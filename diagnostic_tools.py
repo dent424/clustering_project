@@ -43,3 +43,45 @@ def find_delete_keys(possible_answers):
             print question, " ",possible_answers[question]
             del_keys.append(question)
     return del_keys
+
+#Counts number of answers of a given type
+def count_answer_types(answer_dict):
+    answer_types = {}
+    for answer_type in answer_dict:
+        for answer in answer_dict[answer_type]:
+            if answer in answer_types.keys():
+                answer_types[answer] += 1
+            else:
+                answer_types[answer] = 1
+
+    for w in sorted(answer_types, key=answer_types.get, reverse=True):
+        print w, answer_types[w]
+
+#Returns a non-repeating list of answer types when provided with a list like 
+#the one outputted by get_answers())
+def get_answer_types(possible_answers):
+    answer_types = []
+    for answer_set in possible_answers:
+        if possible_answers[answer_set] not in answer_types:
+            answer_types.append(possible_answers[answer_set])
+    return answer_types
+
+def get_var_answer_types(answer_types, possible_answers):
+    answers_dict = {}
+    for i, answer_type in enumerate(answer_types):    
+        answers_dict[i]=answer_type
+
+    answer_type_vars = {}
+    for answer_type in answers_dict:
+        answer_type_vars[answer_type] = []    
+        for var in possible_answers:
+            if answers_dict[answer_type] == possible_answers[var]:
+                answer_type_vars[answer_type].append(var)
+    return answers_dict, answer_type_vars
+
+def generate_question_answer_map(answer_type_vars):
+    question_answer_map = {}
+    for answers in answer_type_vars:
+        for question in answer_type_vars[answers]:
+            question_answer_map[question] = answers
+    return question_answer_map

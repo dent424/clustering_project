@@ -11,10 +11,11 @@ import cleaning_tools
 import dictionary_conversion
 
 data_path = "C:\Clustering Project\Data"
+data_path_2 = "C:\users\Alexander\clustering_project\Data"
 data_file = 'GSS_comma.csv'
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path, data_file )
+data = csv_tools.load_data(data_path_2, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)
@@ -35,4 +36,38 @@ del_keys = diagnostic_tools.find_delete_keys(possible_answers)
 #And removes these dictionary entries
 cleaning_tools.remove_single_answers(del_keys, data_dict)
 
+#Finds the answer sets for each question
 possible_answers = diagnostic_tools.get_answers(data_dict)
+
+#Counts the occurence of answer types and prints out an ordered list of them
+diagnostic_tools.count_answer_types(possible_answers)
+#This analysis points out that there are three common answer types that correspond to no data.
+#THese are  "No answer", "Not applicable", "Don't know", and "Dont know"
+
+#In this case note that often more than one of these answer types will appear as responses to a given question
+#As a result, it will appear that the number of Nan responses is lower than it ought to be
+nan_replace = ["No answer","Not applicable", "Don't know", "Dont know"]
+for answer in nan_replace:
+    data_dict = cleaning_tools.replace_with_nan(answer, data_dict)
+
+#Prints new list of answers
+possible_answers=diagnostic_tools.get_answers(data_dict)
+#diagnostic_tools.count_answer_types(possible_answers)
+   
+#Answer types removes doubles from possible_answers 
+answer_types = diagnostic_tools.get_answer_types(possible_answers)
+
+#Creates an id number for each dictionary type and places it in a dictionary with the id as the key 
+#and the list of responses as a value and returns answers_dict. Also creates answer_type_vars
+#which makes a dictionary with the answer type id as key and a list of vars with that 
+#answer type as values
+answers_dict, answer_type_vars = diagnostic_tools.get_var_answer_types(answer_types, possible_answers)
+print answer_type_vars
+
+#Creates a dictionary where the key is the variable name and the value is the id number of the answer type 
+#Takes in a dictionary where the keys are the id numbers and the values are lists containing questions with that question format
+
+question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
+
+print question_answer_map
+    

@@ -26,3 +26,12 @@ def remove_single_answers(del_keys, data_dict):
             if key in data_dict[row]:
                 del data_dict[row][key]    
     return data_dict
+
+#takes in a dictionary and replaces value in replace_value with nan
+def replace_with_nan(replace_value, d):    
+    for row in d:
+        for cell in d[row]:
+            if d[row][cell] == replace_value:
+                d[row][cell] = 'NaN'
+    return d
+
