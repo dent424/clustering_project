@@ -62,8 +62,8 @@ def count_answer_types(answer_dict):
 def get_answer_types(possible_answers):
     answer_types = []
     for answer_set in possible_answers:
-        if possible_answers[answer_set] not in answer_types:
-            answer_types.append(possible_answers[answer_set])
+        if sorted(possible_answers[answer_set]) not in answer_types:
+            answer_types.append(sorted(possible_answers[answer_set]))
     return answer_types
 
 def get_var_answer_types(answer_types, possible_answers):
@@ -75,10 +75,11 @@ def get_var_answer_types(answer_types, possible_answers):
     for answer_type in answers_dict:
         answer_type_vars[answer_type] = []    
         for var in possible_answers:
-            if answers_dict[answer_type] == possible_answers[var]:
+            if sorted(answers_dict[answer_type]) == sorted(possible_answers[var]):
                 answer_type_vars[answer_type].append(var)
     return answers_dict, answer_type_vars
 
+#Maps questions to the id numbers of the question types
 def generate_question_answer_map(answer_type_vars):
     question_answer_map = {}
     for answers in answer_type_vars:

@@ -20,6 +20,7 @@ def remove_empties(data):
     return data
     
 #Removes fields from dictionaries that have no useful data
+#Note that del_keys is a list
 def remove_single_answers(del_keys, data_dict):
     for row in data_dict:
         for key in del_keys:    

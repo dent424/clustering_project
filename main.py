@@ -10,12 +10,13 @@ import diagnostic_tools
 import cleaning_tools
 import dictionary_conversion
 
+
 data_path = "C:\Clustering Project\Data"
 data_path_2 = "C:\users\Alexander\clustering_project\Data"
 data_file = 'GSS_comma.csv'
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path_2, data_file )
+data = csv_tools.load_data(data_path, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)
@@ -34,7 +35,9 @@ possible_answers = diagnostic_tools.get_answers(data_dict)
 #This analysis shows 4 dictionary keys associated with only 1 type of response
 del_keys = diagnostic_tools.find_delete_keys(possible_answers)
 #And removes these dictionary entries
-cleaning_tools.remove_single_answers(del_keys, data_dict)
+data_dict = cleaning_tools.remove_single_answers(del_keys, data_dict)
+#Also removes variables that will not be used in the analysis
+data_dict = cleaning_tools.remove_single_answers(['numemps'], data_dict)
 
 #Finds the answer sets for each question
 possible_answers = diagnostic_tools.get_answers(data_dict)
@@ -46,7 +49,7 @@ diagnostic_tools.count_answer_types(possible_answers)
 
 #In this case note that often more than one of these answer types will appear as responses to a given question
 #As a result, it will appear that the number of Nan responses is lower than it ought to be
-nan_replace = ["No answer","Not applicable", "Don't know", "Dont know"]
+nan_replace = ["No answer","Not applicable", "Don't know", "Dont know", "Not available","Cant choose","Can t choose","No car, dont drive"]
 for answer in nan_replace:
     data_dict = cleaning_tools.replace_with_nan(answer, data_dict)
 
@@ -69,5 +72,9 @@ print answer_type_vars
 
 question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
 
-print question_answer_map
-    
+pp = pprint.PrettyPrinter()
+print pp.pprint(answers_dict)
+
+translate = dictionary_conversion.recode_dict()
+
+pp.pprint(translate)
