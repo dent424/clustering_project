@@ -7,6 +7,7 @@ Created on Wed Oct 14 20:30:25 2015
 
 
 #This file relates to the recoding and creation of dictionaries
+import translation_dictionary
 
 #This function converts a list of lists with a header list into a dictionary making the id number the dictionary key
 def create_dictionary(data):
@@ -27,10 +28,9 @@ def create_dictionary(data):
 #Thequeswtion answer map is created in diagnostic_tools.generate_question_answer_map()
 
 def recode_data(question_answer_map, data_dict):
-    from translate_dictionary import recode_dict
     for question in question_answer_map:
         #Generates the recoding dictionary used to convert strings to numerical values in the data dictionary                
-        translate = recode_dict()        
+        translate = translation_dictionary.recode_dict()        
         for entry in translate:
             answer_set_id = question_answer_map[question]
             if answer_set_id == entry:

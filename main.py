@@ -16,7 +16,7 @@ data_path_2 = "C:\users\Alexander\clustering_project\Data"
 data_file = 'GSS_comma.csv'
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path, data_file )
+data = csv_tools.load_data(data_path_2, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)
@@ -75,7 +75,9 @@ question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_
 #Recodes all data values with their numerical alternatives
 data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)
 
+
 pp = pprint.PrettyPrinter()
+pp.pprint(question_answer_map)
 
 
 
