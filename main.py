@@ -72,24 +72,12 @@ print answer_type_vars
 
 question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
 
-#Generates the recoding dictionary used to convert strings to numerical values in the data dictionary
-
-translate = dictionary_conversion.recode_dict()
+#Recodes all data values with their numerical alternatives
+data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)
 
 pp = pprint.PrettyPrinter()
 
 
-for question in question_answer_map:
-    for entry in translate:
-        answer_set_id = question_answer_map[question]
-        if answer_set_id == entry:
-            recode_dict = translate[entry]
-            for respondent in data_dict:
-                for response in recode_dict:
-                    answer = data_dict[respondent][question]
-                    if answer==response:
-                        data_dict[respondent][question]=recode_dict[response]
-                    else:
-                        pass
+
 
 #print pp.pprint(data_dict)
