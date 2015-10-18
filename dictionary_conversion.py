@@ -42,3 +42,4 @@ def recode_data(question_answer_map, data_dict):
                             data_dict[respondent][question]=recode_dict[response]
                         else:
                             pass
+    return data_dict

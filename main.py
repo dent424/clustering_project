@@ -72,14 +72,8 @@ print answer_type_vars
 
 question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
 
+pp = pprint.PrettyPrinter()
+pp.pprint(answers_dict)
+
 #Recodes all data values with their numerical alternatives
 data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)
-
-
-pp = pprint.PrettyPrinter()
-pp.pprint(question_answer_map)
-
-
-
-
-#print pp.pprint(data_dict)
