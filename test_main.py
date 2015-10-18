@@ -64,9 +64,9 @@ class TestRecodeData(unittest.TestCase):
                                   'natspac':2,
                                   'watergen':5,
                                   'priven':1}}
-        self.outputDict = {'10001':2,
-                           '10002':1,
-                           '10003':2}
+        self.outputDict = {'10001':['natspac','priven'],
+                           '10002':['grncon'],
+                           '10003':['grncon','natspac']}
   
     def test_recode_data(self):
         print self.QAMap

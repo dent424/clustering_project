@@ -77,3 +77,4 @@ pp.pprint(answers_dict)
 
 #Recodes all data values with their numerical alternatives
 unmatched_dict, data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)
+print unmatched_dict

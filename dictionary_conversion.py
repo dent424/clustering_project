@@ -58,8 +58,8 @@ def recode_data(question_answer_map, data_dict):
                     #If recoder finds non-recodable value, creates a dictionary entry for that row with the count
                     if zero == 0:
                         if respondent in unmatched_count.keys(): 
-                            unmatched_count[respondent]+=1
+                            unmatched_count[respondent]==unmatched_count[respondent].append(question)
                         else:
-                            unmatched_count[respondent]=1
+                            unmatched_count[respondent]=[question]
                                            
     return unmatched_count, data_dict
