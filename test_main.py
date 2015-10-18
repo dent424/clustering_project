@@ -37,7 +37,7 @@ class TestRecodeData(unittest.TestCase):
                                   'watergen':'Somewhat dangerous',
                                   'priven':'Disagree'},
                          '10003':{'grncon':'',
-                                  'natspac':'Too much',
+                                  'natspac':'',
                                   'watergen':'Somewhat dangerous',
                                   'priven':'Strongly agree'},
                          '10004':{'grncon':'Very concerned',
@@ -57,19 +57,23 @@ class TestRecodeData(unittest.TestCase):
                                   'watergen':3,
                                   'priven':2},
                          '10003':{'grncon':'',
-                                  'natspac':3,
+                                  'natspac':'',
                                   'watergen':3,
                                   'priven':5},
                          '10004':{'grncon':5,
                                   'natspac':2,
                                   'watergen':5,
                                   'priven':1}}
+        self.outputDict = {'10001':2,
+                           '10002':1,
+                           '10003':2}
   
     def test_recode_data(self):
         print self.QAMap
         print self.dataDict
-        output =  recode_data(self.QAMap, self.dataDict) 
-        self.assertEqual(output,self.recodedDict)
+        output, updated_dict =  recode_data(self.QAMap, self.dataDict) 
+        self.assertEqual(updated_dict, self.recodedDict)
+        self.assertEqual(output, self.outputDict)
 
         
 if __name__=='__main__':

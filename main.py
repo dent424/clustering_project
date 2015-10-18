@@ -76,4 +76,4 @@ pp = pprint.PrettyPrinter()
 pp.pprint(answers_dict)
 
 #Recodes all data values with their numerical alternatives
-data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)
+unmatched_dict, data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict)

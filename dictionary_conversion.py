@@ -28,18 +28,38 @@ def create_dictionary(data):
 #Thequeswtion answer map is created in diagnostic_tools.generate_question_answer_map()
 
 def recode_data(question_answer_map, data_dict):
+    unmatched_count={}    
+    #Generates the recoding dictionary used to convert strings to numerical values in the data dictionary                
+    translate = translation_dictionary.recode_dict()
+    #pulls out a question, answer-type ID combination   
     for question in question_answer_map:
-        #Generates the recoding dictionary used to convert strings to numerical values in the data dictionary                
-        translate = translation_dictionary.recode_dict()        
+        #Pulls up a recoded question answer-set combination                     
         for entry in translate:
-            answer_set_id = question_answer_map[question]
+            #pulls out the answer-set ID number              
+            answer_set_id = question_answer_map[question]            
             if answer_set_id == entry:
+                #if the answer-set-ID # is equal to the translation dict
+                #Pulls out the dictionary with the answer-set
                 recode_dict = translate[entry]
+                #pulls out a row from the data_dictionary
                 for respondent in data_dict:
+                    #iterates individual responses for the row
+                    zero  = 0                    
                     for response in recode_dict:
+                        #pulls out the un recoded answer
                         answer = data_dict[respondent][question]
+                        #If the answer is equal to the response... 
                         if answer==response:
+                            #replace the dictionary entry
                             data_dict[respondent][question]=recode_dict[response]
+                            zero = 1
                         else:
                             pass
-    return data_dict
+                    #If recoder finds non-recodable value, creates a dictionary entry for that row with the count
+                    if zero == 0:
+                        if respondent in unmatched_count.keys(): 
+                            unmatched_count[respondent]+=1
+                        else:
+                            unmatched_count[respondent]=1
+                                           
+    return unmatched_count, data_dict
