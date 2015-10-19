@@ -15,6 +15,7 @@ class TestC_E(unittest.TestCase):
     
     def test_empty_rows(self):
         self.assertEqual(count_empty(self.l),[0,0,3,1])
+    
 
 from dictionary_conversion import recode_data
 
@@ -66,15 +67,24 @@ class TestRecodeData(unittest.TestCase):
                                   'priven':1}}
         self.outputDict = {'10001':['natspac','priven'],
                            '10002':['grncon'],
-                           '10003':['grncon','natspac']}
-  
+                           '10003':['natspac','grncon']}
+       
+        self.ignore = ['natspac','grncon']
+        
+        self.outputWithIgnoreDict = {'10001':['priven']}         
+        
+       
+    #Tests to see whether the data recodes under normal circumstances   
     def test_recode_data(self):
-        print self.QAMap
-        print self.dataDict
-        output, updated_dict =  recode_data(self.QAMap, self.dataDict) 
+        output, updated_dict =  recode_data(self.QAMap, self.dataDict)        
+        print output        
         self.assertEqual(updated_dict, self.recodedDict)
         self.assertEqual(output, self.outputDict)
-
         
+   #Tests to see whether the ignore functionality works
+    def test_recode_with_ignore(self):
+        output, updated_dict =  recode_data(self.QAMap, self.dataDict, self.ignore) 
+        self.assertEqual(output, self.outputWithIgnoreDict)
+    
 if __name__=='__main__':
     unittest.main()

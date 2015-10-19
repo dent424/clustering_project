@@ -27,7 +27,7 @@ def create_dictionary(data):
 #The question answer map is a dictionary where key is the variable name and the value is the id number of the answer type 
 #Thequeswtion answer map is created in diagnostic_tools.generate_question_answer_map()
 
-def recode_data(question_answer_map, data_dict):
+def recode_data(question_answer_map, data_dict, ignore=[]):
     unmatched_count={}    
     #Generates the recoding dictionary used to convert strings to numerical values in the data dictionary                
     translate = translation_dictionary.recode_dict()
@@ -55,11 +55,14 @@ def recode_data(question_answer_map, data_dict):
                             zero = 1
                         else:
                             pass
-                    #If recoder finds non-recodable value, creates a dictionary entry for that row with the count
+                    #If recoder finds non-recodable value, adds variable name to list in dictionary with key of respondent ID
                     if zero == 0:
-                        if respondent in unmatched_count.keys(): 
-                            unmatched_count[respondent]==unmatched_count[respondent].append(question)
-                        else:
-                            unmatched_count[respondent]=[question]
+                        if question not in ignore: #Checks to see if the variable is to be ignored
+                            if respondent in unmatched_count.keys(): 
+                                unmatched_count[respondent]==unmatched_count[respondent].append(question)
+                            else:
+                                unmatched_count[respondent]=[question]
+                        else: 
+                            pass
                                            
     return unmatched_count, data_dict
