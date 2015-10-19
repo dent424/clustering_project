@@ -64,5 +64,9 @@ def recode_data(question_answer_map, data_dict, ignore=[]):
                                 unmatched_count[respondent]=[question]
                         else: 
                             pass
+    if unmatched_count == {}:
+        print "No unaccounted for answers in recoding. RECODING SUCCESSFUL"
+    else:
+        print len(unmatched_count.keys()), " answers unaccounted for"
                                            
     return unmatched_count, data_dict

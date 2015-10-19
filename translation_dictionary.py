@@ -16,7 +16,7 @@ def recode_dict():
     6 : {'NaN':'NaN','No':0,'Yes':1},
     7 : {'Fairly willing':2,'NaN':'NaN','Neither willing nor unwill':3,'Not at all willing':5,'Not very willing':4,'Very willing':1},
     8 : {'2':2,'3':3,'4':4,'NaN':'NaN','Not at all concerned':1,'Very concerned':5},
-    9 : {'Moderately interest':2,'NaN':'NaN','Not at all interested':1,'Very interested':3},
+    9 : {'Moderately interested':2,'NaN':'NaN','Not at all interested':1,'Very interested':3},
     10 : {'Extremely dangerous for the environment':1,'NaN':'NaN','Not dangerous at all for the environment?':5,'Not very dangerous, or':4,'Somewhat dangerous':3,'Very dangerous':2},
     11 : {'Always':4,'NaN':'NaN','Never':1,'Often':3,'Sometimes':2},
     12 : {'NaN':'NaN','No, i have not':0,'Yes, i have':1},

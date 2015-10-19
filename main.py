@@ -15,6 +15,9 @@ data_path = "C:\Clustering Project\Data"
 data_path_2 = "C:\users\Alexander\clustering_project\Data"
 data_file = 'GSS_comma.csv'
 
+#Sets up pretty printer for later use
+pp = pprint.PrettyPrinter()
+
 #Loads data from CSV into list of lists
 data = csv_tools.load_data(data_path, data_file )
 
@@ -43,7 +46,7 @@ data_dict = cleaning_tools.remove_single_answers(['numemps'], data_dict)
 possible_answers = diagnostic_tools.get_answers(data_dict)
 
 #Counts the occurence of answer types and prints out an ordered list of them
-diagnostic_tools.count_answer_types(possible_answers)
+#diagnostic_tools.count_answer_types(possible_answers)
 #This analysis points out that there are three common answer types that correspond to no data.
 #THese are  "No answer", "Not applicable", "Don't know", and "Dont know"
 
@@ -65,17 +68,18 @@ answer_types = diagnostic_tools.get_answer_types(possible_answers)
 #which makes a dictionary with the answer type id as key and a list of vars with that 
 #answer type as values
 answers_dict, answer_type_vars = diagnostic_tools.get_var_answer_types(answer_types, possible_answers)
-print answer_type_vars
 
 #Creates a dictionary where the key is the variable name and the value is the id number of the answer type 
 #Takes in a dictionary where the keys are the id numbers and the values are lists containing questions with that question format
 
 question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
 
-pp = pprint.PrettyPrinter()
 
 
-#Recodes all data values with their numerical alternatives
-ignore = ['topprob1']
+
+#Recodes all data values with their numerical alternatives. Makes sure that all relevant values are recoded properly
+ignore = ['topprob1','topprob2','busgrn','pubdecid','enprbfam','race','enprbus','peopgrn','sex','caremost','busdecid','age','genegen']
 unmatched_dict, data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict, ignore)
-pp.pprint(unmatched_dict)
+
+
+

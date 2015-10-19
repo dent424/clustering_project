@@ -36,11 +36,14 @@ def get_answers(data_dict):
     return possible_answers
 
 #Takes in the dictionary of possible answers and prints keys that have no meaningful variation in responses
-def find_delete_keys(possible_answers):
+def find_delete_keys(possible_answers, printer=0):
     del_keys = []    
     for question in possible_answers:
         if len(possible_answers[question])<2:
-            print question, " ",possible_answers[question]
+            if printer == 1:            
+                print question, " ",possible_answers[question]
+            else:
+                pass
             del_keys.append(question)
     return del_keys
 
