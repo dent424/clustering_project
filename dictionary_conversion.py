@@ -8,7 +8,7 @@ Created on Wed Oct 14 20:30:25 2015
 
 #This file relates to the recoding and creation of dictionaries
 import translation_dictionary
-
+import math
 #This function converts a list of lists with a header list into a dictionary making the id number the dictionary key
 def create_dictionary(data):
     var_names = data.pop(0)
@@ -70,3 +70,40 @@ def recode_data(question_answer_map, data_dict, ignore=[]):
         print len(unmatched_count.keys()), " answers unaccounted for"
                                            
     return unmatched_count, data_dict
+
+#This function recodes all dictionary entries associated with the key 'var' from strings to numerics where possible.
+def recode_to_int(data_dict, var):
+    for respondent in data_dict:
+        for question in data_dict[respondent]:
+            if question == var:
+                try:
+                    data_dict[respondent][question]=int(data_dict[respondent][question])
+                except:
+                    pass
+            
+    return data_dict
+
+#This function creates a list of list where each list represents a key in data_dict. It returns 0
+#where the value is NaN and 1 where the value is anything else. This is designed to be used with
+#create_NaN_plot() in the graphics module.
+def create_NaN_list(data_dict): 
+    example = data_dict.keys()[0]   
+    variables = data_dict[example].keys()       
+    data = []    
+    for var in variables:
+        print "VARIABLE", var        
+        values = []
+        for respondent in data_dict:
+            response = data_dict[respondent][var]
+            print "RESPONSE: ", response            
+            try:            
+                if math.isnan(float(response)):
+                    values.append(0)
+                else:
+                    values.append(1)
+            except:
+                values.append(1)                
+                
+        data.append(values)
+    print data    
+    return data

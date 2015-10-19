@@ -17,7 +17,7 @@ class TestC_E(unittest.TestCase):
         self.assertEqual(count_empty(self.l),[0,0,3,1])
     
 
-from dictionary_conversion import recode_data
+from dictionary_conversion import recode_data, recode_to_int
 
 class TestRecodeData(unittest.TestCase):
     def setUp(self):
@@ -71,7 +71,49 @@ class TestRecodeData(unittest.TestCase):
        
         self.ignore = ['natspac','grncon']
         
-        self.outputWithIgnoreDict = {'10001':['priven']}         
+        self.outputWithIgnoreDict = {'10001':['priven']} 
+        
+        self.string_int_dict = {'10000':{'grncon':'2',
+                                         'natspac':'1',
+                                         'watergen':'5',
+                                         'priven':'3'},
+                                    '10001':{'grncon':'NaN',
+                                         'natspac':'Oppose',
+                                         'watergen':'NaN',
+                                         'priven':'2'},
+                                    '10002':{'grncon':'Plonky',
+                                        'natspac':'2',
+                                        'watergen':'5',
+                                        'priven':'1'},
+                                    '10003':{'grncon':'',
+                                        'natspac':'3',
+                                        'watergen':'2',
+                                        'priven':'1'},
+                                    '10004':{'grncon':'1',
+                                        'natspac':'5',
+                                        'watergen':'3',
+                                        'priven':'Strongly disagree'}}
+        
+        self.string_int_dict_recoded1 = {'10000':{'grncon':2,
+                                         'natspac':'1',
+                                         'watergen':'5',
+                                         'priven':'3'},
+                                    '10001':{'grncon':'NaN',
+                                         'natspac':'Oppose',
+                                         'watergen':'NaN',
+                                         'priven':'2'},
+                                    '10002':{'grncon':'Plonky',
+                                        'natspac':'2',
+                                        'watergen':'5',
+                                        'priven':'1'},
+                                    '10003':{'grncon':'',
+                                        'natspac':'3',
+                                        'watergen':'2',
+                                        'priven':'1'},
+                                    '10004':{'grncon':1,
+                                        'natspac':'5',
+                                        'watergen':'3',
+                                        'priven':'Strongly disagree'}}
         
        
     #Tests to see whether the data recodes under normal circumstances   
@@ -86,5 +128,42 @@ class TestRecodeData(unittest.TestCase):
         output, updated_dict =  recode_data(self.QAMap, self.dataDict, self.ignore) 
         self.assertEqual(output, self.outputWithIgnoreDict)
     
+    #Tests to make sure that strings of numbers are recoded as int in the specified variables    
+    def test_recode_string_to_int(self):
+        updated_dict = recode_to_int(self.string_int_dict, 'grncon')
+        self.assertEqual(updated_dict, self.string_int_dict_recoded1)
+
+from dictionary_conversion import create_NaN_list
+
+class TestGraphData(unittest.TestCase):
+    def setUp(self):
+        self.dataDict = {'10000':{'grncon':'2',
+                                  'natspac':'NaN',
+                                  'watergen':'Extremely dangerous',
+                                  'priven':'Agree'},
+                         '10001':{'grncon':'NaN',
+                                  'natspac':'Oppose',
+                                  'watergen':'NaN',
+                                  'priven':'Strongly disagree'},
+                         '10002':{'grncon':'Plonky',
+                                  'natspac':'Too little',
+                                  'watergen':'Somewhat dangerous',
+                                  'priven':'Disagree'},
+                         '10003':{'grncon':'1',
+                                  'natspac':'Strongly disagree',
+                                  'watergen':'Somewhat dangerous',
+                                  'priven':'Strongly agree'},
+                         '10004':{'grncon':'NaN',
+                                  'natspac':'NaN',
+                                  'watergen':'NaN',
+                                  'priven':'Strongly disagree'}}
+        self.outputList = [[0,0,1,1,1],[0,1,0,1,1],[0,1,0,1,1],[1,1,1,1,1]]
+
+    #Tests to see whether a binary dictionary of NaN, Not-NaN is created
+    def test_recode_into_binary_list(self):
+        binary_output = create_NaN_list(self.dataDict)        
+        self.assertEqual(self.outputList, binary_output)
+
+
 if __name__=='__main__':
     unittest.main()

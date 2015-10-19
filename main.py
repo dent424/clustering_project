@@ -9,6 +9,7 @@ import csv_tools
 import diagnostic_tools
 import cleaning_tools
 import dictionary_conversion
+import graphics
 
 
 data_path = "C:\Clustering Project\Data"
@@ -71,15 +72,16 @@ answers_dict, answer_type_vars = diagnostic_tools.get_var_answer_types(answer_ty
 
 #Creates a dictionary where the key is the variable name and the value is the id number of the answer type 
 #Takes in a dictionary where the keys are the id numbers and the values are lists containing questions with that question format
-
 question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
-
-
 
 
 #Recodes all data values with their numerical alternatives. Makes sure that all relevant values are recoded properly
 ignore = ['topprob1','topprob2','busgrn','pubdecid','enprbfam','race','enprbus','peopgrn','sex','caremost','busdecid','age','genegen']
 unmatched_dict, data_dict = dictionary_conversion.recode_data(question_answer_map, data_dict, ignore)
 
+#Recodes all data in age to int
+data_dict = dictionary_conversion.recode_to_int(data_dict,'age')
 
+#Graphs NaNs
+graphics.plot_NaNs(data_dict)
 
