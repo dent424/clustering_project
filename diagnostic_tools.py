@@ -4,7 +4,7 @@ Created on Wed Oct 14 19:46:32 2015
 
 @author: Alex
 """
-
+import math
 #Takes a dataset and sees how many cells in each row are empty
 def count_empty(data):
     empty_num = []    
@@ -89,3 +89,59 @@ def generate_question_answer_map(answer_type_vars):
         for question in answer_type_vars[answers]:
             question_answer_map[question] = answers
     return question_answer_map
+
+#Finds the proportion of questions that every individual has a missing value for
+def get_NaN_ratio(data_dict):
+    NaN_dict = {}
+    for respondent in data_dict:
+        if respondent not in NaN_dict.keys():
+            response_count = len(data_dict[respondent].keys())            
+            NaN_dict[respondent]=0
+            counter = 0
+        for response in data_dict[respondent]:
+            try:            
+                if math.isnan(float(data_dict[respondent][response])):
+                    counter += 1
+            except:
+                pass
+        NaN_dict[respondent]=float(counter)/float(response_count)
+    return NaN_dict
+            
+#Finds the proportion of respondents that have missing values for every question
+def get_question_NaN_ratio(data_dict):
+    NaN_dict = {}
+    denominator = len(data_dict)    
+    for respondent in data_dict:
+        for question in data_dict[respondent]:
+            if question not in NaN_dict.keys():
+                NaN_dict[question]=0
+            try:
+                if math.isnan(float(data_dict[respondent][question])):
+                    NaN_dict[question]+=1
+            except:
+                pass
+    for item in NaN_dict:
+        NaN_dict[item]=NaN_dict[item]/float(denominator)
+    
+    return NaN_dict
+
+#Finds the different types of answer patterns that respondents provide
+def answer_patterns(data_dict):
+    full_list=[]    
+    for respondent in data_dict:
+        temp_list = []
+        for question in data_dict[respondent]:                 
+            try:
+                if math.isnan(float(data_dict[respondent][question])):
+                    pass
+                else:
+                    temp_list.append(question)
+            except:
+                temp_list.append(question)
+        temp_list.sort()
+        if temp_list not in full_list:
+            full_list.append(temp_list)                
+    return full_list
+    
+
+            

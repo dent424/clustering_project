@@ -11,9 +11,7 @@ from dictionary_conversion import create_NaN_list
 
 #Creates a chart with questions on the y-axis, respondent on the x-axis to show NaN vs. Non-NaN values
 #Each question, respondent combination would be assigned an x-y coordinate and would be 
-#Red for NaN and Green for any other value.
-
-    
+#Red for NaN and Green for any other value.    
 def plot_NaNs(data_dict):
     NaN_list = create_NaN_list(data_dict)
     y_axis = range(len(NaN_list)) #The respondents

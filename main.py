@@ -82,6 +82,17 @@ unmatched_dict, data_dict = dictionary_conversion.recode_data(question_answer_ma
 #Recodes all data in age to int
 data_dict = dictionary_conversion.recode_to_int(data_dict,'age')
 
-#Graphs NaNs
-graphics.plot_NaNs(data_dict)
+#Graphs NaNs in a question by respondent matrix
+#graphics.plot_NaNs(data_dict)
 
+#Prints the ratio of answers that are NaN for each person
+respondent_NaN_dict = diagnostic_tools.get_NaN_ratio(data_dict)
+#pp.pprint(respondent_NaN_dict)
+
+#Prints the ratio of people that didn't answer each question
+#question_NaN_dict = diagnostic_tools.get_question_NaN_ratio(data_dict)
+#pp.pprint(question_NaN_dict)
+
+#Prints different types of answer patterns
+answer_patterns = diagnostic_tools.answer_patterns(data_dict)
+print pp.pprint(answer_patterns)

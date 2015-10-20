@@ -164,6 +164,81 @@ class TestGraphData(unittest.TestCase):
         binary_output = create_NaN_list(self.dataDict)        
         self.assertEqual(self.outputList, binary_output)
 
+from diagnostic_tools import get_NaN_ratio, get_question_NaN_ratio
+
+class TestNaNCounter(unittest.TestCase):
+    def setUp(self):
+        self.dataDict = {'10000':{'grncon':'2',
+                          'natspac':'NaN',
+                          'watergen':'Extremely dangerous',
+                          'priven':'Agree'},
+                 '10001':{'grncon':'NaN',
+                          'natspac':'Oppose',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'},
+                 '10002':{'grncon':'Plonky',
+                          'natspac':'Too little',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Disagree'},
+                 '10003':{'grncon':'1',
+                          'natspac':'Strongly disagree',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Strongly agree'},
+                 '10004':{'grncon':'NaN',
+                          'natspac':'NaN',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'}}
+
+        self.outputDict = {'10000':0.25,
+                           '10001':0.5,
+                           '10002':0,
+                           '10003':0,
+                           '10004':0.75}
+        self.questionOutputDict = {'grncon':0.4,
+                                   'natspac':0.4,
+                                   'watergen':0.4,
+                                   'priven':0}
+
+    def test_get_NaN_ratio(self):
+        test = get_NaN_ratio(self.dataDict)
+        self.assertDictEqual(self.outputDict, test)
+    
+    def test_get_question_NaN_ratio(self):
+        test = get_question_NaN_ratio(self.dataDict)
+        self.assertDictEqual(self.questionOutputDict, test)
+    
+from diagnostic_tools import answer_patterns
+
+class TestAnswerPatterns(unittest.TestCase):
+    def setUp(self):
+        self.dataDict={'10000':{'grncon':'2',
+                          'natspac':'NaN',
+                          'watergen':'Extremely dangerous',
+                          'priven':'Agree'},
+                 '10001':{'grncon':'NaN',
+                          'natspac':'Oppose',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'},
+                 '10002':{'grncon':'Plonky',
+                          'natspac':'Too little',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Disagree'},
+                 '10003':{'grncon':'1',
+                          'natspac':'NaN',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Strongly agree'},
+                 '10004':{'grncon':'NaN',
+                          'natspac':'NaN',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'}}
+        self.outputList = [sorted(['grncon','watergen','priven']),
+                           sorted(['natspac','priven']),
+                           sorted(['grncon','natspac','watergen','priven']),
+                           sorted(['priven'])]
+                           
+    def test_answer_patterns(self):
+        test = answer_patterns(self.dataDict)
+        self.assertEqual(sorted(self.outputList),sorted(test))
 
 if __name__=='__main__':
     unittest.main()
