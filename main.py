@@ -20,7 +20,7 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path, data_file )
+data = csv_tools.load_data(data_path_2, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)

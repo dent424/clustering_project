@@ -90,12 +90,10 @@ def create_NaN_list(data_dict):
     example = data_dict.keys()[0]   
     variables = data_dict[example].keys()       
     data = []    
-    for var in variables:
-        print "VARIABLE", var        
+    for var in variables:      
         values = []
         for respondent in data_dict:
             response = data_dict[respondent][var]
-            print "RESPONSE: ", response            
             try:            
                 if math.isnan(float(response)):
                     values.append(0)
@@ -105,5 +103,4 @@ def create_NaN_list(data_dict):
                 values.append(1)                
                 
         data.append(values)
-    print data    
     return data
