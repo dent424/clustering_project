@@ -125,23 +125,43 @@ def get_question_NaN_ratio(data_dict):
     
     return NaN_dict
 
+#This module finds the answer pattern for an individual respondent
+def get_single_answer_pattern(respondent):
+    temp_list = []
+    for question in respondent:                 
+        try:
+            if math.isnan(float(respondent[question])):
+                pass
+            else:
+                temp_list.append(question)
+        except:
+            temp_list.append(question)
+    temp_list.sort()
+    return temp_list
+
 #Finds the different types of answer patterns that respondents provide
 def answer_patterns(data_dict):
     full_list=[]    
     for respondent in data_dict:
-        temp_list = []
-        for question in data_dict[respondent]:                 
-            try:
-                if math.isnan(float(data_dict[respondent][question])):
-                    pass
-                else:
-                    temp_list.append(question)
-            except:
-                temp_list.append(question)
-        temp_list.sort()
+        temp_list = get_single_answer_pattern(data_dict[respondent])
         if temp_list not in full_list:
             full_list.append(temp_list)                
     return full_list
-    
 
-            
+#Counts the number of times each answer pattern occurs.
+#Assigns ID numbers to each answer pattern
+#Puts them into two dictionaries
+#Requires the output of answer_patterns() as input along with the data in dictionary form   
+def count_answer_patterns(answer_patterns, data_dict):
+    answer_pattern_dict = {}
+    answer_patterns_id = {}    
+    for respondent in data_dict:
+        temp_list = get_single_answer_pattern(data_dict[respondent])        
+        for i, answer_pattern in enumerate(answer_patterns):
+            if answer_pattern == temp_list:
+                if i in answer_pattern_dict.keys():
+                    answer_pattern_dict[i]+=1
+                else:
+                    answer_pattern_dict[i]=1
+                    answer_patterns_id[i]=answer_pattern
+    return answer_pattern_dict, answer_patterns_id

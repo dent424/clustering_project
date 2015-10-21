@@ -135,6 +135,7 @@ class TestRecodeData(unittest.TestCase):
 
 from dictionary_conversion import create_NaN_list
 
+#Tests the data that will be the input for the NaN graph
 class TestGraphData(unittest.TestCase):
     def setUp(self):
         self.dataDict = {'10000':{'grncon':'2',
@@ -199,16 +200,19 @@ class TestNaNCounter(unittest.TestCase):
                                    'watergen':0.4,
                                    'priven':0}
 
+    #test the percent of a person's responses that are NaN    
     def test_get_NaN_ratio(self):
         test = get_NaN_ratio(self.dataDict)
         self.assertDictEqual(self.outputDict, test)
     
+    #tests the percent of responses to a given question that are NaN
     def test_get_question_NaN_ratio(self):
         test = get_question_NaN_ratio(self.dataDict)
         self.assertDictEqual(self.questionOutputDict, test)
     
-from diagnostic_tools import answer_patterns
+from diagnostic_tools import answer_patterns, count_answer_patterns, get_single_answer_pattern
 
+#This section tests the discovery and counting of answer patterns
 class TestAnswerPatterns(unittest.TestCase):
     def setUp(self):
         self.dataDict={'10000':{'grncon':'2',
@@ -231,14 +235,31 @@ class TestAnswerPatterns(unittest.TestCase):
                           'natspac':'NaN',
                           'watergen':'NaN',
                           'priven':'Strongly disagree'}}
-        self.outputList = [sorted(['grncon','watergen','priven']),
+        self.outputList = [sorted(['grncon','watergen','priven']), 
                            sorted(['natspac','priven']),
-                           sorted(['grncon','natspac','watergen','priven']),
-                           sorted(['priven'])]
-                           
+                           sorted(['grncon','natspac','watergen','priven']), 
+                           sorted(['priven'])] 
+        self.answer_pattern_id = {0:['priven'],
+                                  1:['grncon', 'priven', 'watergen'],
+                                  2:['natspac', 'priven'],
+                                  3:['grncon', 'natspac', 'priven', 'watergen']}
+        self.answer_pattern_count = {0:1,1:2,2:1,3:1}
+    
+    def test_get_single_answer_pattern(self):
+        test = get_single_answer_pattern(self.dataDict['10000'])
+        self.assertEqual(test, self.answer_pattern_id[1])
+
+    #Finds answer patterns and returns a list of them 
     def test_answer_patterns(self):
         test = answer_patterns(self.dataDict)
         self.assertEqual(sorted(self.outputList),sorted(test))
+        
+    #Counts answer patterns in the data and returns two dicionaries, one with counts and one with ids.
+    def test_count_answer_patterns(self):
+        test, ids = count_answer_patterns(answer_patterns(self.dataDict), self.dataDict)
+        self.assertDictEqual(self.answer_pattern_id, ids)        
+        self.assertEqual(self.answer_pattern_count,test)
+    
 
 if __name__=='__main__':
     unittest.main()

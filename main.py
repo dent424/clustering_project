@@ -9,7 +9,7 @@ import csv_tools
 import diagnostic_tools
 import cleaning_tools
 import dictionary_conversion
-import graphics
+#import graphics
 
 
 data_path = "C:\Clustering Project\Data"
@@ -20,7 +20,7 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path_2, data_file )
+data = csv_tools.load_data(data_path, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)
@@ -95,4 +95,7 @@ respondent_NaN_dict = diagnostic_tools.get_NaN_ratio(data_dict)
 
 #Prints different types of answer patterns
 answer_patterns = diagnostic_tools.answer_patterns(data_dict)
-print pp.pprint(answer_patterns)
+#print pp.pprint(answer_patterns)
+
+answer_patterns_count, answer_patterns_id = diagnostic_tools.count_answer_patterns(answer_patterns,data_dict)
+print pp.pprint(answer_patterns_count)
