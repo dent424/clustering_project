@@ -188,3 +188,41 @@ def answer_pattern_crosstab(answer_pattern_id_dict):
             temp_list.append(temp)
         total_list.append(temp_list)
     return total_list
+
+
+#Gets the weights list to be used in the get_tolerance_matrix function from the get_pattern_dict output of count answer patterns
+def get_weights(answer_pattern_count):
+    return [answer_pattern_count[answer] for answer in answer_pattern_count]
+
+#Creates a matrix that shows how many answer patterns are within tolerance distance to evey other answwer pattern.
+#The input is the output of answer_pattern_crosstab 
+def get_tolerance_matrix(answer_pattern_crosstab, tolerance, weights=[]):
+    tolerance_matrix = []    
+    for count_list in answer_pattern_crosstab:
+        temp = []        
+        for count in count_list:
+            if count <= tolerance:
+                temp.append(1)
+            else:
+                temp.append(0)
+        if weights != []:
+            try:
+                temp = [a*b for a,b in zip(temp,weights)]
+            except:
+                print "Weights not applied due to different length lists"
+        tolerance_matrix.append(temp)
+    return tolerance_matrix            
+
+#Collapses the tolerance matrix from above to get a measure of how similar an answer_pattern is to the whole
+def collapse_tolerance_matrix(tolerance_matrix, printer=0):
+    tolerance_metric_dict={}    
+    for i, tolerance_list in enumerate(tolerance_matrix):        
+        tolerance_metric_dict[i]=sum(tolerance_list)
+    if printer != 0:
+        tuples = []
+        for pattern_id in tolerance_metric_dict:
+            tuples.append((tolerance_metric_dict[pattern_id], pattern_id))
+        tuples.sort(reverse=False)
+        for pattern in tuples:
+            print "answer_pattern ID: ", pattern[1], "number: ", pattern[0]
+    return tolerance_metric_dict

@@ -20,7 +20,7 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path, data_file )
+data = csv_tools.load_data(data_path_2, data_file )
 
 #This looks for any mostly empty rows
 #print diagnostic_tools.count_empty(data)
@@ -100,5 +100,18 @@ answer_patterns = diagnostic_tools.answer_patterns(data_dict)
 #Counts the occurence of answer patterns in respondents
 answer_patterns_count, answer_patterns_id = diagnostic_tools.count_answer_patterns(answer_patterns,data_dict)
 
+#Creates a matrix showing how similar answer patterns are to each other
 answer_patterns_matrix = diagnostic_tools.answer_pattern_crosstab(answer_patterns_id)
-print pp.pprint(answer_patterns_matrix)
+
+#Gets weights for the next function
+weights = diagnostic_tools.get_weights(answer_patterns_count)
+
+#Creates a matrix describing the number of answer patterns that are within "tolerance" of every other answer
+tolerance = 15
+tolerance_matrix = diagnostic_tools.get_tolerance_matrix(answer_patterns_matrix,tolerance,weights)
+#print pp.pprint(tolerance_matrix)
+#Determines which answer pattern is most similar to most other answer patterns
+collapsed_matrix = diagnostic_tools.collapse_tolerance_matrix(tolerance_matrix)
+#print pp.pprint(collapsed_matrix)
+
+    

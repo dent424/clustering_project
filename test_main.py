@@ -210,8 +210,7 @@ class TestNaNCounter(unittest.TestCase):
         test = get_question_NaN_ratio(self.dataDict)
         self.assertDictEqual(self.questionOutputDict, test)
     
-from diagnostic_tools import answer_patterns, count_answer_patterns, get_single_answer_pattern, compare_answer_patterns, answer_pattern_crosstab
-
+from diagnostic_tools import get_weights, answer_patterns, count_answer_patterns, get_single_answer_pattern, compare_answer_patterns, answer_pattern_crosstab, get_tolerance_matrix, collapse_tolerance_matrix
 #This section tests the discovery and counting of answer patterns
 class TestAnswerPatterns(unittest.TestCase):
     def setUp(self):
@@ -245,6 +244,10 @@ class TestAnswerPatterns(unittest.TestCase):
                                   3:['grncon', 'natspac', 'priven', 'watergen']}
         self.answer_pattern_count = {0:1,1:2,2:1,3:1}
         self.answer_pattern_crosstabs = [[0,2,1,3],[2,0,2,1],[1,2,0,2],[3,1,2,0]] 
+        self.tolerance_matrix = [[1,0,1,0],[0,1,0,1],[1,0,1,0],[0,1,0,1]]
+        self.weights = [1,2,1,1]
+        self.weighted_tolerance_matrix = [[1,0,1,0],[0,2,0,1],[1,0,1,0],[0,2,0,1]]
+        self.collapsed_tolerance_matrix= {0:2,1:3,2:2,3:3}
     
     def test_get_single_answer_pattern(self):
         test = get_single_answer_pattern(self.dataDict['10000'])
@@ -268,6 +271,29 @@ class TestAnswerPatterns(unittest.TestCase):
     def test_answer_pattern_crosstab(self):
         crosstab = answer_pattern_crosstab(self.answer_pattern_id) 
         self.assertEqual(crosstab, self.answer_pattern_crosstabs)
+
+    #Tests whether a tolerance indicator matrix can be produced
+    def test_tolerable_difference(self):
+        tolerance = 1        
+        tolerance_matrix = get_tolerance_matrix(self.answer_pattern_crosstabs, tolerance)
+        self.assertEqual(tolerance_matrix, self.tolerance_matrix)
+    
+    #Tests the creation of weights for the tolerable_difference function    
+    def test_weights(self):
+        weights = get_weights(self.answer_pattern_count)
+        self.assertEqual(weights, self.weights)
+    
+    #Tests the tolerable difference function with weights applied
+    def test_tolerable_difference_weighted(self):
+        tolerance = 1
+        weights = get_weights(self.answer_pattern_count)
+        weighted_tolerance_matrix = get_tolerance_matrix(self.answer_pattern_crosstabs, tolerance, weights)
+        self.assertEqual(weighted_tolerance_matrix, self.weighted_tolerance_matrix)
+
+    #Test to make sure that the tolerable_difference collapsing function works properly
+    def test_collapse_tolerance_matrix(self):
+        collapsed_matrix = collapse_tolerance_matrix(self.weighted_tolerance_matrix)        
+        self.assertEqual(collapsed_matrix, self.collapsed_tolerance_matrix)
 
 if __name__=='__main__':
     unittest.main()
