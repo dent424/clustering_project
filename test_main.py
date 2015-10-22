@@ -295,5 +295,56 @@ class TestAnswerPatterns(unittest.TestCase):
         collapsed_matrix = collapse_tolerance_matrix(self.weighted_tolerance_matrix)        
         self.assertEqual(collapsed_matrix, self.collapsed_tolerance_matrix)
 
+from cleaning_tools import filter_data_dict
+
+class FilterAnswerPatterns(unittest.TestCase):
+    def setUp(self):    
+        self.collapsed_tolerance_matrix= {0:2,1:3,2:2,3:3}
+        self.answer_pattern_id = {0:['priven'],
+                                      1:['grncon', 'priven', 'watergen'],
+                                      2:['natspac', 'priven'],
+                                      3:['grncon', 'natspac', 'priven', 'watergen']}
+        self.dataDict = {'10000':{'grncon':'2',
+                              'natspac':'NaN',
+                              'watergen':'Extremely dangerous',
+                              'priven':'Agree'},
+                     '10001':{'grncon':'NaN',
+                              'natspac':'Oppose',
+                              'watergen':'NaN',
+                              'priven':'Strongly disagree'},
+                     '10002':{'grncon':'Plonky',
+                              'natspac':'Too little',
+                              'watergen':'Somewhat dangerous',
+                              'priven':'Disagree'},
+                     '10003':{'grncon':'1',
+                              'natspac':'Strongly disagree',
+                              'watergen':'Somewhat dangerous',
+                              'priven':'Strongly agree'},
+                     '10004':{'grncon':'NaN',
+                              'natspac':'NaN',
+                              'watergen':'NaN',
+                              'priven':'Strongly disagree'}}
+        self.filtered_dict = {'10001':{'grncon':'NaN',
+                              'natspac':'Oppose',
+                              'watergen':'NaN',
+                              'priven':'Strongly disagree'},
+                               '10004':{'grncon':'NaN',
+                              'natspac':'NaN',
+                              'watergen':'NaN',
+                              'priven':'Strongly disagree'}} 
+        self.answer_pattern_id = {0:['priven'],
+                          1:['grncon', 'priven', 'watergen'],
+                          2:['natspac', 'priven'],
+                          3:['grncon', 'natspac', 'priven', 'watergen']}
+    
+    def test_filter_data_dict(self):
+        answer_pattern_id = 0
+        tolerance = 1  
+        filtered_dict = filter_data_dict(self.dataDict, answer_pattern_id, tolerance, self.answer_pattern_id)
+        self.assertDictEqual(filtered_dict, self.filtered_dict)
+    
+    
+
+
 if __name__=='__main__':
     unittest.main()

@@ -110,8 +110,13 @@ weights = diagnostic_tools.get_weights(answer_patterns_count)
 tolerance = 15
 tolerance_matrix = diagnostic_tools.get_tolerance_matrix(answer_patterns_matrix,tolerance,weights)
 #print pp.pprint(tolerance_matrix)
+
 #Determines which answer pattern is most similar to most other answer patterns
 collapsed_matrix = diagnostic_tools.collapse_tolerance_matrix(tolerance_matrix)
 #print pp.pprint(collapsed_matrix)
 
-    
+#Filters data for data with similar answer patterns to minimize missing values
+#1087 is the answer type with the most common answer types
+answer_type = 1087
+filtered_data_dict = cleaning_tools.filter_data_dict(data_dict, answer_type, tolerance, answer_patterns_id)    
+pp.pprint(filtered_data_dict)

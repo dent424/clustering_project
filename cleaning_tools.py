@@ -36,3 +36,13 @@ def replace_with_nan(replace_value, d):
                 d[row][cell] = 'NaN'
     return d
 
+#filters answers based on the id provided in answer_pattern_id
+def filter_data_dict(dataDict, answer_pattern_id, tolerance, answer_patterns_id_dict):
+    filtered_dict = {}    
+    basis_answer_pattern = answer_patterns_id_dict[answer_pattern_id]
+    for respondent in dataDict:        
+        comparison_pattern = diagnostic_tools.get_single_answer_pattern(dataDict[respondent])
+        difference = diagnostic_tools.compare_answer_patterns(basis_answer_pattern, comparison_pattern)
+        if difference <= tolerance:
+            filtered_dict[respondent] = dataDict[respondent] 
+    return filtered_dict
