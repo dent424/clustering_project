@@ -97,5 +97,8 @@ respondent_NaN_dict = diagnostic_tools.get_NaN_ratio(data_dict)
 answer_patterns = diagnostic_tools.answer_patterns(data_dict)
 #print pp.pprint(answer_patterns)
 
+#Counts the occurence of answer patterns in respondents
 answer_patterns_count, answer_patterns_id = diagnostic_tools.count_answer_patterns(answer_patterns,data_dict)
-print pp.pprint(answer_patterns_count)
+
+answer_patterns_matrix = diagnostic_tools.answer_pattern_crosstab(answer_patterns_id)
+print pp.pprint(answer_patterns_matrix)

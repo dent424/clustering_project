@@ -165,3 +165,26 @@ def count_answer_patterns(answer_patterns, data_dict):
                     answer_pattern_dict[i]=1
                     answer_patterns_id[i]=answer_pattern
     return answer_pattern_dict, answer_patterns_id
+
+#compares two answer patterns and returns the number of differences between them
+def compare_answer_patterns(answer_pattern1, answer_pattern2):
+    if len(answer_pattern1)>len(answer_pattern2):  
+        set1 = set(answer_pattern1)
+        set2 = set(answer_pattern2)
+    else:
+        set1 = set(answer_pattern2)
+        set2 = set(answer_pattern1)
+    
+    x = len(list(set1-set2))       
+    return x 
+
+#Takes the id dict reated by count_answer_patterns and creates a matrix showing the coloseness of answer patterns to each other    
+def answer_pattern_crosstab(answer_pattern_id_dict):
+    total_list=[]    
+    for answer_pattern_id in answer_pattern_id_dict:
+        temp_list=[]        
+        for answer_pattern_comparison_id in answer_pattern_id_dict:        
+            temp = compare_answer_patterns(answer_pattern_id_dict[answer_pattern_id],answer_pattern_id_dict[answer_pattern_comparison_id])
+            temp_list.append(temp)
+        total_list.append(temp_list)
+    return total_list

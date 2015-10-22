@@ -210,7 +210,7 @@ class TestNaNCounter(unittest.TestCase):
         test = get_question_NaN_ratio(self.dataDict)
         self.assertDictEqual(self.questionOutputDict, test)
     
-from diagnostic_tools import answer_patterns, count_answer_patterns, get_single_answer_pattern
+from diagnostic_tools import answer_patterns, count_answer_patterns, get_single_answer_pattern, compare_answer_patterns, answer_pattern_crosstab
 
 #This section tests the discovery and counting of answer patterns
 class TestAnswerPatterns(unittest.TestCase):
@@ -244,6 +244,7 @@ class TestAnswerPatterns(unittest.TestCase):
                                   2:['natspac', 'priven'],
                                   3:['grncon', 'natspac', 'priven', 'watergen']}
         self.answer_pattern_count = {0:1,1:2,2:1,3:1}
+        self.answer_pattern_crosstabs = [[0,2,1,3],[2,0,2,1],[1,2,0,2],[3,1,2,0]] 
     
     def test_get_single_answer_pattern(self):
         test = get_single_answer_pattern(self.dataDict['10000'])
@@ -259,7 +260,14 @@ class TestAnswerPatterns(unittest.TestCase):
         test, ids = count_answer_patterns(answer_patterns(self.dataDict), self.dataDict)
         self.assertDictEqual(self.answer_pattern_id, ids)        
         self.assertEqual(self.answer_pattern_count,test)
-    
+    #A simple test to see if the proper number of differences between lists comes back
+    def test_compare_answer_patterns(self):
+        difference = compare_answer_patterns(self.answer_pattern_id[0],self.answer_pattern_id[3])
+        self.assertEqual(difference, 3)
+    #Creates a matrix comparing all answer patterns to all other answer patterns
+    def test_answer_pattern_crosstab(self):
+        crosstab = answer_pattern_crosstab(self.answer_pattern_id) 
+        self.assertEqual(crosstab, self.answer_pattern_crosstabs)
 
 if __name__=='__main__':
     unittest.main()
