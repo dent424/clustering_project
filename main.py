@@ -24,9 +24,7 @@ data = csv_tools.load_data(data_path, data_file )
 data = diagnostic_suite.run_diagnostics_and_transformations(data)
 #runs the diagnostic and conversion suite which gets data ready for analysis
 final_data=diagnostic_suite.run_dict_diagnostics(data)
-
-pp.pprint(final_data)
-
+#pp.pprint(final_data)
 
 
 

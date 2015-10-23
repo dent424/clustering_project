@@ -115,6 +115,14 @@ def run_dict_diagnostics(data_dict):
     #1087 is the answer type with the most common answer types
     answer_type = 1087
     filtered_data_dict = cleaning_tools.filter_data_dict(data_dict, answer_type, tolerance, answer_patterns_id)    
+
+    #Final function to ensure that index numbers for respondents have not changed
+    for respondent in filtered_data_dict:
+        if data_dict[respondent] != filtered_data_dict[respondent]:
+            print "ERROR"
+        else:
+            print "OK!"    
+        
     return filtered_data_dict
             
         
