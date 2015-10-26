@@ -122,7 +122,6 @@ def get_question_NaN_ratio(data_dict):
                 pass
     for item in NaN_dict:
         NaN_dict[item]=NaN_dict[item]/float(denominator)
-    
     return NaN_dict
 
 #This module finds the answer pattern for an individual respondent

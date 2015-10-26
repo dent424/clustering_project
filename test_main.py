@@ -342,9 +342,60 @@ class FilterAnswerPatterns(unittest.TestCase):
         tolerance = 1  
         filtered_dict = filter_data_dict(self.dataDict, answer_pattern_id, tolerance, self.answer_pattern_id)
         self.assertDictEqual(filtered_dict, self.filtered_dict)
-    
-    
 
+from cleaning_tools import filter_missing_value_questions, filter_respondent_questions
+
+class FilterList(unittest.TestCase):
+
+    def setUp(self):
+        self.dataDict = {'10000':{'grncon':'NaN',
+                          'natspac':'NaN',
+                          'watergen':'Extremely dangerous',
+                          'priven':'Agree'},
+                 '10001':{'grncon':'NaN',
+                          'natspac':'Oppose',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'},
+                 '10002':{'grncon':'Plonky',
+                          'natspac':'Too little',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Disagree'},
+                 '10003':{'grncon':'1',
+                          'natspac':'Strongly disagree',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Strongly agree'},
+                 '10004':{'grncon':'NaN',
+                          'natspac':'NaN',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'}}
+        self.output_case_dict = {'natspac' :.40,
+                                'watergen': .40,
+                                'priven': 0}
+
+        self.respondent_dict = {'10000':{'natspac':'NaN',
+                          'watergen':'Extremely dangerous',
+                          'priven':'Agree'},
+                 '10001':{'natspac':'Oppose',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'},
+                 '10002':{'natspac':'Too little',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Disagree'},
+                 '10003':{'natspac':'Strongly disagree',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Strongly agree'},
+                 '10004':{'natspac':'NaN',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'}}
+
+    def test_filter_missing_value_questions(self):
+        tolerance = 0.5                    
+        output = filter_missing_value_questions(self.dataDict, tolerance)
+        self.assertDictEqual(output, self.output_case_dict)
+        output2 = filter_respondent_questions(output, self.dataDict)
+        self.assertDictEqual(output2, self.respondent_dict)
+
+        
 
 if __name__=='__main__':
     unittest.main()

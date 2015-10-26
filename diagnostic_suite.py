@@ -121,7 +121,7 @@ def run_dict_diagnostics(data_dict):
         if data_dict[respondent] != filtered_data_dict[respondent]:
             print "ERROR"
         else:
-            print "OK!"    
+            pass 
         
     return filtered_data_dict
             

@@ -46,3 +46,17 @@ def filter_data_dict(dataDict, answer_pattern_id, tolerance, answer_patterns_id_
         if difference <= tolerance:
             filtered_dict[respondent] = dataDict[respondent] 
     return filtered_dict
+    
+#Filters dictionary of question names and the percent of respondents not answering those questions keeping only
+#Those less than tolerance
+def filter_missing_value_questions(data_dict, tolerance, reporting=0):
+    question_answered_dict = diagnostic_tools.get_question_NaN_ratio(data_dict)  
+    new_questions_dict = {k:v for k, v in question_answered_dict.iteritems() if v < tolerance }    
+
+    if reporting !=0:
+        print "Number of questions reduced from ", len(question_answered_dict.keys()), " to ", len(new_questions_dict.keys())
+    return new_questions_dict
+
+#Takes in the data and removes all key,value pairs where the key is not a key in output
+def filter_respondent_questions(output, dataDict):
+    pass
