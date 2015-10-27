@@ -343,7 +343,7 @@ class FilterAnswerPatterns(unittest.TestCase):
         filtered_dict = filter_data_dict(self.dataDict, answer_pattern_id, tolerance, self.answer_pattern_id)
         self.assertDictEqual(filtered_dict, self.filtered_dict)
 
-from cleaning_tools import filter_missing_value_questions, filter_respondent_questions
+from cleaning_tools import filter_missing_value_questions, filter_respondent_questions, filter_respondents
 
 class FilterList(unittest.TestCase):
 
@@ -387,13 +387,29 @@ class FilterList(unittest.TestCase):
                  '10004':{'natspac':'NaN',
                           'watergen':'NaN',
                           'priven':'Strongly disagree'}}
+        self.final_dict = {'10000':{'natspac':'NaN',
+                          'watergen':'Extremely dangerous',
+                          'priven':'Agree'},
+                 '10001':{'natspac':'Oppose',
+                          'watergen':'NaN',
+                          'priven':'Strongly disagree'},
+                 '10002':{'natspac':'Too little',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Disagree'},
+                 '10003':{'natspac':'Strongly disagree',
+                          'watergen':'Somewhat dangerous',
+                          'priven':'Strongly agree'}}
 
     def test_filter_missing_value_questions(self):
         tolerance = 0.5                    
+        tolerance2 = 0.5       
         output = filter_missing_value_questions(self.dataDict, tolerance)
         self.assertDictEqual(output, self.output_case_dict)
         output2 = filter_respondent_questions(output, self.dataDict)
-        self.assertDictEqual(output2, self.respondent_dict)
+        self.assertDictEqual(output2, self.respondent_dict)                
+        output3 = filter_respondents(self.respondent_dict, tolerance2)
+        print output3        
+        self.assertDictEqual(output3, self.final_dict)
 
         
 

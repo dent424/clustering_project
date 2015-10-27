@@ -52,11 +52,27 @@ def filter_data_dict(dataDict, answer_pattern_id, tolerance, answer_patterns_id_
 def filter_missing_value_questions(data_dict, tolerance, reporting=0):
     question_answered_dict = diagnostic_tools.get_question_NaN_ratio(data_dict)  
     new_questions_dict = {k:v for k, v in question_answered_dict.iteritems() if v < tolerance }    
-
     if reporting !=0:
         print "Number of questions reduced from ", len(question_answered_dict.keys()), " to ", len(new_questions_dict.keys())
     return new_questions_dict
 
 #Takes in the data and removes all key,value pairs where the key is not a key in output
-def filter_respondent_questions(output, dataDict):
-    pass
+def filter_respondent_questions(keep_vars, dataDict):
+    final_dict = {}    
+    for respondent in dataDict:    
+        temp_dict={k:v for k,v in dataDict[respondent].iteritems() if k in keep_vars}
+        final_dict[respondent]=temp_dict
+    return final_dict
+
+#Filters out respondents that have more than tolerance missing values
+def filter_respondents(data_dict, tolerance, reporting=0):
+    NaN_dict = diagnostic_tools.get_NaN_ratio(data_dict)
+    final_dict = {}
+            
+    for respondent in data_dict:
+        if NaN_dict[respondent]<=tolerance:
+            final_dict[respondent] = data_dict[respondent]
+    if reporting != 0:
+        print "Number of respondents reduced from ", len(data_dict), " to ", len(final_dict)
+    return final_dict
+            

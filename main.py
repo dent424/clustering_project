@@ -32,9 +32,9 @@ filtered_dict=cleaning_tools.filter_missing_value_questions(finalized_respondent
 #pp.pprint(filtered_dict)
 
 #Removes dictionary entries for features that are not in filtred_dict
+data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_dict.keys(), finalized_respondent_data)
 
-
-
-
+#Removes respondents where, after filtering questions, more than 10% of questions are not answered
+final_data_dict = cleaning_tools.filter_respondents(final_data_dict, 0.1, 1)
 
 
