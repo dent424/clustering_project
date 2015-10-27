@@ -411,6 +411,30 @@ class FilterList(unittest.TestCase):
         print output3        
         self.assertDictEqual(output3, self.final_dict)
 
+from clustering_module import convert_to_list
+
+class Prep_to_cluster(unittest.TestCase):
+
+    def setUp(self):        
+        self.input_dict = {'10000':{'natspac':'NaN',
+                  'watergen':'Extremely dangerous',
+                  'priven':'Agree'},
+         '10001':{'natspac':'Oppose',
+                  'watergen':'NaN',
+                  'priven':'Strongly disagree'},
+         '10002':{'natspac':'Too little',
+                  'watergen':'Somewhat dangerous',
+                  'priven':'Disagree'},
+         '10003':{'natspac':'Strongly disagree',
+                  'watergen':'Somewhat dangerous',
+                  'priven':'Strongly agree'}}
+        
+        self.output_list = [['NaN','Extremely dangerous','Agree'],['Oppose','NaN','Strongly disagree'],['Too little','Somewhat dangerous','Disagree'],['Strongly disagree','Somewhat dangerous','Strongly agree']]
+
+
+    def test_convert_to_list(self):
+        output = convert_to_list(self.input_dict)
+        self.assertEqual(output, self.output_list.sort())
         
 
 if __name__=='__main__':

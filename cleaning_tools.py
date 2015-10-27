@@ -67,11 +67,7 @@ def filter_respondent_questions(keep_vars, dataDict):
 #Filters out respondents that have more than tolerance missing values
 def filter_respondents(data_dict, tolerance, reporting=0):
     NaN_dict = diagnostic_tools.get_NaN_ratio(data_dict)
-    final_dict = {}
-            
-    for respondent in data_dict:
-        if NaN_dict[respondent]<=tolerance:
-            final_dict[respondent] = data_dict[respondent]
+    final_dict = {k: v for k, v in data_dict.items() if NaN_dict[k] <= tolerance}
     if reporting != 0:
         print "Number of respondents reduced from ", len(data_dict), " to ", len(final_dict)
     return final_dict

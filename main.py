@@ -8,6 +8,7 @@ import pprint
 import csv_tools
 import diagnostic_suite
 import cleaning_tools
+import clustering_module
 #import graphics
 
 
@@ -35,6 +36,11 @@ filtered_dict=cleaning_tools.filter_missing_value_questions(finalized_respondent
 data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_dict.keys(), finalized_respondent_data)
 
 #Removes respondents where, after filtering questions, more than 10% of questions are not answered
-final_data_dict = cleaning_tools.filter_respondents(final_data_dict, 0.1, 1)
+final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd, 0.1, 1)
 
+final_data_list= clustering_module.convert_to_list(final_data_dict) 
+feature_names = final_data_dict.values()[0].keys()
+
+pp.pprint(final_data_list)
+#pp.pprint(feature_names)
 
