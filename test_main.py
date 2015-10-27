@@ -411,7 +411,7 @@ class FilterList(unittest.TestCase):
         print output3        
         self.assertDictEqual(output3, self.final_dict)
 
-from clustering_module import convert_to_list
+from clustering_module import convert_to_list, convert_to_NaN
 
 class Prep_to_cluster(unittest.TestCase):
 
@@ -422,19 +422,24 @@ class Prep_to_cluster(unittest.TestCase):
          '10001':{'natspac':'Oppose',
                   'watergen':'NaN',
                   'priven':'Strongly disagree'},
-         '10002':{'natspac':'Too little',
+         '10002':{'natspac':3,
                   'watergen':'Somewhat dangerous',
                   'priven':'Disagree'},
          '10003':{'natspac':'Strongly disagree',
                   'watergen':'Somewhat dangerous',
-                  'priven':'Strongly agree'}}
+                  'priven':1}}
         
-        self.output_list = [['NaN','Extremely dangerous','Agree'],['Oppose','NaN','Strongly disagree'],['Too little','Somewhat dangerous','Disagree'],['Strongly disagree','Somewhat dangerous','Strongly agree']]
-
+        self.output_list = [['Extremely dangerous','NaN','Agree'],['NaN','Oppose','Strongly disagree'],['Somewhat dangerous',3,'Disagree'],['Somewhat dangerous','Strongly disagree',1]]
+        self.nan_list = [['NaN','NaN','NaN'],['NaN','NaN','NaN'],['NaN',3,'NaN'],['NaN','NaN',1]]
 
     def test_convert_to_list(self):
         output = convert_to_list(self.input_dict)
-        self.assertEqual(output, self.output_list.sort())
+        #print output
+        #print self.output_list
+        #print "KEYS ", self.input_dict.items()[0][1].keys()
+        self.assertEqual(output, self.output_list)
+        output2 = convert_to_NaN(self.output_list)
+        self.assertEqual(output2, self.nan_list)
         
 
 if __name__=='__main__':

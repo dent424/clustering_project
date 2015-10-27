@@ -40,7 +40,6 @@ final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd,
 
 final_data_list= clustering_module.convert_to_list(final_data_dict) 
 feature_names = final_data_dict.values()[0].keys()
-
-pp.pprint(final_data_list)
-#pp.pprint(feature_names)
-
+final_data_list=clustering_module.convert_to_NaN(final_data_list)
+print final_data_list
+clustering_module.clustering(final_data_list, 5)
