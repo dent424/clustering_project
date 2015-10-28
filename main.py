@@ -20,7 +20,7 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path_2, data_file )
+data = csv_tools.load_data(data_path, data_file )
 
 #Converts CSV data to dictionary
 data = diagnostic_suite.run_diagnostics_and_transformations(data)
@@ -41,5 +41,5 @@ final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd,
 final_data_list= clustering_module.convert_to_list(final_data_dict) 
 feature_names = final_data_dict.values()[0].keys()
 final_data_list=clustering_module.convert_to_NaN(final_data_list)
-print final_data_list
-clustering_module.clustering(final_data_list, 5)
+final_data_list_imputed = clustering_module.preprocess(final_data_list)
+clustering_module.clustering(final_data_list_imputed, 5)

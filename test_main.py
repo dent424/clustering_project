@@ -407,11 +407,11 @@ class FilterList(unittest.TestCase):
         self.assertDictEqual(output, self.output_case_dict)
         output2 = filter_respondent_questions(output, self.dataDict)
         self.assertDictEqual(output2, self.respondent_dict)                
-        output3 = filter_respondents(self.respondent_dict, tolerance2)
-        print output3        
+        output3 = filter_respondents(self.respondent_dict, tolerance2)      
         self.assertDictEqual(output3, self.final_dict)
 
-from clustering_module import convert_to_list, convert_to_NaN
+from clustering_module import convert_to_list, convert_to_NaN, preprocess
+import numpy as np
 
 class Prep_to_cluster(unittest.TestCase):
 
@@ -432,6 +432,9 @@ class Prep_to_cluster(unittest.TestCase):
         self.output_list = [['Extremely dangerous','NaN','Agree'],['NaN','Oppose','Strongly disagree'],['Somewhat dangerous',3,'Disagree'],['Somewhat dangerous','Strongly disagree',1]]
         self.nan_list = [['NaN','NaN','NaN'],['NaN','NaN','NaN'],['NaN',3,'NaN'],['NaN','NaN',1]]
 
+        self.impute_list =[['NaN',4,3,5],[6,4,8,2],[2,5,'NaN',4],[1,1,1,1]] 
+        self.imputed = np.array([[3,4,3,5],[6,4,8,2],[2,5,4,4],[1,1,1,1]])
+
     def test_convert_to_list(self):
         output = convert_to_list(self.input_dict)
         #print output
@@ -440,7 +443,7 @@ class Prep_to_cluster(unittest.TestCase):
         self.assertEqual(output, self.output_list)
         output2 = convert_to_NaN(self.output_list)
         self.assertEqual(output2, self.nan_list)
-        
+        output3 = preprocess(self.impute_list)
 
 if __name__=='__main__':
     unittest.main()
