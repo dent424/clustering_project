@@ -39,7 +39,11 @@ data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_
 final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd, 0.1, 1)
 
 final_data_list= clustering_module.convert_to_list(final_data_dict) 
+respondent_IDs = final_data_dict.keys()
 feature_names = final_data_dict.values()[0].keys()
 final_data_list=clustering_module.convert_to_NaN(final_data_list)
 final_data_list_imputed = clustering_module.preprocess(final_data_list)
-clustering_module.clustering(final_data_list_imputed, 5)
+#Transformed is distance of each respondent from each cluster center
+#Predicted is the cluster membership of each respondent
+#Score?
+transformed, predicted, score = clustering_module.clustering(final_data_list_imputed, 5)

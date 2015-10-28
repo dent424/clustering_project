@@ -13,6 +13,7 @@ def convert_to_list(data_dict):
     data_array = []    
     for entry in data_dict:
         respondent = [v for _,v in data_dict[entry].items()]
+        #respondent.append(entry)        
         data_array.append(respondent)        
     return data_array
 
@@ -37,7 +38,18 @@ def clustering(data, num_clusters):
     clf = cluster.KMeans(n_clusters=num_clusters)
     clf.fit(data)
     transformed = clf.transform(data)
-    print transformed[:3]
+    #print transformed
     predicted = clf.predict(data)
-    print predicted[:3]
+    #print predicted
+    score = clf.score(data)
+    return transformed, predicted, score
 
+#cluster_data - list of cluster memberships
+#data - response data
+#feature names - list of feature names
+#cluster name - what the cluster membership column should be called. Must be as a list
+def add_new_data_to_rows(cluster_data, data, feature_names, new_features):
+    data_with_clusters = [row + [cluster_data[i]] for i, row in enumerate(data)]      
+    new_feature_names = feature_names + new_features
+    return data_with_clusters, new_feature_names
+        
