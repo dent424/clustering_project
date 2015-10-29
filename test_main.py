@@ -7,6 +7,7 @@ Created on Sun Oct 18 11:13:16 2015
 
 import unittest
 from diagnostic_tools import count_empty
+import numpy as np
 
 
 class TestC_E(unittest.TestCase):
@@ -417,19 +418,19 @@ class Prep_to_cluster(unittest.TestCase):
 
     def setUp(self):        
         self.input_dict = {'10000':{'natspac':'NaN',
-                  'watergen':'Extremely dangerous',
-                  'priven':'Agree'},
-         '10001':{'natspac':'Oppose',
+                  'watergen':1,
+                  'priven':3},
+         '10001':{'natspac':3,
                   'watergen':'NaN',
-                  'priven':'Strongly disagree'},
+                  'priven':1},
          '10002':{'natspac':3,
-                  'watergen':'Somewhat dangerous',
-                  'priven':'Disagree'},
-         '10003':{'natspac':'Strongly disagree',
-                  'watergen':'Somewhat dangerous',
+                  'watergen':4,
+                  'priven':2},
+         '10003':{'natspac':5,
+                  'watergen':4,
                   'priven':1}}
         
-        self.output_list = [['Extremely dangerous','NaN','Agree'],['NaN','Oppose','Strongly disagree'],['Somewhat dangerous',3,'Disagree'],['Somewhat dangerous','Strongly disagree',1]]
+        self.output_list = np.array([[1,'NaN',3],['NaN',3,1],[4,3,2],[4,5,1]])
         self.nan_list = [['NaN','NaN','NaN'],['NaN','NaN','NaN'],['NaN',3,'NaN'],['NaN','NaN',1]]
 
         self.impute_list =[['NaN',4,3,5],[6,4,8,2],[2,5,'NaN',4],[1,1,1,1]] 
@@ -437,13 +438,11 @@ class Prep_to_cluster(unittest.TestCase):
 
     def test_convert_to_list(self):
         output = convert_to_list(self.input_dict)
-        #print output
-        #print self.output_list
-        #print "KEYS ", self.input_dict.items()[0][1].keys()
-        self.assertEqual(output, self.output_list)
-        output2 = convert_to_NaN(self.output_list)
-        self.assertEqual(output2, self.nan_list)
-        output3 = preprocess(self.impute_list)
+        print output        
+        np.testing.assert_array_equal(output, self.output_list)
+        #output2 = convert_to_NaN(self.output_list)
+        #self.assertEqual(output2, self.nan_list)
+
 
 from clustering_module import add_new_data_to_rows
 

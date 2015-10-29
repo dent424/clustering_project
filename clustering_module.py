@@ -7,14 +7,20 @@ Created on Tue Oct 27 12:45:26 2015
 
 from sklearn import cluster
 from sklearn.preprocessing import Imputer
+import numpy as np
 
 #Converts dictionary form data to an array
 def convert_to_list(data_dict):
-    data_array = []    
+    data_array = np.array([])    
     for entry in data_dict:
-        respondent = [v for _,v in data_dict[entry].items()]
-        #respondent.append(entry)        
-        data_array.append(respondent)        
+        respondent = [v for _,v in data_dict[entry].items()]        
+        if data_array.size == 0:        
+            #print "YA"
+            data_array = np.array([respondent])            
+        else:
+            #print data_array
+            #print respondent
+            data_array = np.vstack((data_array, respondent))
     return data_array
 
 #Converts non_numeric values to NaN
