@@ -9,29 +9,26 @@ from sklearn import cluster
 from sklearn.preprocessing import Imputer
 import numpy as np
 
+#Converts non_numeric values in a list to NaN
+def convert_to_NaN(data_list):
+    for i, response in enumerate(data_list):
+        try:
+            float(response)
+        except:
+            data_list[i]='NaN'
+    return data_list
+    
 #Converts dictionary form data to an array
 def convert_to_list(data_dict):
     data_array = np.array([])    
     for entry in data_dict:
-        respondent = [v for _,v in data_dict[entry].items()]        
+        respondent = np.array([v for _,v in data_dict[entry].items()])        
+        respondent = convert_to_NaN(respondent)        
         if data_array.size == 0:        
-            #print "YA"
             data_array = np.array([respondent])            
         else:
-            #print data_array
-            #print respondent
             data_array = np.vstack((data_array, respondent))
     return data_array
-
-#Converts non_numeric values to NaN
-def convert_to_NaN(data_list):
-    for i, respondent in enumerate(data_list):
-        for j, response in enumerate(respondent):
-            try:
-                float(response)
-            except:
-                data_list[i][j]='NaN'
-    return data_list
 
 #Preprocesses the data to prepare for clustering
 def preprocess(data_list):    

@@ -417,11 +417,11 @@ import numpy as np
 class Prep_to_cluster(unittest.TestCase):
 
     def setUp(self):        
-        self.input_dict = {'10000':{'natspac':'NaN',
+        self.input_dict = {'10000':{'natspac':'Noon',
                   'watergen':1,
                   'priven':3},
          '10001':{'natspac':3,
-                  'watergen':'NaN',
+                  'watergen':'Baboon',
                   'priven':1},
          '10002':{'natspac':3,
                   'watergen':4,
