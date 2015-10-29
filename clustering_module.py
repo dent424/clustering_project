@@ -51,8 +51,9 @@ def clustering(data, num_clusters):
 #data - response data
 #feature names - list of feature names
 #cluster name - what the cluster membership column should be called. Must be as a list
-def add_new_data_to_rows(cluster_data, data, feature_names, new_features):
-    data_with_clusters = [row + [cluster_data[i]] for i, row in enumerate(data)]      
+def add_new_data_to_rows(cluster_data, data, feature_names, new_features):    
+    if np.array_equal(cluster_data.transpose(),cluster_data):    
+        cluster_data = np.array([cluster_data]).transpose()       
+    data_with_clusters = np.append(data, cluster_data, axis=1)
     new_feature_names = feature_names + new_features
     return data_with_clusters, new_feature_names
-        
