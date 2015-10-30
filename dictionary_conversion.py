@@ -10,8 +10,11 @@ Created on Wed Oct 14 20:30:25 2015
 import translation_dictionary
 import math
 #This function converts a list of lists with a header list into a dictionary making the id number the dictionary key
-def create_dictionary(data):
-    var_names = data.pop(0)
+def create_dictionary(data, variable_names = [], row_ids = []):
+    if variable_names == []:     
+        var_names = data.pop(0)
+    else:
+        var_names = variable_names
     data_dict = {}
     for j, row in enumerate(data):
         temp_dict = {}

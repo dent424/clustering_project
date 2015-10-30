@@ -452,6 +452,7 @@ class combine_with_clustering_data(unittest.TestCase):
         self.distance_names = ["Distance1","Distance2"]
         self.feature_names = ["A","B","C","D"]
         self.data_with_clusters = np.array([[1,2,3,4,1],[5,6,7,8,2],[9,10,11,12,3],[13,14,15,16,4],[17,18,19,20,5]])
+        self.data_with_clusters_before = np.array([[1,1,2,3,4],[2,5,6,7,8],[3,9,10,11,12],[4,13,14,15,16],[5,17,18,19,20]])         
         self.new_feature_names = ["A","B","C","D","E"]
         self.data_with_distances = np.array([[1,2,3,4,52.5,12],[5,6,7,8,13.2,1],[9,10,11,12,5.3,2],[13,14,15,16,2,5.5],[17,18,19,20,16.3,1]])
         self.new_feature_names_distance = ["A","B","C","D","Distance1","Distance2"]
@@ -461,12 +462,17 @@ class combine_with_clustering_data(unittest.TestCase):
         np.testing.assert_array_equal(output, self.data_with_clusters)
         self.assertEqual(keys, self.new_feature_names)
 
+    def test_add_new_data_before(self):
+        output, _ = add_new_data_to_rows(self.clusters,self.data_list, self.feature_names, ["E"], "before")
+        np.testing.assert_array_equal(output, self.data_with_clusters_before)
+        
 
     def test_add_new_data_to_row_row(self):
         output, keys = add_new_data_to_rows(self.distances,self.data_list, self.feature_names, self.distance_names)
         np.testing.assert_array_equal(output, self.data_with_distances)
         print output
         self.assertEqual(keys, self.new_feature_names_distance)
+    
         
 
 
