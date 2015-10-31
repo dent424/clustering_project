@@ -10,7 +10,7 @@ Created on Wed Oct 14 20:30:25 2015
 import translation_dictionary
 import math
 #This function converts a list of lists with a header list into a dictionary making the id number the dictionary key
-def create_dictionary(data, variable_names = [], row_ids = []):
+def create_dictionary(data, variable_names = [], id_row=0):
     if variable_names == []:     
         var_names = data.pop(0)
     else:
@@ -19,11 +19,11 @@ def create_dictionary(data, variable_names = [], row_ids = []):
     for j, row in enumerate(data):
         temp_dict = {}
         for i, element in enumerate(row):
-            if i != 1:        
+            if i != id_row:        
                 temp_dict[var_names[i]] = element
             else: 
                 pass
-            data_dict[data[j][1]] = temp_dict
+            data_dict[data[j][id_row]] = temp_dict
     return data_dict
 
 #Takes in the data dictionary and the question answer map
@@ -107,3 +107,13 @@ def create_NaN_list(data_dict):
                 
         data.append(values)
     return data
+
+#Takes a dictionary of dictionaries and converts the values to integers
+def convert_values_to_int(dictionary):
+    for entry in dictionary:
+        for response in dictionary[entry]:
+            try:
+                dictionary[entry][response]=int(dictionary[entry][response])
+            except:
+                pass
+    return dictionary

@@ -59,7 +59,8 @@ def add_new_data_to_rows(cluster_data, data, feature_names, new_features, before
         cluster_data = np.array([cluster_data]).transpose()       
     if before_after == "before":
         data_with_clusters = np.append(cluster_data, data, axis=1)
+        new_feature_names = new_features + feature_names
     else:
         data_with_clusters = np.append(data, cluster_data, axis=1)
-    new_feature_names = feature_names + new_features
+        new_feature_names = feature_names + new_features
     return data_with_clusters, new_feature_names

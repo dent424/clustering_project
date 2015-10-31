@@ -22,10 +22,10 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data = csv_tools.load_data(data_path_2, data_file )
+data_list_form = csv_tools.load_data(data_path, data_file )
 
 #Converts CSV data to dictionary
-data = diagnostic_suite.run_diagnostics_and_transformations(data)
+data = diagnostic_suite.run_diagnostics_and_transformations(data_list_form)
 #runs the diagnostic and conversion suite which gets data ready for analysis
 finalized_respondent_data=diagnostic_suite.run_dict_diagnostics(data)
 #pp.pprint(final_data)
@@ -41,14 +41,16 @@ data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_
 final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd, 0.1, 1)
 
 final_data_list= clustering_module.convert_to_list(final_data_dict) 
-respondent_IDs = np.array(map(float, final_data_dict.keys()))
+respondent_IDs = np.array(map(int, final_data_dict.keys()))
 feature_names = final_data_dict.values()[0].keys()
 final_data_list_imputed = clustering_module.preprocess(final_data_list)
 #Transformed is distance of each respondent from each cluster center
 #Predicted is the cluster membership of each respondent
 transformed, predicted, score = clustering_module.clustering(final_data_list_imputed, 5)
 merging_list = clustering_module.convert_to_list(final_data_dict)
-data, var_names = clustering_module.add_new_data_to_rows(predicted, merging_list, feature_names, ["5 Cluster"])
+data, var_names = clustering_module.add_new_data_to_rows(predicted, merging_list, feature_names, ["5_Cluster"])
 data, var_names = clustering_module.add_new_data_to_rows(respondent_IDs, data, var_names, ["ids"], "before")
 temp = dictionary_conversion.create_dictionary(data, var_names)
+num_converted = dictionary_conversion.convert_values_to_int(temp)
+
 

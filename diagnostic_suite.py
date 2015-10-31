@@ -23,7 +23,8 @@ def run_diagnostics_and_transformations(data):
     #This data confirms that the data was removed
     #print diagnostic_tools.count_empty(data)
     #Converts the list data into dictionary data for easier analysis
-    data_dict = dictionary_conversion.create_dictionary(data)
+    #ID row is set 1 because the respondent ID is 1 in this case
+    data_dict = dictionary_conversion.create_dictionary(data,id_row=1)
     return data_dict
 
 def run_dict_diagnostics(data_dict):
