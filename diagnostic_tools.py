@@ -239,6 +239,9 @@ class DictDiffer(object):
         self.ignore_set_changed = ignore_set_changed
     def added(self):
         #items added
+        #print self.set_current
+        #print self.intersect
+        #print self.ignore_set_added
         return self.set_current - self.intersect - self.ignore_set_added        
     def removed(self):
         #items removed
@@ -256,8 +259,7 @@ def compare_respondent_dicts(resp_id_list, after_dict, before_dict, ignore_set_c
     value_error_list = []
     addition_error_list = []   
     removal_error_list = [] 
-    ignore_set_changed = set(['busgrn', 'peopgrn', 'sex', 'race', 'topprob1', 'topprob2'])    
-    ignore_set_added = set(['5_Cluster'])    
+    ignore_set_changed = set(['busgrn', 'peopgrn', 'sex', 'race', 'topprob1', 'topprob2'])     
     
     for respondent_ID in resp_id_list: 
         respondent_ID = str(respondent_ID)
@@ -270,14 +272,18 @@ def compare_respondent_dicts(resp_id_list, after_dict, before_dict, ignore_set_c
             removal_error_list.append(respondent_ID)
     
     if value_error_list != []:  
-        print value_error_list
+        #print value_error_list
+        print "VALUE ERRORS DETECTED"
     else:
         print "NO VALUE ERRORS AFTER CLUSTER DATA ADDITION"
     if addition_error_list != []:
-        print addition_error_list
+        #print addition_error_list
+        print "ERROR - UNACCOUNTED FOR DATA CREATED"
     else:
         print "NO ACCIDENTAL ADDITIONS CLUSTER DATA ADDITION"
     if removal_error_list != []:    
-        print removal_error_list
+        #print removal_error_list
+        print "ERROR - DATA REMOVED"
     else:
         print "NO ACCIDENTAL REMOVALS AFTER CLUSTER DATA ADDITION"
+    return test
