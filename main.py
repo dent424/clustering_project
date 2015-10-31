@@ -7,6 +7,7 @@ Created on Wed Oct 14 19:24:18 2015
 import pprint
 import csv_tools
 import diagnostic_suite
+from diagnostic_tools import compare_respondent_dicts
 import cleaning_tools
 import clustering_module
 import dictionary_conversion
@@ -52,5 +53,14 @@ data, var_names = clustering_module.add_new_data_to_rows(predicted, merging_list
 data, var_names = clustering_module.add_new_data_to_rows(respondent_IDs, data, var_names, ["ids"], "before")
 temp = dictionary_conversion.create_dictionary(data, var_names)
 num_converted = dictionary_conversion.convert_values_to_int(temp)
+
+#Set of features that should be different due to being categorical
+ignore_set_changed = set(['busgrn', 'peopgrn', 'sex', 'race', 'topprob1', 'topprob2'])    
+ignore_set_added = set(['5_Cluster'])    
+compare_respondent_dicts(respondent_IDs, num_converted, final_data_dict, ignore_set_changed, ignore_set_added)
+   
+
+    
+
 
 

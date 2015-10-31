@@ -225,3 +225,59 @@ def collapse_tolerance_matrix(tolerance_matrix, printer=0):
         for pattern in tuples:
             print "answer_pattern ID: ", pattern[1], "number: ", pattern[0]
     return tolerance_metric_dict
+
+#Modified from http://stackoverflow.com/questions/1165352/calculate-difference-in-keys-contained-in-two-python-dictionaries/1165552#1165552
+#Code for comparing dictionaries
+#ignore_set_changed is items that should be ignored when considering value changes in changed() and unchanged()
+#ignore_set_added is items that should be ignored when considering key additions in added() 
+class DictDiffer(object):
+    def __init__(self, current_dict, past_dict, ignore_set_changed, ignore_set_added):
+        self.current_dict, self.past_dict = current_dict, past_dict
+        self.set_current, self.set_past = set(current_dict.keys()), set(past_dict.keys())
+        self.intersect = self.set_current.intersection(self.set_past)
+        self.ignore_set_added = ignore_set_added
+        self.ignore_set_changed = ignore_set_changed
+    def added(self):
+        #items added
+        return self.set_current - self.intersect - self.ignore_set_added        
+    def removed(self):
+        #items removed
+        return self.set_past - self.intersect
+    def changed(self):
+        #Key same but value changed        
+        return set(o for o in self.intersect if self.past_dict[o] != self.current_dict[o]) - self.ignore_set_changed
+    def unchanged(self):
+        #Key same in both and unchanged values
+        return set(o for o in self.intersect if self.past_dict[o] == self.current_dict[o])        
+
+
+
+def compare_respondent_dicts(resp_id_list, after_dict, before_dict, ignore_set_changed, ignore_set_added):
+    value_error_list = []
+    addition_error_list = []   
+    removal_error_list = [] 
+    ignore_set_changed = set(['busgrn', 'peopgrn', 'sex', 'race', 'topprob1', 'topprob2'])    
+    ignore_set_added = set(['5_Cluster'])    
+    
+    for respondent_ID in resp_id_list: 
+        respondent_ID = str(respondent_ID)
+        test = DictDiffer(after_dict[respondent_ID], before_dict[respondent_ID], ignore_set_changed, ignore_set_added)
+        if test.changed():        
+            value_error_list.append(respondent_ID)
+        if test.added():
+            addition_error_list.append(respondent_ID)
+        if test.removed():
+            removal_error_list.append(respondent_ID)
+    
+    if value_error_list != []:  
+        print value_error_list
+    else:
+        print "NO VALUE ERRORS AFTER CLUSTER DATA ADDITION"
+    if addition_error_list != []:
+        print addition_error_list
+    else:
+        print "NO ACCIDENTAL ADDITIONS CLUSTER DATA ADDITION"
+    if removal_error_list != []:    
+        print removal_error_list
+    else:
+        print "NO ACCIDENTAL REMOVALS AFTER CLUSTER DATA ADDITION"
