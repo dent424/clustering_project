@@ -41,11 +41,11 @@ data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_
 #Removes respondents where, after filtering questions, more than 10% of questions are not answered
 final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd, 0.1, 1)
 
-#Conducts clustering for 
+#Conducts clustering for data, outputting as either a dict or a list 
 #data_dict, _=cluster(final_data_dict, range(2, 10), "dict")
 data_list, features = cluster(final_data_dict, range(2, 10), "list")
 
-
+#Writes data to csv file
 with open('clusterData.csv', 'wb') as f:
     wr = csv.writer(f)
     wr.writerows([features])
