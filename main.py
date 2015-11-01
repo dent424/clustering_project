@@ -8,7 +8,10 @@ import pprint
 import csv_tools
 import diagnostic_suite
 import cleaning_tools
+import csv
+import numpy as np
 from clustering_suite import cluster
+
 #import graphics
 
 
@@ -20,7 +23,7 @@ data_file = 'GSS_comma.csv'
 pp = pprint.PrettyPrinter()
 
 #Loads data from CSV into list of lists
-data_list_form = csv_tools.load_data(data_path, data_file )
+data_list_form = csv_tools.load_data(data_path_2, data_file )
 
 #Converts CSV data to dictionary
 data = diagnostic_suite.run_diagnostics_and_transformations(data_list_form)
@@ -39,7 +42,16 @@ data_dict_questions_filterd=cleaning_tools.filter_respondent_questions(filtered_
 final_data_dict = cleaning_tools.filter_respondents(data_dict_questions_filterd, 0.1, 1)
 
 #Conducts clustering for 
-data_dict, _=cluster(final_data_dict, range(2, 10))
+#data_dict, _=cluster(final_data_dict, range(2, 10), "dict")
+data_list, features = cluster(final_data_dict, range(2, 10), "list")
+
+
+with open('clusterData.csv', 'wb') as f:
+    wr = csv.writer(f)
+    wr.writerows([features])
+    np.savetxt(f, data_list, delimiter=',', fmt="%s")
+ 
+
 
 
     
