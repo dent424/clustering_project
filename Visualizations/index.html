@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <script src="http://d3js.org/d3.v3.min.js"></script>
+	    <style>
+	    </style>
+	    <script type="text/javascript">
+	    	function draw(data) {
+	    		"use strict";
+	    		data.forEach(function(d){
+	    			d["2_clusters"] = +d["2_clusters"]
+	    		}); 
+
+	    		var nested = d3.nest()
+          					   .key(function(d) {
+          					   		return d['2_clusters'];
+          					   })
+          					   .rollup(function(leaves){
+          					   		return leaves.length;
+          					   })
+          					   .entries(data)
+          	          		
+
+       			d3.select("body").selectAll("p")
+	    		  .data(nested)
+	    		  .enter()
+	    		  .append("p")
+	    		  .text(function(d){ return d.values;});
+	    		debugger;
+	    		/*
+       			var margin = 75,
+            	width = 1400 - margin,
+            	height = 600 - margin;
+
+
+            	d3.select("body")
+          		.append("h2")
+          		.text("Environmental Cluster Analyzer")
+
+          		
+          		var svg = d3.select("body")
+          		.append("svg")
+          		.attr("width", width + margin)
+          		.attr("height", height + margin)
+          		.append('g')
+          		.attr('class', 'cluster_graphs');
+	    	
+          		*/
+	    	};
+	    		
+	    </script>
+	</head>
+	<body>
+		<script type="text/javascript">
+	  		/*
+	    	Use D3 to load the cluster data file
+	    	*/
+			d3.csv("clusterData.csv", draw);
+  		</script>
+	</body>
+</html>
+
