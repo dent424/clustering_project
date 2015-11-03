@@ -40,7 +40,6 @@
 
 	    		var cluster_var_name = Array.apply(null, Array(num_solutions)).map(function (_, i) {return (i+2) + "_cluster";});
 
-	    		debugger;
 
 	    		/*sets up the canvas for the visualization*/
 	    		var margin = 75,
@@ -61,101 +60,76 @@
 
 	    		
 	    		
+          		function draw_circles(data) {
+		    		/*Gets data on clusters*/
+		    	    data.forEach(function(d){
+		    			d["5_clusters"] = +d["5_clusters"]
+		    		}); 
+		    		
+		    	    /*Rolls up cluster data */
+			    		var nested = d3.nest()
+		          					   .key(function(d) {
+		          					   		return d['5_clusters'];
+		          					   })
+		          					   .rollup(function(leaves){
+		          					   		var total = data.length;
+		          					   		var cluster = leaves.length;
+		          					   		return {
+		          					   			'cluster_members' : cluster,
+		          					   			'cluster_percent' : cluster/total
+		          					   		};
+		          					   })
+		          					   .entries(data);
 
-	    		/*Gets data on clusters*/
-	    	    data.forEach(function(d){
-	    			d["5_clusters"] = +d["5_clusters"]
-	    		}); 
-	    		
-	    	    /*Rolls up cluster data */
-	    		var nested = d3.nest()
-          					   .key(function(d) {
-          					   		return d['5_clusters'];
-          					   })
-          					   .rollup(function(leaves){
-          					   		var total = data.length;
-          					   		var cluster = leaves.length;
-          					   		return {
-          					   			'cluster_members' : cluster,
-          					   			'cluster_percent' : cluster/total
-          					   		};
-          					   })
-          					   .entries(data);
+		          	    
+		          	    /*Gets the maximum population for this clustering solution */
+		          	    var cluster_pop_max = d3.max(nested, function(d) {
+		          	    	return d.values['cluster_members']
+		          	    });
 
-          	    
-          	    /*Gets the maximum population for this clustering solution */
-          	    var cluster_pop_max = d3.max(nested, function(d) {
-          	    	return d.values['cluster_members']
-          	    });
+		          	    /*Number of clusters */
+		          	    var num_clusters = nested.length
+		          	    /*Minimum gap between circles */
+		          	    var circle_gap = 25
+		          	    /*Maximum for radius is set as a function of height and number of clusters*/
+		          	    var range_max = (height/(2*num_clusters))*.9
+		          	    /*Creates the scaling function for circle radii*/
+		          	    var radius = d3.scale.sqrt()
+		            				   .domain([0, cluster_pop_max])
+		            				   .range([0,range_max]);
 
-          	    /*Number of clusters */
-          	    var num_clusters = nested.length
-          	    /*Minimum gap between circles */
-          	    var circle_gap = 25
-          	    /*Maximum for radius is set as a function of height and number of clusters*/
-          	    var range_max = (height/(2*num_clusters))*.9
-          	    /*Creates the scaling function for circle radii*/
-          	    var radius = d3.scale.sqrt()
-            				   .domain([0, cluster_pop_max])
-            				   .range([0,range_max]);
+		          	    /*Creates circles which have a radius that represents the proportion
+		          	    of the population in that cluster*/
+		          	    
+		          	    var elem = svg.selectAll("g")
+		          	    			  .data(nested)
 
-          	    /*Creates circles which have a radius that represents the proportion
-          	    of the population in that cluster*/
-          	    
-          	    var elem = svg.selectAll("g")
-          	    			  .data(nested)
+		          	    var elemEnter = elem.enter()
+		          	    					.append("g")
+		          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.key*circle_gap + 2*d.key*range_max) +")"});
 
-          	    var elemEnter = elem.enter()
-          	    					.append("g")
-          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.key*circle_gap + 2*d.key*range_max) +")"});
+		          	    var circle = elemEnter.append("circle")
+		          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
 
-          	    var circle = elemEnter.append("circle")
-          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
+		          	    
+		          	    /*Generates an array of cluster names */
+		       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
 
-          	    
-          	    /*Generates an array of cluster names */
-       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
+		       			/*Adds Cluster Name Text Above Circles*/
+		          	    elemEnter.append("text")
+		          	    	     .attr("dy", function(d) {return -1.2 * radius(d.values['cluster_members'])})
+		          	    	     .attr("dx", -50)
+		          	    	     .text(function(d){return cluster_names[+d.key]})
+		          	    	     .attr("class", "cluster_circle_name");
 
-       			/*Adds Cluster Name Text Above Circles*/
-          	    elemEnter.append("text")
-          	    	     .attr("dy", function(d) {return -1.2 * radius(d.values['cluster_members'])})
-          	    	     .attr("dx", -50)
-          	    	     .text(function(d){return cluster_names[+d.key]})
-          	    	     .attr("class", "cluster_circle_name");
+		          	    elemEnter.append("text")
+		          	    		 .attr("text-anchor", "middle")
+		          	    		 .attr("dy",".35em")
+		          	    	     .text(function(d){return (d.values['cluster_percent']*100).toPrecision(3)+"%"})
+		          	    	     .attr("class", "cluster_circle_pct");
+	          	    }
 
-          	    elemEnter.append("text")
-          	    		 .attr("text-anchor", "middle")
-          	    		 .attr("dy",".35em")
-          	    	     .text(function(d){return (d.values['cluster_percent']*100).toPrecision(3)+"%"})
-          	    	     .attr("class", "cluster_circle_pct");
-
-          	    /*
-          	    circles.enter()
-          	    	.append("circle")
-          	    	.attr('cx', range_max)
-          	    	.attr('cy', function(d) {return range_max + circle_gap + 2*d.key*range_max})
-          	    	.attr('r', function(d) {return radius(d.values['cluster_members'])})
-          	    	.attr('class', 'cluster_circle');
-          	    */
-
-
-          		
-
-       			/*Writes a paragraph for each cluster with name, # members, and % of pop*/
-       			d3.select("body").selectAll("p")
-	    		  .data(nested)
-	    		  .enter()
-	    		  .append("p")
-	    		  .text(function(d){ 
-	    		  	return cluster_names[d.key] + ":  Members " + d.values.cluster_members + " Percent of Pop " + d.values.cluster_percent*100;
-	    		  });
-	    		
-	    		/*
-	    		
-	    		
-
-	    	
-          		*/
+	          		d3.csv("clusterData.csv", draw_circles);
 	    	};
 	    		
 	    </script>
@@ -164,6 +138,7 @@
 		<script type="text/javascript">
 	  		/*
 	    	Use D3 to load the cluster data file
+	    	THIS WILL BE REMOVED EVENTUALLY
 	    	*/
 			d3.csv("clusterData.csv", draw);
   		</script>
