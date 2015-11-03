@@ -32,8 +32,7 @@
           		.append("svg")
           		.attr("width", width + margin)
           		.attr("height", height + margin)
-          		.append('g')
-          		.attr('class', 'cluster_graphs');
+
 	    		
 	    		
 
@@ -71,23 +70,38 @@
 
           	    /*Creates circles which have a radius that represents the proportion
           	    of the population in that cluster*/
-          	    var circles = svg.selectAll('circle')
-          	    				 .data(nested)
+          	    
+          	    var elem = svg.selectAll("g")
+          	    			  .data(nested)
+
+          	    var elemEnter = elem.enter()
+          	    					.append("g")
+          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.key*circle_gap + 2*d.key*range_max) +")"});
+
+          	    var circle = elemEnter.append("circle")
+          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
+
+          	    
+          	    /*Generates an array of cluster names */
+       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
+
+       			/*Adds Cluster Name Text Above Circles*/
+          	    elemEnter.append("text")
+          	    	     .attr("dy", function(d) {return -1.1 * radius(d.values['cluster_members'])})
+          	    	     .attr("dx", -50)
+          	    	     .text(function(d){return cluster_names[+d.key]});
+
+          	    /*
           	    circles.enter()
           	    	.append("circle")
           	    	.attr('cx', range_max)
           	    	.attr('cy', function(d) {return range_max + circle_gap + 2*d.key*range_max})
           	    	.attr('r', function(d) {return radius(d.values['cluster_members'])})
           	    	.attr('class', 'cluster_circle');
-				debugger;
-          	    d3.selectAll("circle.cluster_circle")
-          	      .append("text")
-          	      .text("HELLOOOO!")
-          	      .attr('x', '100')
-          	      .attr('y', '100');
+          	    */
 
-          		/*Generates an array of cluster names */
-       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
+
+          		
 
        			/*Writes a paragraph for each cluster with name, # members, and % of pop*/
        			d3.select("body").selectAll("p")
