@@ -9,27 +9,11 @@
 	    	function draw(data) {
 	    		"use strict";
 	    		data.forEach(function(d){
-	    			d["2_clusters"] = +d["2_clusters"]
+	    			d["5_clusters"] = +d["5_clusters"]
 	    		}); 
-
-	    		var nested = d3.nest()
-          					   .key(function(d) {
-          					   		return d['2_clusters'];
-          					   })
-          					   .rollup(function(leaves){
-          					   		return leaves.length;
-          					   })
-          					   .entries(data)
-          	          		
-
-       			d3.select("body").selectAll("p")
-	    		  .data(nested)
-	    		  .enter()
-	    		  .append("p")
-	    		  .text(function(d){ return d.values;});
-	    		debugger;
-	    		/*
-       			var margin = 75,
+	    		
+	    		/*sets up the canvas for the visualization*/
+	    		var margin = 75,
             	width = 1400 - margin,
             	height = 600 - margin;
 
@@ -45,6 +29,62 @@
           		.attr("height", height + margin)
           		.append('g')
           		.attr('class', 'cluster_graphs');
+	    		
+	    		
+
+	    		/*Gets data on clusters*/
+	    		var nested = d3.nest()
+          					   .key(function(d) {
+          					   		return d['5_clusters'];
+          					   })
+          					   .rollup(function(leaves){
+          					   		var total = data.length;
+          					   		var cluster = leaves.length;
+          					   		
+          					   		return {
+          					   			'cluster_members' : cluster,
+          					   			'cluster_percent' : cluster/total
+          					   		};
+          					   })
+          					   .entries(data);
+          	    
+          	    /*Gets the maximum population for this clustering solution */
+          	    var cluster_pop_max = d3.max(nested, function(d) {
+          	    	return d.values['cluster_members']
+          	    });
+
+          	    /*Creates the scaling function for circle radii*/
+          	    var radius = d3.scale.sqrt()
+            				   .domain([0, cluster_pop_max])
+            				   .range([0,100]);
+
+          	    /*Creates circles which have a radius that represents the proportion
+          	    of the population in that cluster*/
+          	    var circles = svg.selectAll('circle')
+          	    				 .data(nested);
+
+          	    circles.enter()
+          	    	.append("circle")
+          	    	.attr('cx', function(d) {return d.values['cluster_members']})
+          	    	.attr('cy', function(d) {return d.values['cluster_members']})
+          	    	.attr('r', function(d) {return radius(d.values['cluster_members'])});
+
+
+          		/*Generates an array of cluster names */
+       			var cluster_names = Array.apply(null, Array(nested.length)).map(function (_, i) {return "Cluster " + (i+1);});
+
+       			/*Writes a paragraph for each cluster with name, # members, and % of pop*/
+       			d3.select("body").selectAll("p")
+	    		  .data(nested)
+	    		  .enter()
+	    		  .append("p")
+	    		  .text(function(d){ 
+	    		  	return cluster_names[d.key] + ":  Members " + d.values.cluster_members + " Percent of Pop " + d.values.cluster_percent*100;
+	    		  });
+	    		/*
+	    		debugger;
+	    		
+
 	    	
           		*/
 	    	};
