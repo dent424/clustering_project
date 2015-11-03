@@ -4,6 +4,11 @@
 	  <meta charset="utf-8">
 	  <script src="http://d3js.org/d3.v3.min.js"></script>
 	    <style>
+	    	circle {
+	    		fill: skyblue;
+	    		stroke: black;
+	    		stroke-width: 0.7;
+	    	}
 	    </style>
 	    <script type="text/javascript">
 	    	function draw(data) {
@@ -15,7 +20,7 @@
 	    		/*sets up the canvas for the visualization*/
 	    		var margin = 75,
             	width = 1400 - margin,
-            	height = 600 - margin;
+            	height = 700 - margin;
 
 
             	d3.select("body")
@@ -40,38 +45,49 @@
           					   .rollup(function(leaves){
           					   		var total = data.length;
           					   		var cluster = leaves.length;
-          					   		
           					   		return {
           					   			'cluster_members' : cluster,
           					   			'cluster_percent' : cluster/total
           					   		};
           					   })
           					   .entries(data);
+
           	    
           	    /*Gets the maximum population for this clustering solution */
           	    var cluster_pop_max = d3.max(nested, function(d) {
           	    	return d.values['cluster_members']
           	    });
 
+          	    /*Number of clusters */
+          	    var num_clusters = nested.length
+          	    /*Minimum gap between circles */
+          	    var circle_gap = 10
+          	    /*Maximum for radius is set as a function of height and number of clusters*/
+          	    var range_max = height/(2*num_clusters)
           	    /*Creates the scaling function for circle radii*/
           	    var radius = d3.scale.sqrt()
             				   .domain([0, cluster_pop_max])
-            				   .range([0,100]);
+            				   .range([0,range_max]);
 
           	    /*Creates circles which have a radius that represents the proportion
           	    of the population in that cluster*/
           	    var circles = svg.selectAll('circle')
-          	    				 .data(nested);
-
+          	    				 .data(nested)
           	    circles.enter()
           	    	.append("circle")
-          	    	.attr('cx', function(d) {return d.values['cluster_members']})
-          	    	.attr('cy', function(d) {return d.values['cluster_members']})
-          	    	.attr('r', function(d) {return radius(d.values['cluster_members'])});
-
+          	    	.attr('cx', range_max)
+          	    	.attr('cy', function(d) {return range_max + circle_gap + 2*d.key*range_max})
+          	    	.attr('r', function(d) {return radius(d.values['cluster_members'])})
+          	    	.attr('class', 'cluster_circle');
+				debugger;
+          	    d3.selectAll("circle.cluster_circle")
+          	      .append("text")
+          	      .text("HELLOOOO!")
+          	      .attr('x', '100')
+          	      .attr('y', '100');
 
           		/*Generates an array of cluster names */
-       			var cluster_names = Array.apply(null, Array(nested.length)).map(function (_, i) {return "Cluster " + (i+1);});
+       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
 
        			/*Writes a paragraph for each cluster with name, # members, and % of pop*/
        			d3.select("body").selectAll("p")
@@ -81,8 +97,9 @@
 	    		  .text(function(d){ 
 	    		  	return cluster_names[d.key] + ":  Members " + d.values.cluster_members + " Percent of Pop " + d.values.cluster_percent*100;
 	    		  });
+	    		
 	    		/*
-	    		debugger;
+	    		
 	    		
 
 	    	
