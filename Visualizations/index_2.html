@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -54,6 +52,18 @@
 	    		float: right;
 	    	}
 
+	    	div.cluster_buttons {
+        		position: fixed;
+        		top: 5px;
+        		left: 50px;
+      		}
+
+	        div.cluster_buttons div {
+	          background-color: rgb(251, 201, 127);
+	          padding: 3px;
+	          margin: 7px;
+	        }
+
 	    </style>
 	    <script type="text/javascript">
 	    	function draw(data) {
@@ -61,8 +71,8 @@
 
 	    		var num_solutions = 8;
 
-	    		var cluster_var_name = Array.apply(null, Array(num_solutions)).map(function (_, i) {return (i+2) + "_cluster";});
-
+	    		/* An array with all of the variable names for the different clusters */
+	    		var cluster_var_name = Array.apply(null, Array(num_solutions)).map(function (_, i) {return (i+2) + "_clusters";});
 
 	    		/*sets up the canvas for the visualization*/
 	    		var margin = 75,
@@ -72,111 +82,47 @@
 
             	d3.select("body")
           		  .append("h2")
-          		  .text("Environmental Cluster Analyzer")
+          		  .text("Environmental Cluster Analyzer");
 
           		var buttons =d3.select("body")
           		  			  .append('div')
-          		  			  .attr('class','cluster_selection_buttons')
-          		  			  
+          		  			  .attr('class','cluster_selection_buttons');
+          		/* ADDS BUTTONS  			  
           		buttons.append('div')
           			   .text("<")
           			   .attr("class", "button")
-          			   .attr("id", "left-button")
+          			   .attr("id", "left-button");
           	    buttons.append('div')
           			   .text(">")
 					   .attr("class", "button")
-          			   .attr("id", "right-button")
-
+          			   .attr("id", "right-button");
+				*/
           		var svg = d3.select("body")
           					.append("svg")
           					.attr("id", "svg_main")
           					.attr("width", width + margin)
-          					.attr("height", height + margin)
+          					.attr("height", height + margin);
+          		
+          		function update(cluster_membership) {
 
-	    		
-	    		
-          		function draw_circles(data) {
-
-		    	    /*Rolls up cluster data */
-		    		var nested = d3.nest()
-	          					   .key(function(d) {
-	          					   		return d['5_clusters'];
-	          					   })
-	          					   .rollup(function(leaves){
-	          					   		var total = data.length;
-	          					   		var cluster = leaves.length;
-	          					   		return {
-	          					   			'cluster_members' : cluster,
-	          					   			'cluster_percent' : cluster/total
-	          					   		};
-	          					   })
-	          					   .entries(data);
-
-	          	    
-	          	    /*Gets the maximum population for this clustering solution */
-	          	    var cluster_pop_max = d3.max(nested, function(d) {
-	          	    	return d.values['cluster_members']
-	          	    });
-
-	          	    /*Number of clusters */
-	          	    var num_clusters = nested.length
-	          	    /*Minimum gap between circles */
-	          	    var circle_gap = 25
-	          	    /*Maximum for radius is set as a function of height and number of clusters*/
-	          	    var range_max = (height/(2*num_clusters))*.9
-	          	    /*Creates the scaling function for circle radii*/
-	          	    var radius = d3.scale.sqrt()
-	            				   .domain([0, cluster_pop_max])
-	            				   .range([0,range_max]);
-
-	          	    /*Creates circles which have a radius that represents the proportion
-	          	    of the population in that cluster*/
-	          	    
-	          	    var elem = svg.selectAll("g")
-	          	    			  .data(nested)
-
-	          	    var elemEnter = elem.enter()
-	          	    					.append("g")
-	          	    					.attr("class", "circle_frame")
-	          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.key*circle_gap + 2*d.key*range_max) +")"});
-
-	          	    var circle = elemEnter.append("circle")
-	          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
-
-	          	    
-	          	    /*Generates an array of cluster names */
-	       			var cluster_names = Array.apply(null, Array(num_clusters)).map(function (_, i) {return "Cluster " + (i+1);});
-
-	       			/*Adds Cluster Name Text Above Circles*/
-	          	    elemEnter.append("text")
-	          	    	     .attr("dy", function(d) {return -1.2 * radius(d.values['cluster_members'])})
-	          	    	     .attr("dx", -50)
-	          	    	     .text(function(d){return cluster_names[+d.key]})
-	          	    	     .attr("class", "cluster_circle_name");
-
-	          	    elemEnter.append("text")
-	          	    		 .attr("text-anchor", "middle")
-	          	    		 .attr("dy",".35em")
-	          	    	     .text(function(d){return (d.values['cluster_percent']*100).toPrecision(3)+"%"})
-	          	    	     .attr("class", "cluster_circle_pct");
-
-	          	    /*Function for updating between clustering solutions*/
-	          	   	function update(cluster) {
-	          	   		/*A PART OF THE SOLUTION HERE IS TO MAKE THE KEYS SOMETHING UNIQUE FOR EACH COLUMN LIKE 6-5 FOR THE 5TH CLUSTER IN THE 6 CLUSTER SOLUTION. THIS REQUIRES EITHER DATA TO BE MANIPULATED BEFORE COMING TO JAVA SCRIPT OR TRANSFORMING IT HERE*/
 	          	   		var nested = d3.nest()
 	          					   .key(function(d) {
-	          					   		return cluster + d[cluster];
+	          					   		return cluster_membership + "_" + d[cluster_membership];
 	          					   })
 	          					   .rollup(function(leaves){
 	          					   		var total = data.length;
 	          					   		var cluster = leaves.length;
+	          					   		var cluster_no = d3.mean(leaves, function(d){
+	          					   			return d[cluster_membership]
+	          					   		});
 	          					   		return {
 	          					   			'cluster_members' : cluster,
-	          					   			'cluster_percent' : cluster/total
+	          					   			'cluster_percent' : cluster/total,
+	          					   			'cluster': cluster_no
 	          					   		};
 	          					   })
-	          					   .entries(data);
-	          	   	
+	          					   .entries(data)
+	          					   debugger;
 						/*Gets the maximum population for this clustering solution */
 		          	    var cluster_pop_max = d3.max(nested, function(d) {
 		          	    	return d.values['cluster_members']
@@ -195,16 +141,16 @@
 
 		          	    /*Creates circles which have a radius that represents the proportion
 		          	    of the population in that cluster*/
-		          	    
+		          	    debugger;
 		          	    var elem = svg.selectAll("g.circle_frame")
 		          	    			  .data(nested) 
-		          	    debugger;
+
 		          	    elem.exit().remove();
 
 		          	    var elemEnter = elem.enter()
 		          	    					.append("g")
 		          	    					.attr("class", "circle_frame")
-		          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.key*circle_gap + 2*d.key*range_max) +")"});
+		          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.values['cluster']*circle_gap + 2*d.values['cluster']*range_max) +")"});
 
 		          	    var circle = elemEnter.append("circle")
 		          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
@@ -217,7 +163,7 @@
 		          	    elemEnter.append("text")
 		          	    	     .attr("dy", function(d) {return -1.2 * radius(d.values['cluster_members'])})
 		          	    	     .attr("dx", -50)
-		          	    	     .text(function(d){return cluster_names[+d.key]})
+		          	    	     .text(function(d){return cluster_names[+d.values['cluster']]})
 		          	    	     .attr("class", "cluster_circle_name");
 
 		          	    elemEnter.append("text")
@@ -225,15 +171,31 @@
 		          	    		 .attr("dy",".35em")
 		          	    	     .text(function(d){return (d.values['cluster_percent']*100).toPrecision(3)+"%"})
 		          	    	     .attr("class", "cluster_circle_pct");
-		          	}    	     
-	          	debugger;
-	          	update("6_clusters");
-	          	}
+		        };
+		        
+		        var buttons = d3.select("body")
+		        				.append('div')
+		        				.attr('class','cluster_buttons')
+		        				.selectAll('div')
+		        				.data(cluster_var_name)
+		        				.enter()
+		        				.append('div')
+		        				.text(function(d) {
+									return d
+		        				});
 
-	          	d3.csv("clusterData.csv", draw_circles);
-	    	};
-	    		
-	    </script>
+		        buttons.on("click", function(d){
+		        	update(d);
+		        });
+
+				
+		        update('2_clusters');
+
+		        update('3_clusters');
+          	};
+
+        </script>
+
 	</head>
 	<body>
 		<script type="text/javascript">
@@ -245,4 +207,3 @@
   		</script>
 	</body>
 </html>
-
