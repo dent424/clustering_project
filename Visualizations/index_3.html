@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <script src="http://d3js.org/d3.v3.min.js"></script>
+	    <style>
+	    	circle {
+	    		fill: skyblue;
+	    		stroke: black;
+	    		stroke-width: 0.7;
+	    	}
+	    	h2 {
+	    		color: #708090;
+	    		text-align: center;
+	    		font-size: 30px;
+	    		font-family: sans-serif;
+	    	}
+	    	.cluster_circle_pct {
+	    		fill: white;
+	    		font-family: sans-serif;
+	    		font-size: 20px;
+	    	}
+	    	.cluster_circle_name {
+	    		fill: slategray;
+	    		font-family: sans-serif;
+	    		font-size: 20px;
+	    		font-weight: bold;
+	    	}
+	    	#svg_main {
+	    		margin-left:auto; 
+	    		margin-right:auto; 
+	    		display:block;
+	    	}
+	    	div.cluster_selection_buttons {
+	    		width: 80px;
+	    		margin: auto;
+	    	}
+
+	    	div.button {
+	    		font-size: 30px;
+	    		font-weight: bold;
+	    		color: #708090;
+	    		padding: 3px;
+	    		margin: auto;
+	    	}
+
+	    	#left-button{
+	    		float: left;
+	    	}
+
+	    	#right-button{
+	    		float: right;
+	    	}
+
+	    	div.cluster_buttons {
+        		position: fixed;
+        		top: 5px;
+        		left: 50px;
+      		}
+
+	        div.cluster_buttons div {
+	          background-color: rgb(251, 201, 127);
+	          padding: 3px;
+	          margin: 7px;
+	        }
+
+	    </style>
+	    <script type="text/javascript">
+	    	function draw(data) {
+	    		"use strict";
+	    		/*Number of clusters to show at start*/
+	    		var default_cluster = 3;
+	    		var current_cluster = [default_cluster] 
+	    		var num_solutions = 8;
+
+	    		/* An array with all of the variable names for the different clusters */
+	    		var cluster_var_name = Array.apply(null, Array(num_solutions)).map(function (_, i) {return (i+2) + "_clusters";});
+
+	    		/*sets up the canvas for the visualization*/
+	    		var margin = 75,
+            	width = 1400 - margin,
+            	height = 700 - margin;
+
+
+            	d3.select("body")
+          		  .append("h2")
+          		  .text("Environmental Cluster Analyzer");
+
+          		var buttons =d3.select("body")
+          		  			  .append('div')
+          		  			  .attr('class','cluster_selection_buttons');
+  			  
+
+
+          		var svg = d3.select("body")
+          					.append("svg")
+          					.attr("id", "svg_main")
+          					.attr("width", width + margin)
+          					.attr("height", height + margin);
+          		
+  			    /*Setup for stacked bars*/
+  			    var x = width/10
+
+      			var y = d3.scale.linear()
+      					  .rangeRound([height,0]);
+
+      			var color = d3.scale.category10()
+
+      			var xAxis = d3.svg.axis().orient("bottom")
+
+      			var yAxis = d3.svg.axis()
+      						  .scale(y)
+      						  .orient("left")
+
+      			var cluster_membership = current_cluster + "_clusters"
+      						  
+          		function update(cluster_num) {
+
+	          	   		d3.selectAll("svg > *")
+	          	   		  .remove();
+
+	          	   		var y_start=0
+	          	   		var y_end = 0
+	          	   		var nested = d3.nest()
+	          					   .key(function(d) {
+	          					   		return cluster_membership + "_" + d[cluster_membership];
+	          					   })
+	          					   .rollup(function(leaves){
+	          					   		var total = data.length;
+	          					   		var cluster = leaves.length;
+	          					   		var cluster_no = d3.mean(leaves, function(d){
+	          					   			return d[cluster_membership]
+	          					   		});
+	          					   		var cluster_percent = cluster/total;
+	          					   		y_start = y_end;
+	          					   		y_end = y_start + cluster_percent;
+	          					   		return {
+	          					   			'cluster_members' : cluster,
+	          					   			'cluster_percent' : cluster_percent,
+	          					   			'cluster': cluster_no,
+	          					   			'y0': y_start,
+	          					   			'y1': y_end  
+	          					   		};
+	          					   })
+	          					   .entries(data)
+							          					   
+					 	/*creates a list of partitions*/
+					 	var partitions = []
+					 	nested.forEach(function(d){	
+					 		partitions.push(d.key)
+					 	});
+					 	
+					 	/*Creates a domain where each partition is mapped*/
+						color.domain(partitions);
+
+						debugger;
+
+
+				
+		        };
+
+		        var left = buttons.append('div')
+		        	   .selectAll('div')
+          			   .data(current_cluster)
+          			   .enter()
+          			   .append('div')
+          			   .attr("class", "button")
+          			   .text("<")
+          			   .attr("id", "left-button");
+
+          	    var right = buttons.append('div')
+          	    	   .selectAll('div')
+          			   .data(current_cluster)
+          			   .enter()
+          			   .insert('div')
+          			   .attr("class", "button")
+          			   .text(">")
+          			   .attr("id", "right-button");
+		        
+		        
+		        left.on("click", function(d) {
+		        	current_cluster--
+		        	if (current_cluster < 2) {
+		        		current_cluster = 9;
+		        	}
+		        	update(current_cluster)
+
+		        });
+		        right.on("click", function(d) {
+		        	current_cluster++
+		        	if (current_cluster > 9) {
+		        		current_cluster = 2
+		        	}
+		        	update(current_cluster);
+		        });
+
+		        update(default_cluster);
+				
+          	};
+
+        </script>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+	  		/*
+	    	Use D3 to load the cluster data file
+	    	THIS WILL BE REMOVED EVENTUALLY
+	    	*/
+			d3.csv("clusterData.csv", draw);
+  		</script>
+	</body>
+</html>
