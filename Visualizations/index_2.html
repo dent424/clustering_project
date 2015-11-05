@@ -105,6 +105,16 @@
           		
           		function update(cluster_membership) {
 
+          				var circles = d3.selectAll("circle")
+          				  
+
+          				circles.attr('r', 0)
+          					   .remove();
+   
+
+	          	   		d3.selectAll("svg > *")
+	          	   		  .remove();
+
 	          	   		var nested = d3.nest()
 	          					   .key(function(d) {
 	          					   		return cluster_membership + "_" + d[cluster_membership];
@@ -122,7 +132,7 @@
 	          					   		};
 	          					   })
 	          					   .entries(data)
-	          					   debugger;
+	          					   
 						/*Gets the maximum population for this clustering solution */
 		          	    var cluster_pop_max = d3.max(nested, function(d) {
 		          	    	return d.values['cluster_members']
@@ -141,10 +151,10 @@
 
 		          	    /*Creates circles which have a radius that represents the proportion
 		          	    of the population in that cluster*/
-		          	    debugger;
+		          	    
 		          	    var elem = svg.selectAll("g.circle_frame")
 		          	    			  .data(nested) 
-
+		          	    
 		          	    elem.exit().remove();
 
 		          	    var elemEnter = elem.enter()
@@ -153,7 +163,11 @@
 		          	    					.attr("transform", function(d){return "translate(" + range_max+"," + (2*circle_gap + range_max + d.values['cluster']*circle_gap + 2*d.values['cluster']*range_max) +")"});
 
 		          	    var circle = elemEnter.append("circle")
-		          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])});
+		          	    					  .attr('r', 0)
+		          	    					  .transition()
+		          	    					  .duration(1000)
+		          	    					  .attr('r', function(d) {return radius(d.values['cluster_members'])})
+;
 
 		          	    
 		          	    /*Generates an array of cluster names */
@@ -173,6 +187,7 @@
 		          	    	     .attr("class", "cluster_circle_pct");
 		        };
 		        
+		        
 		        var buttons = d3.select("body")
 		        				.append('div')
 		        				.attr('class','cluster_buttons')
@@ -187,11 +202,11 @@
 		        buttons.on("click", function(d){
 		        	update(d);
 		        });
-
+				
 				
 		        update('2_clusters');
-
 		        update('3_clusters');
+
           	};
 
         </script>
