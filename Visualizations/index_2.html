@@ -68,7 +68,9 @@
 	    <script type="text/javascript">
 	    	function draw(data) {
 	    		"use strict";
-
+	    		/*Number of clusters to show at start*/
+	    		var default_cluster = 3;
+	    		var current_cluster = [default_cluster] 
 	    		var num_solutions = 8;
 
 	    		/* An array with all of the variable names for the different clusters */
@@ -87,24 +89,19 @@
           		var buttons =d3.select("body")
           		  			  .append('div')
           		  			  .attr('class','cluster_selection_buttons');
-          		/* ADDS BUTTONS  			  
-          		buttons.append('div')
-          			   .text("<")
-          			   .attr("class", "button")
-          			   .attr("id", "left-button");
-          	    buttons.append('div')
-          			   .text(">")
-					   .attr("class", "button")
-          			   .attr("id", "right-button");
-				*/
+  			  
+
+
           		var svg = d3.select("body")
           					.append("svg")
           					.attr("id", "svg_main")
           					.attr("width", width + margin)
           					.attr("height", height + margin);
           		
-          		function update(cluster_membership) {
+          		function update(cluster_num) {
 
+          				
+          				var cluster_membership = cluster_num + "_clusters"
           				var circles = d3.selectAll("circle")
           				  
 
@@ -186,27 +183,44 @@
 		          	    	     .text(function(d){return (d.values['cluster_percent']*100).toPrecision(3)+"%"})
 		          	    	     .attr("class", "cluster_circle_pct");
 		        };
-		        
-		        
-		        var buttons = d3.select("body")
-		        				.append('div')
-		        				.attr('class','cluster_buttons')
-		        				.selectAll('div')
-		        				.data(cluster_var_name)
-		        				.enter()
-		        				.append('div')
-		        				.text(function(d) {
-									return d
-		        				});
 
-		        buttons.on("click", function(d){
-		        	update(d);
+		        var left = buttons.append('div')
+		        	   .selectAll('div')
+          			   .data(current_cluster)
+          			   .enter()
+          			   .append('div')
+          			   .attr("class", "button")
+          			   .text("<")
+          			   .attr("id", "left-button");
+
+          	    var right = buttons.append('div')
+          	    	   .selectAll('div')
+          			   .data(current_cluster)
+          			   .enter()
+          			   .insert('div')
+          			   .attr("class", "button")
+          			   .text(">")
+          			   .attr("id", "right-button");
+		        
+		        
+		        left.on("click", function(d) {
+		        	current_cluster--
+		        	if (current_cluster < 2) {
+		        		current_cluster = 9;
+		        	}
+		        	update(current_cluster)
+
 		        });
-				
-				
-		        update('2_clusters');
-		        update('3_clusters');
+		        right.on("click", function(d) {
+		        	current_cluster++
+		        	if (current_cluster > 9) {
+		        		current_cluster = 2
+		        	}
+		        	update(current_cluster);
+		        });
 
+		        update(default_cluster);
+				
           	};
 
         </script>
