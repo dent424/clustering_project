@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <script src="http://d3js.org/d3.v3.min.js"></script>
+	  <style>
+	  	h2 {
+	    		color: #708090;
+	    		text-align: center;
+	    		font-size: 30px;
+	    }
+
+    	div.question_selection_buttons {
+    		width: 80px;
+    		margin: auto;
+    	}
+
+    	div.button {
+    		font-size: 40px;
+    		font-weight: bold;
+    		color: #708090;
+    		padding: 3px;
+    		margin: auto;
+    	}
+
+    	#svg_main {
+	    	margin-left:auto; 
+	    	margin-right:auto; 
+	    	display:block;
+	    }
+
+    	#left-button{
+    		float: left;
+    	}
+
+    	#right-button{
+    		float: right;
+    	}
+
+
+	  </style>
+	  <script type="text/javascript">
+	  	function draw(data) {
+	  		"use strict";
+
+	  		// Sets up initial question
+	  		var current_question = [1];
+
+	  		/*sets up the canvas for the visualization*/
+	    	var margin = 75,
+            width = 1400 - margin,
+            height = 700 - margin;
+
+            /*Adds title*/
+            d3.select("body")
+          	  .append("h2")
+              .text("Environmental Attitudes");
+
+            //Adds space for updated question text later
+            var question_text = d3.select("body")
+            					  .append('div')
+            					  .attr('class','question_text');
+
+            /*Adds buttons for question selection*/
+          	var buttons =d3.select("body")
+          		  		   .append('div')
+          		  		   .attr('class','question_selection_buttons');
+
+
+
+      		// y scale
+      		var y = d3.scale.linear()
+      						.range([height,0]);
+      		// x scale
+      		var x = d3.scale.ordinal()
+      				  .rangeRoundBands([0, width], .1);
+      		//x axis
+      		var xAxis = d3.svg.axis()
+      						  .scale(x)
+      						  .orient("bottom");
+      		//y axis
+      		var yAxis = d3.svg.axis()
+      						  .scale(y)
+      						  .orient("left");
+
+      		/*Adds the SVG element that will house everything else*/
+      		var svg = d3.select("body")
+      					.append("svg")
+      					.attr("id", "svg_main")
+      					.attr("width", width + margin)
+      					.attr("height", height + margin);
+
+      		// list of variables
+      		var questions = d3.keys(data[0]).filter(function(d){
+      													var x = "cluster";
+      													if (d.indexOf(x) === -1 && d !== 'ids') {
+      														return d	;
+      													}		
+      												});
+
+      		var num_questions = questions.length;
+
+      		//draws x axis
+            svg.append("g")
+               .attr('class','x axis')
+               .attr('transform', 'translate(0,' + height + ')')
+               .call(xAxis);
+                   
+            //draws y axis
+            svg.append('g')
+               .attr("class", 'y axis')
+               .call(yAxis);
+
+      		function update_chart(question) {
+      			
+      			/*
+      			d3.selectAll("svg > *")
+	          	   		  .remove();
+				*/
+      			// filters out NaN observations from data from the question "question"
+      			var new_data = data.filter(function(d){
+      				if(isNaN(+d[question])){
+      					return false;
+      				}
+      				return true;
+      			});
+
+
+      			// rolls up data by answer in "question"
+      			var nested = d3.nest()
+      						   .key(function(d){return d[question];
+      						   })
+      						   .rollup(function(leaves){
+      						   		var total = data.length
+      						   		var responses = leaves.length;
+
+      						   		return {
+      						   			'responses' : responses,
+      						   			'percent' : responses/total
+      						   		};
+      						   	})
+      						   .entries(new_data)
+
+
+      			//sets the domain of x by passing it the range of possible values
+      			x.domain(nested.map(function (d) {
+      				return d.key;
+      			}));
+
+      			//sets the domain of y by passing it the range of possible values
+      			y.domain([0, d3.max(nested, function (d) {
+      				return +d.values['percent'].toPrecision(3);
+      			})]);
+      			
+      			
+				/*Joins data to rectangles*/
+				var rects = svg.selectAll('rect')
+      					.data(nested, function(d) { 
+      						return d.key;
+      					}); 
+      			
+      			/*Elements entering*/
+      			rects.enter().append("rect");
+
+      			//Handle update
+
+      			rects
+      				.attr("width", x.rangeBand())
+      				.attr('height', function(d){	
+      						return height-y(+d.values['percent'].toPrecision(3));
+      					})
+      				.attr("y", function(d){return y(+d.values['percent'].toPrecision(3))})
+      				.attr('x', function(d){
+      						return x(d.key);
+      					});
+
+      			/*removes old rectangles*/
+      			rects.exit().remove();
+
+      			svg.select('g.x.axis')
+      			   .call(xAxis);
+
+				svg.select('g.y.axis')
+      			   .call(yAxis);				      		
+      		};
+      		
+
+      		var left = buttons.append('div')
+		        	   		  .selectAll('div')
+          			   		  .data(current_question)
+          			   		  .enter()
+          			   		  .append('div')
+          			   		  .attr("class", "button")
+          			   		  .text("<")
+          			   		  .attr("id", "left-button");
+		   		  
+          	var right = buttons.append('div')
+          	    	   		   .selectAll('div')
+          			   		   .data(current_question)
+          			   		   .enter()
+          			   		   .insert('div')
+          			   		   .attr("class", "button")
+          			   		   .text(">")
+          			   		   .attr("id", "right-button");
+
+          	left.on("click", function(d) {
+		        	current_question--
+		        	if (current_question < 0) {
+		        		current_question = num_questions-1;
+		        	};
+		        	update_chart(questions[current_question])
+		        });
+		    right.on("click", function(d) {
+		        	current_question++
+		        	if (current_question >= num_questions) {
+		        		current_question = 0
+		        	}
+
+		        	update_chart(questions[current_question]);
+		        });
+
+          	update_chart(questions[current_question[0]]);
+
+
+	  	}
+	  </script>
+	</head>
+	</body>
+		<script type="text/javascript">
+			d3.csv("clusterData.csv", draw)
+		</script>
+	</body>
+</html>
