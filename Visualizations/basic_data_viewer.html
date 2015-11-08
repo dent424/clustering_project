@@ -49,6 +49,8 @@
 	  	function draw(data) {
 	  		"use strict";
 
+	  		// Set speed at which bars move
+	  		var bar_moves = 200;
 	  		// Sets up initial question
 	  		var current_question = [1];
 
@@ -162,42 +164,64 @@
       			})]);
       			
       			
-				/*Joins data to rectangles*/
-				var rects = svg.selectAll('rect')
+      			//Start test segment
+      			
+      			var group = svg.selectAll('.bars')		
       					.data(nested, function(d) { 
       						return d.key;
-      					}); 
-      			
-      			/*removes old rectangles*/
-      			rects.exit()
-      				 .transition()
-      				 .duration(300)
-      				 .attr('height', 0 )
-      				 .attr('y',height)
-      				 .remove();
-
-      			/*Elements entering*/
-      			rects.enter().append("rect");
-
-      			//Handle update
-
-      			rects
-      				.attr("width", x.rangeBand())
-      				.attr('height', 0)
-      				.attr('y',height)
-      				.transition()
-      				.delay(400)
-      				.duration(500)
-      				.attr("width", x.rangeBand())
-      				.attr('height', function(d){	
-      						return height-y(+d.values['percent'].toPrecision(3));
-      					})
-      				.attr("y", function(d){return y(+d.values['percent'].toPrecision(3))})
-      				.attr('x', function(d){
-      						return x(d.key);
       					});
 
 
+
+      			//remove exit
+	      		group.exit()
+	      			 .select('rect')
+	      			 .transition()
+	      			 .duration(bar_moves)
+      				 .attr('height', 0 )
+      				 .attr('y', height)
+      				 .each("end", function(){
+      					group.exit().remove();	 	
+      				 });
+
+				
+				//enter selection
+				var enterbars = group.enter()
+					.append('g')
+					.attr('class','bars')
+					.append('rect')
+					.attr("width", x.rangeBand());
+
+
+				//update
+				group.attr('transform',function(d) {
+						var y_val = 0;
+						var x_val = x(d.key);
+						return "translate(0," + y_val +")";
+					})
+					.select('rect')
+      				.transition() //This transition makes all bars go to the axis
+      				.duration(bar_moves)
+      				.attr('height', 0)
+      				.attr('y',height)
+					.each('end', function(){ //This makes sure that transitions are only vertical
+						d3.select(this)
+						  .attr('x',function(d) {
+	      				 	return x(d.key);
+	      		    	  })
+	      		    	  .attr("width", x.rangeBand());
+						})
+					.transition() //This transition creates the new bars
+      				.delay(bar_moves)
+      				.duration(bar_moves*2.5)
+	      			.attr('height', function(d){	
+	      				return height - y(+d.values['percent'].toPrecision(3));
+	      			})
+	      		    .attr('y', function(d){
+	      				return y(+d.values['percent'].toPrecision(3));
+	      			});
+
+	      		
 
       			svg.select('g.x.axis')
       			   .call(xAxis);
