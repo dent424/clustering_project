@@ -8,6 +8,7 @@
 	    		color: #708090;
 	    		text-align: center;
 	    		font-size: 30px;
+	    		font-family: sans-serif;
 	    }
 
     	div.question_selection_buttons {
@@ -36,7 +37,12 @@
     	#right-button{
     		float: right;
     	}
-
+    	div.question_text{
+    		text-align: center;
+    		font-size: 40px;
+    		color: #708090;
+    		font-family: sans-serif;
+    	}
 
 	  </style>
 	  <script type="text/javascript">
@@ -65,6 +71,10 @@
           	var buttons =d3.select("body")
           		  		   .append('div')
           		  		   .attr('class','question_selection_buttons');
+
+          	var question_space = d3.select("body")
+          						   .append('div')
+          						   .attr('class','question_text')
 
 
 
@@ -113,10 +123,7 @@
 
       		function update_chart(question) {
       			
-      			/*
-      			d3.selectAll("svg > *")
-	          	   		  .remove();
-				*/
+
       			// filters out NaN observations from data from the question "question"
       			var new_data = data.filter(function(d){
       				if(isNaN(+d[question])){
@@ -125,6 +132,8 @@
       				return true;
       			});
 
+      			question_space.data(question)
+      						  .text(question);
 
       			// rolls up data by answer in "question"
       			var nested = d3.nest()
@@ -173,7 +182,6 @@
       			//Handle update
 
       			rects
-      				.transition()
       				.attr("width", x.rangeBand())
       				.attr('height', 0)
       				.attr('y',height)
@@ -206,8 +214,8 @@
           			   		  .append('div')
           			   		  .attr("class", "button")
           			   		  .text("<")
-          			   		  .attr("id", "left-button");
-		   		  
+          			   		  .attr("id", "left-button");	  
+          	
           	var right = buttons.append('div')
           	    	   		   .selectAll('div')
           			   		   .data(current_question)
