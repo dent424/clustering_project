@@ -159,12 +159,27 @@
       						return d.key;
       					}); 
       			
+      			/*removes old rectangles*/
+      			rects.exit()
+      				 .transition()
+      				 .duration(300)
+      				 .attr('height', 0 )
+      				 .attr('y',height)
+      				 .remove();
+
       			/*Elements entering*/
       			rects.enter().append("rect");
 
       			//Handle update
 
       			rects
+      				.transition()
+      				.attr("width", x.rangeBand())
+      				.attr('height', 0)
+      				.attr('y',height)
+      				.transition()
+      				.delay(400)
+      				.duration(500)
       				.attr("width", x.rangeBand())
       				.attr('height', function(d){	
       						return height-y(+d.values['percent'].toPrecision(3));
@@ -174,8 +189,7 @@
       						return x(d.key);
       					});
 
-      			/*removes old rectangles*/
-      			rects.exit().remove();
+
 
       			svg.select('g.x.axis')
       			   .call(xAxis);
