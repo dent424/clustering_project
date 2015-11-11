@@ -15,18 +15,24 @@
 	    		width: 50%;
 	    }
 
+      p {
+        padding: 0px;
+        margin: 0px;
+        text-align: center;
+        margin-top: 0.5em;
+      }
+
     	#svg_main {
-	    	margin-left:auto; 
-	    	margin-right:auto; 
+	    	margin:auto; 
 	    	display:block;
 	    }
 
     	div.button {
-    		font-size: 40px;
-    		font-weight: bold;
+    		font-size: 30px;
     		color: #708090;
     		padding: 3px;
     		margin: auto;
+        font-family: sans-serif;
     	}
 
     	div.question_selection_buttons {
@@ -51,7 +57,13 @@
     		width: 50%;
    			margin:auto;  
 	    	display:block;
+        height:100px;
     	}
+
+      .x.axis{
+        fill:#708090;
+        font-family: sans-serif; 
+      }
 
     	rect {
     		fill: forestgreen;
@@ -62,11 +74,43 @@
     		font-size: 40px;
     		font-family: sans-serif;
     	}
+      .question-chapters {
+        height: 50px;
+        font-size: 20px;
+        font-family: sans-serif;
+        position: relative;
+        margin: auto;
+        width: 50%;
+      }
+      .question-chapter {
+        background-color: green;
+        float:left;
+        height: 90%;
+        width: 20%;
+
+      }
+      .active_chapter {
+        background-color: green;
+      }
+      .inactive_chapter {
+        fill:#708090;
+        background-color: #708090;
+      }
+      .chapter-text {
+        color: white;
+      }
+      .button-container {
+        /*container for question change buttons*/
+        height: 50px;
+        width: 50%;
+        margin: auto;
+      }
 
 	  </style>
 	  <script type="text/javascript">
 	  	function draw(data) {
 	  		"use strict";
+
 
 	  		// Set speed at which bars move
 	  		var bar_moves = 200;
@@ -78,24 +122,42 @@
             width = 1400 - margin,
             height = 700 - margin;
 
-            /*Adds title*/
-            d3.select("body")
-          	  .append("h2")
-              .text("Environmental Attitudes");
+          /*Adds title*/
+          d3.select("body")
+        	  .append("h2")
+            .text("Environmental Attitudes");
 
-            /*Adds buttons for question selection*/
-          	var buttons =d3.select("body")
-          		  		   .append('div')
-          		  		   .attr('class','question_selection_buttons');
+          //Adds a div to put question section selection buttons in.
+          var chapters = d3.select("body")
+                           .append('div')
+                           .attr('class','question-chapters');
 
-          	//Adds space for updated question text later
-          	var question_space = d3.select("body")
-          						   .append('div')
-          						   .attr('class','question_text')
+          //The width of the divs that hold all non-svg content
+          var content_width = d3.select('.question-chapters').node().getBoundingClientRect()['width']
+          
+          //Chapter-titles
+          var chapter_titles = ['Attitudes','Risk','Knowledge','Behaviors','Government']
+          var chapter_button_holder = chapters.selectAll('div')
+                                    .data(chapter_titles)
+                  
+          var chapter_button = chapter_button_holder.enter()
+                                                     .append('div')
+                                                     .attr('class','inactive_chapter question-chapter')
+                                                     .attr('id',function(d){return d})
+          chapter_button.append('p')
+                         .attr('class', 'chapter-text')
+                         .text(function(d){return d});
 
-          	d3.select("body")
-          	  .append('div')
-          	  .style('height','50px')
+
+          /*Adds buttons for question selection*/
+        	var buttons =d3.select("body")
+        		  		   .append('div')
+                     .attr('class','button-container');
+
+        	//Adds space for updated question text later
+        	var question_space = d3.select("body")
+        						   .append('div')
+        						   .attr('class','question_text');
 
       		// y scale
       		var y = d3.scale.linear()
@@ -125,16 +187,62 @@
       		// list of variables
       		var questions = d3.keys(data[0]).filter(function(d){
       													var x = "cluster";
-      													if (d.indexOf(x) === -1 && d !== 'ids') {
+      													if (d.indexOf(x) === -1 && d !== 'ids' ) {
       														return d	;
       													}		
       												});
       		
-          var questions_list = ["ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen", "grncon", "carsgen", "indusgen", "watergen", "tempgen1", "grnprice", "busgrn", "grnsol", "knwcause", "peopgrn", "grntaxes", "knowsol", "drivless", "grnmoney", "grngroup", "redcehme", "nobuygrn", "ihlpgrn", "recycle", "grndemo", "h2oless", "chemfree", "grnsign", "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polviews", "polgreed", "topprob1", "topprob2", "sex", "race", "age"]
+          var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
           
           function get_x_labels(question_index){
-            if (question_index >= 0 && question_index <= 16) {
+            if ((question_index >= 0 && question_index <= 17)||(question_index >= 49 && question_index <= 50)){
               var answer_choices = {1:"Strongly Disagree",2:"2",3:"3",4:"4",5:"Strongly Agree"}
+              return answer_choices
+            }
+            if (question_index >= 18 && question_index <= 23) {
+              var answer_choices = {1:"Extremely dangerous",2:"Very dangerous",3:"Somewhat dangerous",4:"Not very dangerous",5:"Not dangerous at all"}
+              return answer_choices
+            }
+            if (question_index === 24) {
+              var answer_choices = {1:"Not concerned",2:"2",3:"3",4:"4",5:"Very concerned"}
+              return answer_choices
+            }
+            if (question_index >= 25 && question_index <= 27) {
+              var answer_choices = {1:"Very willing",2:"Fairly willing",3:"Neither willing nor unwilling",4:"Not very willing",5:"Not at all willing"}
+              return answer_choices
+            }
+            if (question_index === 28) {
+              var answer_choices = {
+                'Heavy fines for businesses that damage the environment':"Heavy fines for environmental damage",'More information and education for businesses about the advantages of protecting the environment':"Information and education for businesses",'Use the tax system to reward businesses that protect the environment':"Tax benefits for good behavior"}
+              return answer_choices
+            }
+            if (question_index === 29) {
+              var answer_choices = {
+                'Heavy fines for people who damage the environment':"Heavy fines for environmental damage",'More information and education for people about the advantages of protecting the environment':"Information and education for people",'Use the tax system to reward people who protect the environment':"Tax benefits for good behavior"}
+              return answer_choices
+            }
+            if (question_index >= 30 && question_index <= 31) {
+              var answer_choices = {1:"Know nothing",2:"2",3:"3",4:"4",5:"Know a lot"}
+              return answer_choices
+            }
+            if (question_index >= 32 && question_index <= 37) {
+              var answer_choices = {1:"Never",2:"Sometimes",3:"Often",4:"Always"}
+              return answer_choices
+            }
+            if (question_index >= 38 && question_index <= 41) {
+              var answer_choices = {0:"No",1:"Yes"}
+              return answer_choices
+            }
+            if (question_index >= 42 && question_index <= 48) {
+              var answer_choices = {1:"Too little",2:"About right",3:"Too much"}
+              return answer_choices
+            }
+            if (question_index === 51) {
+              var answer_choices = {1:"Extremely conservative",2:"Conservative",3:"Slightly conservative",4:"Moderate",5:"Slightly liberal", 6:"Liberal", 7:"Extremely liberal"}
+              return answer_choices
+            }
+            if (question_index >= 52) {
+              var answer_choices = {"Crime":"Crime","Education":"Education","Health care":'Health care',Immigration:'Immigration','None of these':'None of these','Poverty':'Poverty','Terrorism':'Terrorism','The economy':'The economy','The environment':'The environment'}
               return answer_choices
             }
             else {
@@ -146,34 +254,33 @@
       		var question_text = 
       			{ldcgrn: "Poorer countries should be expected to make less effort than richer countries to protect the environment.",
       			othssame: "There is no point in doing what I can for the environment unless others do the same.",
-      			chemgen:"In general, do you think that pesticides and chemicals used in farming are...",
-      			natchld:"In the US, are we spending too much, too little, or about the right amount on assistance for childcare",
-      			natpark:"In the US, are we spending too much, too little, or about the right amount on parks and recreation",
+      			chemgen:"How dangerous do you think that pesticides and chemicals used in farming are for the environment?",
+      			natchld:"In the US, are we spending too much, too little, or about the right amount on assistance for childcare?",
+      			natpark:"In the US, are we spending too much, too little, or about the right amount on parks and recreation?",
       			sex:"Respondent's sex",
-      			nukegen: "Do you think nuclear power a stations are...",
+      			nukegen: "How dangerous do you think nuclear power stations are for the environment?",
       			harmgood: "Overall, modern science does more harm than good.",
       			topprob1: "Which of these issues is the most important for America today?",
       			drivless: "How often do you cut back on driving a car for environmental reasons?",
       			grnmoney: "In the last five years, have you given money to an environmental group?",
-      			topprob2: "Which of these issues is the second most important for America today?",
       			peopgrn: "Which of these approaches do you think would be the best way of getting people and their families in America to protect the environment?",
-      			natsci: "In the US, are we spending too much, too little, or about the right amount on supporting scientific research",
+      			natsci: "In the US, are we spending too much, too little, or about the right amount on supporting scientific research?",
       			grngroup: "Are you a member of any group whose main aim is to preserve or protect the environment?",
       			redcehme: "How often do you reduce the energy or fuel you use at home for environmental reasons?",
       			grntaxes: "How willing would you be to pay much higher taxes in order to protect the environment?",
       			grncon: "How concerned are you about environmental issues?",
-      			govdook: "Most of the time we can trust people in government to do what is right",
+      			govdook: "Most of the time we can trust people in government to do what is right.",
       			knowsol: "How much do you feel you know about solution to environmental problems?",
       			chemfree: "How often do you make a special effort to buy fruits and vegetables grown without pesticides or chemicals?",
       			ihlpgrn: "I do what I can to help the environment.",
-      			tempgen1: "do you think that a rise in the world’s temperature caused by climate change is . . .",
+      			tempgen1: "How dangerous do you think that a rise in the world's temperature due to climate change is for the environment?",
       			recycle: "How often do you make a special effort to sort your garbage for recycling?",
       			grndemo:"In the last five years have you taken part in a protest or demonstration about an environmental issue?",
       			impgrn: "There are more important things to do in life than protect the environment.",
       			scigrn: "Modern science will solve our environmental problems with little change to our way of life.",
       			h2oless: "How often do you choose to save or re-use water for environmental reasons?",
-      			carsgen: "Do you think that air pollution caused by cars is…",
-      			indusgen: "do you think that air pollution caused by industry is…",
+      			carsgen: "How dangerous do you think air pollution caused by cars is for the environment?",
+      			indusgen: "How dangerous do you think air pollution caused by industry is for the environment?",
       			grnprice: "How willing would you be to pay much higher prices in order to protect the environment?",
       			grwthelp: "In order to protect the environment, America needs economic growth.",
       			nobuygrn: "How often do you avoid buying certain products for environmental reasons?",
@@ -185,15 +292,15 @@
     				harmsgrn: "Almost everything we do in modern life harms the environment.",
     				grnexagg: "Many of the claims about environmental threats are exaggerated.",
     				popgrwth: "The earth cannot continue to support population growth at its present rate.",
-    				watergen: "I think that pollution of America's rivers, lakes, and streams is…",
+    				watergen: "How dangerous is pollution of America's rivers, lakes and streams for the environment?",
     				natenrgy: "In the US, are we spending too much, too little, or about the right amount on developing alternative energy sources",
     				busgrn: "Which of these approaches do you think would be the best way of getting business and industry in America to protect the environment?",
     				natsoc: "In the US, are we spending too much, too little, or about the right amount on Social Security",
     				privent: "Private enterprise is the best way to solve America’s economic problems",
     				grnsol: "How willing would you be to accept cuts in your standard of living in order to protect the environment?",
-    				natroad: "Are we spending too much, too little, or about the right amount on highways and bridges?",
+    				natroad: "In the US, are we spending too much, too little, or about the right amount on highways and bridges?",
     				age: "Age of respondent",
-    				usdoenuf: "Some countries are doing more to protect the world environment than other countries are. Do you think America is doing…",
+    				usdoenuf: "Do you think America is doing enough to protect the world environment?",
     				grwtharm: "Economic growth always harms the environment.",
     				race: "Race of respondent.",
     				polgreed: "Most politicians are in politics only for what they can get out of it personally.",
@@ -342,7 +449,8 @@
 	      		
 
       			svg.select('g.x.axis')
-      			   .call(xAxis);
+               .transition()
+               .call(xAxis);
 
 				    svg.select('g.y.axis')
       			   .call(yAxis);				      		
@@ -363,7 +471,7 @@
           			   		   .enter()
           			   		   .insert('div')
           			   		   .attr("class", "button")
-          			   		   .text(">")
+          			   		   .text("> Next Question")
           			   		   .attr("id", "right-button");
             
             left.on("click", function(d) {
@@ -381,6 +489,18 @@
 
 		        	update_chart(questions_list[current_question]);
 		        });
+            var chapter_locations= {
+              Attitudes: 0,
+              Risk:18,
+              Knowledge: 25,
+              Behaviors: 32,
+              Government: 42
+            }
+            chapter_button.on('click', function(d){
+              current_question = chapter_locations[d];
+              update_chart(questions_list[current_question]);
+            })
+
 
           	update_chart(questions_list[current_question[0]]);
 	  	}
