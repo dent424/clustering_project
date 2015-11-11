@@ -6,15 +6,20 @@
 	  <style>
 	  	h2 {
 	    		color: #708090;
-	    		text-align: center;
+	    		text-align: left;
 	    		font-size: 30px;
 	    		font-family: sans-serif;
+	    		margin-left:auto; 
+	    		margin-right:auto; 
+	    		display:block;
+	    		width: 50%;
 	    }
 
-    	div.question_selection_buttons {
-    		width: 80px;
-    		margin: auto;
-    	}
+    	#svg_main {
+	    	margin-left:auto; 
+	    	margin-right:auto; 
+	    	display:block;
+	    }
 
     	div.button {
     		font-size: 40px;
@@ -24,24 +29,28 @@
     		margin: auto;
     	}
 
-    	#svg_main {
-	    	margin-left:auto; 
-	    	margin-right:auto; 
-	    	display:block;
-	    }
-
+    	div.question_selection_buttons {
+        width: 50%;
+        margin:auto;
+        height:60px; 
+    	}
+   	
     	#left-button{
     		float: left;
     	}
 
     	#right-button{
-    		float: right;
+    		float: left;
     	}
+
     	div.question_text{
-    		text-align: center;
+    		text-align: left;
     		font-size: 40px;
     		color: #708090;
     		font-family: sans-serif;
+    		width: 50%;
+   			margin:auto;  
+	    	display:block;
     	}
 
     	rect {
@@ -62,7 +71,7 @@
 	  		// Set speed at which bars move
 	  		var bar_moves = 200;
 	  		// Sets up initial question
-	  		var current_question = [1];
+	  		var current_question = [0];
 
 	  		/*sets up the canvas for the visualization*/
 	    	var margin = 75,
@@ -97,6 +106,9 @@
       		//x axis
       		var xAxis = d3.svg.axis()
       						  .scale(x)
+                    .tickFormat(function(d){
+                      var responses = get_x_labels(current_question);
+                      return responses[d]; })
       						  .orient("bottom");
       		//y axis
       		var yAxis = d3.svg.axis()
@@ -117,7 +129,20 @@
       														return d	;
       													}		
       												});
-      		//Text for questions
+      		
+          var questions_list = ["ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen", "grncon", "carsgen", "indusgen", "watergen", "tempgen1", "grnprice", "busgrn", "grnsol", "knwcause", "peopgrn", "grntaxes", "knowsol", "drivless", "grnmoney", "grngroup", "redcehme", "nobuygrn", "ihlpgrn", "recycle", "grndemo", "h2oless", "chemfree", "grnsign", "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polviews", "polgreed", "topprob1", "topprob2", "sex", "race", "age"]
+          
+          function get_x_labels(question_index){
+            if (question_index >= 0 && question_index <= 16) {
+              var answer_choices = {1:"Strongly Disagree",2:"2",3:"3",4:"4",5:"Strongly Agree"}
+              return answer_choices
+            }
+            else {
+              return "UNDEFINED"
+            }
+          };
+
+          //Text for questions
       		var question_text = 
       			{ldcgrn: "Poorer countries should be expected to make less effort than richer countries to protect the environment.",
       			othssame: "There is no point in doing what I can for the environment unless others do the same.",
@@ -157,27 +182,27 @@
       			grnprog:"People worry too much about human progress harming the environment.",
       			toodifme: "It is just too difficult for someone like me to do much about the environment.",
       			grnsign: "In the last five years, have you signed a petition about an environmental issue?",
-				harmsgrn: "Almost everything we do in modern life harms the environment.",
-				grnexagg: "Many of the claims about environmental threats are exaggerated.",
-				popgrwth: "The earth cannot continue to support population growth at its present rate.",
-				watergen: "I think that pollution of America's rivers, lakes, and streams is…",
-				natenrgy: "In the US, are we spending too much, too little, or about the right amount on developing alternative energy sources",
-				busgrn: "Which of these approaches do you think would be the best way of getting business and industry in America to protect the environment?",
-				natsoc: "In the US, are we spending too much, too little, or about the right amount on Social Security",
-				privent: "Private enterprise is the best way to solve America’s economic problems",
-				grnsol: "How willing would you be to accept cuts in your standard of living in order to protect the environment?",
-				natroad: "Are we spending too much, too little, or about the right amount on highways and bridges?",
-				age: "Age of respondent",
-				usdoenuf: "Some countries are doing more to protect the world environment than other countries are. Do you think America is doing…",
-				grwtharm: "Economic growth always harms the environment.",
-				race: "Race of respondent.",
-				polgreed: "Most politicians are in politics only for what they can get out of it personally.",
-				polviews: "How liberal or conservative do you consider yourself?",
-				grnintl: "For environmental problems, there should be international agreements that America and other countries should be made to follow.",
-				knwcause: "How much do you feel you know about the causes of environmental problems?",
-				grnecon: "We worry too much about the future of the environment, and not enough about prices and jobs today."}; 
+    				harmsgrn: "Almost everything we do in modern life harms the environment.",
+    				grnexagg: "Many of the claims about environmental threats are exaggerated.",
+    				popgrwth: "The earth cannot continue to support population growth at its present rate.",
+    				watergen: "I think that pollution of America's rivers, lakes, and streams is…",
+    				natenrgy: "In the US, are we spending too much, too little, or about the right amount on developing alternative energy sources",
+    				busgrn: "Which of these approaches do you think would be the best way of getting business and industry in America to protect the environment?",
+    				natsoc: "In the US, are we spending too much, too little, or about the right amount on Social Security",
+    				privent: "Private enterprise is the best way to solve America’s economic problems",
+    				grnsol: "How willing would you be to accept cuts in your standard of living in order to protect the environment?",
+    				natroad: "Are we spending too much, too little, or about the right amount on highways and bridges?",
+    				age: "Age of respondent",
+    				usdoenuf: "Some countries are doing more to protect the world environment than other countries are. Do you think America is doing…",
+    				grwtharm: "Economic growth always harms the environment.",
+    				race: "Race of respondent.",
+    				polgreed: "Most politicians are in politics only for what they can get out of it personally.",
+    				polviews: "How liberal or conservative do you consider yourself?",
+    				grnintl: "For environmental problems, there should be international agreements that America and other countries should be made to follow.",
+    				knwcause: "How much do you feel you know about the causes of environmental problems?",
+    				grnecon: "We worry too much about the future of the environment, and not enough about prices and jobs today."}; 
 
-      		var num_questions = questions.length;
+      		var num_questions = questions_list.length;
 
       		//draws x axis
             svg.append("g")
@@ -192,7 +217,7 @@
 
       		function update_chart(question) {
       			// filters out NaN observations from data from the question "question"     			
-      			var new_data = data.filter(function(d){
+            var new_data = data.filter(function(d){
       				if(d[question]=='NaN'){
       					return false;
       				};
@@ -201,7 +226,7 @@
 
       			// Adds questions
       			question_space.data(question)
-      						  .text(question);
+      						  .text(question_text[question]);
 
       			// rolls up data by answer in "question"
       			var nested = d3.nest()
@@ -319,11 +344,11 @@
       			svg.select('g.x.axis')
       			   .call(xAxis);
 
-				svg.select('g.y.axis')
+				    svg.select('g.y.axis')
       			   .call(yAxis);				      		
       		};
       		
-      		var left = buttons.append('div')
+      		  var left = buttons.append('div')
 		        	   		  .selectAll('div')
           			   		  .data(current_question)
           			   		  .enter()
@@ -340,24 +365,24 @@
           			   		   .attr("class", "button")
           			   		   .text(">")
           			   		   .attr("id", "right-button");
-
-          	left.on("click", function(d) {
+            
+            left.on("click", function(d) {
 		        	current_question--
 		        	if (current_question < 0) {
 		        		current_question = num_questions-1;
 		        	};
-		        	update_chart(questions[current_question])
+              update_chart(questions_list[current_question])
 		        });
-		    right.on("click", function(d) {
+		        right.on("click", function(d) {
 		        	current_question++
 		        	if (current_question >= num_questions) {
 		        		current_question = 0
 		        	}
 
-		        	update_chart(questions[current_question]);
+		        	update_chart(questions_list[current_question]);
 		        });
 
-          	update_chart(questions[current_question[0]]);
+          	update_chart(questions_list[current_question[0]]);
 	  	}
 	  </script>
 	</head>

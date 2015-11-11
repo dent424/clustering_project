@@ -12,6 +12,7 @@ Created on Thu Oct 22 19:07:51 2015
 import diagnostic_tools
 import cleaning_tools
 import dictionary_conversion
+import pprint
 
 def run_diagnostics_and_transformations(data):
     #This looks for any mostly empty rows
@@ -67,7 +68,9 @@ def run_dict_diagnostics(data_dict):
     #which makes a dictionary with the answer type id as key and a list of vars with that 
     #answer type as values
     answers_dict, answer_type_vars = diagnostic_tools.get_var_answer_types(answer_types, possible_answers)
-    
+    pp = pprint.PrettyPrinter()    
+    pp.pprint(answers_dict)
+    pp.pprint(answer_type_vars)
     #Creates a dictionary where the key is the variable name and the value is the id number of the answer type 
     #Takes in a dictionary where the keys are the id numbers and the values are lists containing questions with that question format
     question_answer_map = diagnostic_tools.generate_question_answer_map(answer_type_vars)
