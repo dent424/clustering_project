@@ -82,19 +82,18 @@
         margin: auto;
         width: 50%;
       }
-      .question-chapter {
+
+      .active_chapter {
         background-color: green;
         float:left;
         height: 90%;
         width: 20%;
-
-      }
-      .active_chapter {
-        background-color: green;
       }
       .inactive_chapter {
-        fill:#708090;
         background-color: #708090;
+        float:left;
+        height: 90%;
+        width: 20%;
       }
       .chapter-text {
         color: white;
@@ -142,7 +141,15 @@
                   
           var chapter_button = chapter_button_holder.enter()
                                                      .append('div')
-                                                     .attr('class','inactive_chapter question-chapter')
+                                                     .attr('class', function(d){
+                                                        if(d==="Attitudes") {
+                                                          return 'active_chapter'
+                                                        }
+                                                        else {
+                                                          return 'inactive_chapter'
+                                                        }
+                                                     })
+                                                     //.attr('class','inactive_chapter')
                                                      .attr('id',function(d){return d})
           chapter_button.append('p')
                          .attr('class', 'chapter-text')
@@ -499,6 +506,9 @@
             chapter_button.on('click', function(d){
               current_question = chapter_locations[d];
               update_chart(questions_list[current_question]);
+              d3.select('.active_chapter').attr('class','inactive_chapter');
+              d3.select(this).attr('class','active_chapter');
+
             })
 
 
