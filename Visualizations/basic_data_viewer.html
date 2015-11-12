@@ -88,12 +88,16 @@
         float:left;
         height: 90%;
         width: 20%;
+        opacity: 0.5;
+        border-radius:10px 25px 25px 10px;
       }
       .inactive_chapter {
         background-color: #708090;
         float:left;
         height: 90%;
         width: 20%;
+        opacity: 0.7;
+        border-radius:10px 25px 25px 10px;
       }
       .chapter-text {
         color: white;
@@ -149,7 +153,6 @@
                                                           return 'inactive_chapter'
                                                         }
                                                      })
-                                                     //.attr('class','inactive_chapter')
                                                      .attr('id',function(d){return d})
           chapter_button.append('p')
                          .attr('class', 'chapter-text')
