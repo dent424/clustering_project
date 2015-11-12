@@ -12,7 +12,7 @@
 	    		margin-left:auto; 
 	    		margin-right:auto; 
 	    		display:block;
-	    		width: 50%;
+	    		width: 70%;
 	    }
 
       p {
@@ -54,7 +54,7 @@
     		font-size: 40px;
     		color: #708090;
     		font-family: sans-serif;
-    		width: 50%;
+    		width: 70%;
    			margin:auto;  
 	    	display:block;
         height:100px;
@@ -80,7 +80,7 @@
         font-family: sans-serif;
         position: relative;
         margin: auto;
-        width: 50%;
+        width: 70%;
       }
 
       .active_chapter {
@@ -105,7 +105,7 @@
       .button-container {
         /*container for question change buttons*/
         height: 50px;
-        width: 50%;
+        width: 70%;
         margin: auto;
       }
 
@@ -120,10 +120,7 @@
 	  		// Sets up initial question
 	  		var current_question = [0];
 
-	  		/*sets up the canvas for the visualization*/
-	    	var margin = 75,
-            width = 1400 - margin,
-            height = 700 - margin;
+
 
           /*Adds title*/
           d3.select("body")
@@ -138,6 +135,11 @@
           //The width of the divs that hold all non-svg content
           var content_width = d3.select('.question-chapters').node().getBoundingClientRect()['width']
           
+          /*sets up the canvas for the visualization*/
+          var margin = 75,
+          width = content_width,
+          height = 700 - margin;
+
           //Chapter-titles
           var chapter_titles = ['Attitudes','Risk','Knowledge','Behaviors','Government']
           var chapter_button_holder = chapters.selectAll('div')
