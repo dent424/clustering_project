@@ -5,21 +5,37 @@
 	  <script src="http://d3js.org/d3.v3.min.js"></script>
 	  <style>
 	  	h2 {
-	    		color: #708090;
+	    		color: 'black';
+          font-weight: normal;
 	    		text-align: left;
-	    		font-size: 30px;
-	    		font-family: sans-serif;
-	    		margin-left:auto; 
-	    		margin-right:auto; 
+	    		font-size: 50px;
+	    		font-family: "Times New Roman", Times, serif; 
 	    		display:block;
-	    		width: 70%;
+          margin: 0;
 	    }
 
-      p {
+      .header_container {
+        width: 70%;
+        min-width: 1000px;
+        max-width: 1600px;
+        height: 200px;
+        margin: auto;
+        margin-bottom: 20px;
+      }
+
+      p.introduction {
+        display: inline;
+        font-size: 30px;
+        font-family: "Times New Roman", Times, serif; 
+      }
+
+      p.chapter-text {
+        font-family: sans-serif;
         padding: 0px;
         margin: 0px;
         text-align: center;
-        margin-top: 0.5em;
+        margin-top: 0.3em;
+        font-size: 25px;
       }
 
     	#svg_main {
@@ -58,6 +74,8 @@
    			margin:auto;  
 	    	display:block;
         height:100px;
+        min-width: 1000px;
+        max-width: 1600px;
     	}
 
       .x.axis{
@@ -69,6 +87,14 @@
     		fill: forestgreen;
     		fill-opacity: 0.5;
     	}
+      
+      .description_rect {
+        fill:white;
+        stroke-width:3;
+        stroke:#708090;;
+
+      }
+
     	text.bar_text{
     		fill: forestgreen;
     		font-size: 40px;
@@ -81,6 +107,8 @@
         position: relative;
         margin: auto;
         width: 70%;
+        min-width: 1000px;
+        max-width: 1600px;
       }
 
       .active_chapter {
@@ -107,6 +135,11 @@
         height: 50px;
         width: 70%;
         margin: auto;
+        min-width: 1000px;
+        max-width: 1600px;
+      }
+      .description_text {
+        font-size: 30px
       }
 
 	  </style>
@@ -124,8 +157,24 @@
 
           /*Adds title*/
           d3.select("body")
-        	  .append("h2")
+        	  .append("div")
+            .attr("class", "header_container")
+            .append("h2")
             .text("Environmental Attitudes");
+
+          d3.select(".header_container")
+            .append("p")
+            .attr("class","introduction")
+            .text("Since 1972, the University of Chicago has run the General Social Survey (GSS) monitoring social attitudes in the United States. In 2010, the GSS included multiple questions on Americans' perceptions regarding environmental issues. Below are some of the results of the 2010 survey.")
+
+          d3.select(".header_container")
+            .append("hr")
+          //Sets the starting index of question chapters used to update chapter button formatting and chart on button press  
+          var attitudes_chapter_start = 0;
+          var risk_chapter_start = 18;
+          var knowledge_chapter_start = 25;
+          var behavior_chapter_start = 32;
+          var government_chapter_start = 42;
 
           //Adds a div to put question section selection buttons in.
           var chapters = d3.select("body")
@@ -134,11 +183,6 @@
 
           //The width of the divs that hold all non-svg content
           var content_width = d3.select('.question-chapters').node().getBoundingClientRect()['width']
-          
-          /*sets up the canvas for the visualization*/
-          var margin = 75,
-          width = content_width,
-          height = 700 - margin;
 
           //Chapter-titles
           var chapter_titles = ['Attitudes','Risk','Knowledge','Behaviors','Government']
@@ -147,19 +191,12 @@
                   
           var chapter_button = chapter_button_holder.enter()
                                                      .append('div')
-                                                     .attr('class', function(d){
-                                                        if(d==="Attitudes") {
-                                                          return 'active_chapter'
-                                                        }
-                                                        else {
-                                                          return 'inactive_chapter'
-                                                        }
-                                                     })
-                                                     .attr('id',function(d){return d})
+                                                     .attr('class','inactive_chapter')
+                                                     .attr('id',function(d){return d});
+                                                     
           chapter_button.append('p')
                          .attr('class', 'chapter-text')
                          .text(function(d){return d});
-
 
           /*Adds buttons for question selection*/
         	var buttons =d3.select("body")
@@ -171,13 +208,20 @@
         						   .append('div')
         						   .attr('class','question_text');
 
-      		// y scale
+      		/*sets up the canvas for the visualization*/
+          var margin = 75,
+          width = content_width,
+          height = 700 - margin;
+
+          // y scale
       		var y = d3.scale.linear()
       						.range([height,0]);
-      		// x scale
+
+          // x var
       		var x = d3.scale.ordinal()
       				  .rangeRoundBands([0, width], .1);
-      		//x axis
+      		
+          //x axis
       		var xAxis = d3.svg.axis()
       						  .scale(x)
                     .tickFormat(function(d){
@@ -196,16 +240,13 @@
       					.attr("width", width + margin)
       					.attr("height", height + margin);
 
-      		// list of variables
-      		var questions = d3.keys(data[0]).filter(function(d){
-      													var x = "cluster";
-      													if (d.indexOf(x) === -1 && d !== 'ids' ) {
-      														return d	;
-      													}		
-      												});
+          svg.append('g')
+             .attr('class','description_text')
       		
+          //List of variables and their order
           var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
           
+          //Outputs the x-axis labels for questions
           function get_x_labels(question_index){
             if ((question_index >= 0 && question_index <= 17)||(question_index >= 49 && question_index <= 50)){
               var answer_choices = {1:"Strongly Disagree",2:"2",3:"3",4:"4",5:"Strongly Agree"}
@@ -250,17 +291,28 @@
               return answer_choices
             }
             if (question_index === 51) {
-              var answer_choices = {1:"Extremely conservative",2:"Conservative",3:"Slightly conservative",4:"Moderate",5:"Slightly liberal", 6:"Liberal", 7:"Extremely liberal"}
+              var answer_choices = {1:"Very conservative",2:"Conservative",3:"Slightly conservative",4:"Moderate",5:"Slightly liberal", 6:"Liberal", 7:"Very liberal"}
               return answer_choices
             }
             if (question_index >= 52) {
-              var answer_choices = {"Crime":"Crime","Education":"Education","Health care":'Health care',Immigration:'Immigration','None of these':'None of these','Poverty':'Poverty','Terrorism':'Terrorism','The economy':'The economy','The environment':'The environment'}
+              var answer_choices = {"Crime":"Crime","Education":"Education","Health care":'Health care',Immigration:'Immigration','None of these':'Other','Poverty':'Poverty','Terrorism':'Terrorism','The economy':'Economy','The environment':'Environment'}
               return answer_choices
             }
             else {
               return "UNDEFINED"
             }
           };
+
+          //List of objects for descriptions
+          var description_objects =[
+            {question:'grncon',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans have some concern over environmental issues"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only the 5th most important issue to Americans"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing to pay higher prices to protect the environment."], text_x_y_pos:[20,57], box_size:[100,200]}];
+
+          var description_counter = [0];
+
+          var test = "X";
 
           //Text for questions
       		var question_text = 
@@ -334,8 +386,73 @@
                .attr("class", 'y axis')
                .call(yAxis);
 
-      		function update_chart(question) {
-      			// filters out NaN observations from data from the question "question"     			
+      		//Function updating chapter bar when questions are in a given chapter
+          function update_chapter_bar(question) {
+            var question_index = questions_list.indexOf(question);
+            d3.select('.active_chapter').attr('class','inactive_chapter');
+            if (question_index >= attitudes_chapter_start & question_index < risk_chapter_start) {
+              d3.select('div#Attitudes').attr('class','active_chapter');
+            }
+            else if (question_index >= risk_chapter_start & question_index < knowledge_chapter_start) {
+              d3.select('div#Risk').attr('class','active_chapter');
+            }
+            else if (question_index >= knowledge_chapter_start & question_index < behavior_chapter_start) {
+              d3.select('div#Knowledge').attr('class','active_chapter');
+            }
+            else if (question_index >= behavior_chapter_start & question_index < 41) {
+              d3.select('div#Behaviors').attr('class','active_chapter');
+            }
+            else {
+              d3.select('div#Government').attr('class','active_chapter');
+            }
+          }
+
+          function update_dialog_box() {
+            
+            var params = description_objects[description_counter]
+            var descriptions = d3.select('svg').selectAll('g.description_text')
+                          .data(description_counter)
+                          .enter()
+                          .append('g')
+                          .attr('class','description_text')
+
+            descriptions.attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
+
+
+            descriptions.append('rect')
+                        .attr('class','description_rect')
+                        .attr('height',params["box_size"][0])
+                        .attr('width',params["box_size"][1]);
+            
+            descriptions.append('text')
+                       .text(params["description"][0])
+                       .attr('x',params["text_x_y_pos"][0])
+                       .attr('y',params["text_x_y_pos"][1]);
+          };
+
+
+
+          function update_chart(question) {
+      			//question is a string representing the question being displayed
+            //x_y_pos is an array with x and y position of text
+            //description is an array of strings to be used at x_y_pos
+            //text_x_y_pos is an array with x and y position of top left of top line of text
+            //box_size is size of the bounding box
+            //Next node holds an object with the next batch of parameters
+            d3.select('g.description_text').remove();
+          
+            update_dialog_box();
+
+            //Makes description button clickable for next description.
+            var d_rect = svg.select('rect.description_rect')
+            d_rect.on('click', function(d){       
+              alert(d);
+            })
+
+            //Updates chapter bar depending on current question
+            update_chapter_bar(question)
+            
+            // filters out NaN observations from data from the question "question"     			
             var new_data = data.filter(function(d){
       				if(d[question]=='NaN'){
       					return false;
@@ -370,15 +487,14 @@
       			//sets the domain of y by passing it the range of possible values
       			y.domain([0,1.1]);
       			
-      			//Create g to hold bars
+            //Create g to hold bars
       			var group = svg.selectAll('.bars')		
       					.data(nested, function(d) { 
       						return d.key;
       					});
 
-
-
-      			//remove exit
+      			
+            //remove exit
 	      		var exitbars = group.exit()
 	      			 
 	      		exitbars.select('rect')
@@ -478,7 +594,7 @@
           			   		  .attr("id", "left-button");	  
           	
           	var right = buttons.append('div')
-          	    	   		   .selectAll('div')
+          	    	   		 .selectAll('div')
           			   		   .data(current_question)
           			   		   .enter()
           			   		   .insert('div')
@@ -501,23 +617,27 @@
 
 		        	update_chart(questions_list[current_question]);
 		        });
+            
             var chapter_locations= {
-              Attitudes: 0,
-              Risk:18,
-              Knowledge: 25,
-              Behaviors: 32,
-              Government: 42
+              Attitudes: attitudes_chapter_start,
+              Risk:risk_chapter_start,
+              Knowledge: knowledge_chapter_start,
+              Behaviors: behavior_chapter_start ,
+              Government: government_chapter_start
             }
+
+            //Programming for Chapter buttons
             chapter_button.on('click', function(d){
               current_question = chapter_locations[d];
               update_chart(questions_list[current_question]);
               d3.select('.active_chapter').attr('class','inactive_chapter');
               d3.select(this).attr('class','active_chapter');
 
-            })
+            });
 
 
           	update_chart(questions_list[current_question[0]]);
+
 	  	}
 	  </script>
 	</head>
