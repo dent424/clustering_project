@@ -240,8 +240,7 @@
       					.attr("width", width + margin)
       					.attr("height", height + margin);
 
-          svg.append('g')
-             .attr('class','description_text')
+
       		
           //List of variables and their order
           var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
@@ -305,10 +304,11 @@
 
           //List of objects for descriptions
           var description_objects =[
-            {question:'grncon',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200]},
             {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans have some concern over environmental issues"], text_x_y_pos:[20,57], box_size:[100,200]},
             {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only the 5th most important issue to Americans"], text_x_y_pos:[20,57], box_size:[100,200]},
             {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing to pay higher prices to protect the environment."], text_x_y_pos:[20,57], box_size:[100,200]}];
+          var num_descriptions = description_objects.length
 
           var description_counter = [0];
 
@@ -386,6 +386,10 @@
                .attr("class", 'y axis')
                .call(yAxis);
 
+            //draws initial box for narrative descriptions
+            svg.append('g')
+               .attr('class','description_text')
+
       		//Function updating chapter bar when questions are in a given chapter
           function update_chapter_bar(question) {
             var question_index = questions_list.indexOf(question);
@@ -408,26 +412,32 @@
           }
 
           function update_dialog_box() {
-            
+                       
             var params = description_objects[description_counter]
+            debugger;
             var descriptions = d3.select('svg').selectAll('g.description_text')
-                          .data(description_counter)
-                          .enter()
-                          .append('g')
-                          .attr('class','description_text')
+                          .data(description_counter, function(d) {
+                            debugger;
+                            return d;
+                          })
+            var exit_desc = descriptions.exit()              
 
-            descriptions.attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
+            exit_desc.remove()            
 
+            var enter_desc = descriptions.enter()
+                                         .append('g')
+                                         .attr('class','description_text')
+                                         .attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
 
-            descriptions.append('rect')
-                        .attr('class','description_rect')
-                        .attr('height',params["box_size"][0])
-                        .attr('width',params["box_size"][1]);
+            enter_desc.append('rect')
+                      .attr('class','description_rect')
+                      .attr('height',params["box_size"][0])
+                      .attr('width',params["box_size"][1]);
             
-            descriptions.append('text')
-                       .text(params["description"][0])
-                       .attr('x',params["text_x_y_pos"][0])
-                       .attr('y',params["text_x_y_pos"][1]);
+            enter_desc.append('text')
+                      .text(params["description"][0])
+                      .attr('x',params["text_x_y_pos"][0])
+                      .attr('y',params["text_x_y_pos"][1]);
           };
 
 
@@ -439,15 +449,13 @@
             //text_x_y_pos is an array with x and y position of top left of top line of text
             //box_size is size of the bounding box
             //Next node holds an object with the next batch of parameters
-            d3.select('g.description_text').remove();
-          
+
+            
+           // d3.select('g.description_text').remove();
+
+
             update_dialog_box();
 
-            //Makes description button clickable for next description.
-            var d_rect = svg.select('rect.description_rect')
-            d_rect.on('click', function(d){       
-              alert(d);
-            })
 
             //Updates chapter bar depending on current question
             update_chapter_bar(question)
@@ -575,14 +583,31 @@
 	      			 .attr('y', function(d) {return y(+d.values['percent'].toPrecision(3))-5;})
 	      			 .style("fill-opacity", 0.7);
 	      		
+            //Makes description button clickable for next description.
+            var d_rect = svg.select('rect.description_rect')
+            d_rect.on('click', function(d){       
+              description_counter[0] ++
+              if (description_counter < num_descriptions) {
+                current_question = questions_list.indexOf(description_objects[description_counter]['question'])
+                update_chart(description_objects[description_counter]['question'])
+              }
+              else {
+                update_chart(questions_list[current_question[0]])
+              }
+            });
+      			
 
-      			svg.select('g.x.axis')
+            svg.select('g.x.axis')
                .transition()
                .call(xAxis);
 
 				    svg.select('g.y.axis')
       			   .call(yAxis);				      		
-      		};
+      		
+
+
+
+          };
       		
       		  var left = buttons.append('div')
 		        	   		  .selectAll('div')
@@ -634,7 +659,6 @@
               d3.select(this).attr('class','active_chapter');
 
             });
-
 
           	update_chart(questions_list[current_question[0]]);
 
