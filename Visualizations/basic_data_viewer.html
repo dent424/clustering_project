@@ -305,9 +305,24 @@
           //List of objects for descriptions
           var description_objects =[
             {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans have some concern over environmental issues"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans have", "some concern over environmental issues"], text_x_y_pos:[20,57], box_size:[200,400]},
             {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only the 5th most important issue to Americans"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing to pay higher prices to protect the environment."], text_x_y_pos:[20,57], box_size:[100,200]}];
+            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing to pay higher prices to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grnintl',x_y_pos:[100,100], description:["And over 75% of Americans believe that international environmental agreements are necessary"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing to accept cuts to their standard of living for the sake of the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling to pay higher taxes to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'govdook',x_y_pos:[100,100], description:["Perhaps this reluctance is due to a distrust of government"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grwthelp',x_y_pos:[100,100], description:["Instead many believe that economic growth is necessary to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'scigrn',x_y_pos:[100,100], description:["While also believing that improving technology on its own isn't a solution"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'toodifme',x_y_pos:[100,100], description:["Many believe that individuals can make positive environmental changes"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'ihlpgrn',x_y_pos:[100,100], description:["In fact, most believe they are helping the environment in some way"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'redcehme',x_y_pos:[100,100], description:["Many do conserve energy for environmental reasons at least some of the time"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'recycle',x_y_pos:[100,100], description:["And recycling is one of the most popular ways of supporting the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'nobuygrn',x_y_pos:[100,100], description:["Fewer people change their buying habits for environmental reasons"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'drivless',x_y_pos:[100,100], description:["And people do not often change their driving habits"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grngroup',x_y_pos:[100,100], description:["Even fewer have participated in any sort of environmental activism"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'grnsign',x_y_pos:[100,100], description:["And only one in five have signed a petition about an environmental issue in the past five years"], text_x_y_pos:[20,57], box_size:[100,200]},
+            {question:'ldcgrn',x_y_pos:[100,100], description:["Use the buttons above to explore the data"], text_x_y_pos:[20,57], box_size:[100,200]}];
           var num_descriptions = description_objects.length
 
           var description_counter = [0];
@@ -414,10 +429,9 @@
           function update_dialog_box() {
                        
             var params = description_objects[description_counter]
-            debugger;
+
             var descriptions = d3.select('svg').selectAll('g.description_text')
                           .data(description_counter, function(d) {
-                            debugger;
                             return d;
                           })
             var exit_desc = descriptions.exit()              
@@ -434,10 +448,14 @@
                       .attr('height',params["box_size"][0])
                       .attr('width',params["box_size"][1]);
             
-            enter_desc.append('text')
-                      .text(params["description"][0])
-                      .attr('x',params["text_x_y_pos"][0])
-                      .attr('y',params["text_x_y_pos"][1]);
+            var counter = 0
+            params["description"].forEach(function(line) {
+              enter_desc.append('text')
+                        .text(line)
+                        .attr('x',params["text_x_y_pos"][0])
+                        .attr('y',params["text_x_y_pos"][1]+counter*30);
+              counter++  
+            })
           };
 
 
