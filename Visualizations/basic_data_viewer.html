@@ -23,6 +23,11 @@
         margin-bottom: 20px;
       }
 
+      .x.axis {
+        opacity: 50%;
+      }
+
+
       p.introduction {
         display: inline;
         font-size: 30px;
@@ -45,7 +50,7 @@
 
     	div.button {
     		font-size: 30px;
-    		color: #708090;
+    		color: #875a34;
     		padding: 3px;
     		margin: auto;
         font-family: sans-serif;
@@ -68,7 +73,7 @@
     	div.question_text{
     		text-align: left;
     		font-size: 40px;
-    		color: #708090;
+    		color: #875a34;
     		font-family: sans-serif;
     		width: 70%;
    			margin:auto;  
@@ -79,7 +84,7 @@
     	}
 
       .x.axis{
-        fill:#708090;
+        fill:#875a34;
         font-family: sans-serif; 
       }
 
@@ -91,7 +96,7 @@
       .description_rect {
         fill:white;
         stroke-width:3;
-        stroke:#708090;;
+        stroke:#875a34;;
 
       }
 
@@ -120,7 +125,7 @@
         border-radius:10px 25px 25px 10px;
       }
       .inactive_chapter {
-        background-color: #708090;
+        background-color: #875a34;
         float:left;
         height: 90%;
         width: 20%;
@@ -140,6 +145,16 @@
       }
       .description_text {
         font-size: 30px
+      }
+      .restart_skip {
+        font-size: 20px;
+        font-family: sans-serif;
+        color: #875a34;
+        margin: auto;
+        min-width: 1000px;
+        max-width: 1600px;
+        width: 70%;
+        text-align: right;
       }
 
 	  </style>
@@ -240,8 +255,9 @@
       					.attr("width", width + margin)
       					.attr("height", height + margin);
 
-
-      		
+          d3.select("body")
+            .append('div')
+            .attr('class','restart_skip')
           //List of variables and their order
           var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
           
@@ -304,25 +320,27 @@
 
           //List of objects for descriptions
           var description_objects =[
-            {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans have", "some concern over environmental issues"], text_x_y_pos:[20,57], box_size:[200,400]},
-            {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only the 5th most important issue to Americans"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing to pay higher prices to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grnintl',x_y_pos:[100,100], description:["And over 75% of Americans believe that international environmental agreements are necessary"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing to accept cuts to their standard of living for the sake of the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling to pay higher taxes to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'govdook',x_y_pos:[100,100], description:["Perhaps this reluctance is due to a distrust of government"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grwthelp',x_y_pos:[100,100], description:["Instead many believe that economic growth is necessary to protect the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'scigrn',x_y_pos:[100,100], description:["While also believing that improving technology on its own isn't a solution"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'toodifme',x_y_pos:[100,100], description:["Many believe that individuals can make positive environmental changes"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'ihlpgrn',x_y_pos:[100,100], description:["In fact, most believe they are helping the environment in some way"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'redcehme',x_y_pos:[100,100], description:["Many do conserve energy for environmental reasons at least some of the time"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'recycle',x_y_pos:[100,100], description:["And recycling is one of the most popular ways of supporting the environment"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'nobuygrn',x_y_pos:[100,100], description:["Fewer people change their buying habits for environmental reasons"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'drivless',x_y_pos:[100,100], description:["And people do not often change their driving habits"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grngroup',x_y_pos:[100,100], description:["Even fewer have participated in any sort of environmental activism"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'grnsign',x_y_pos:[100,100], description:["And only one in five have signed a petition about an environmental issue in the past five years"], text_x_y_pos:[20,57], box_size:[100,200]},
-            {question:'ldcgrn',x_y_pos:[100,100], description:["Use the buttons above to explore the data"], text_x_y_pos:[20,57], box_size:[100,200]}];
+            {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200], callout:[]},
+            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans", "have some concern over", "environmental issues"], text_x_y_pos:[20,57], box_size:[160,350], callout:["3","4","5"]},
+            {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only", "the 5th most important issue", "to Americans"], text_x_y_pos:[20,57], box_size:[160,390], callout:["theenvironment"]},
+            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing", "to pay higher prices to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,380], callout:['1','2']},
+            {question:'grnintl',x_y_pos:[100,100], description:["And over 75% of Americans", "believe that international", "environmental agreements are", "necessary"], text_x_y_pos:[20,57], box_size:[190,420], callout:['4','5']},
+            {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing", "to accept cuts to their standard", "of living for the sake of the", "environment"], text_x_y_pos:[20,57], box_size:[190,430], callout:['1','2']},
+            {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling", "to pay higher taxes to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['1','2']},
+            {question:'govdook',x_y_pos:[100,100], description:["Perhaps this reluctance is due", "to a distrust of government"], text_x_y_pos:[20,57], box_size:[130,410], callout:['1','2']},
+            {question:'grwthelp',x_y_pos:[100,100], description:["Instead many believe that", "economic growth is necessary", "to protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['4','5']},
+            {question:'scigrn',x_y_pos:[100,100], description:["While also believing that", "improving technology on", "its own isn't a solution"], text_x_y_pos:[20,57], box_size:[160,360], callout:['1','2']},
+            {question:'toodifme',x_y_pos:[100,100], description:["Many believe that individuals", "can make positive", "environmental changes"], text_x_y_pos:[20,57], box_size:[160,410], callout:['1','2']},
+            {question:'ihlpgrn',x_y_pos:[100,100], description:["In fact, most believe they", "are helping the environment", "in some way"], text_x_y_pos:[20,57], box_size:[160,390], callout:['4','5']},
+            {question:'redcehme',x_y_pos:[100,100], description:["Many do conserve energy", "for environmental reasons", "at least some of the time"], text_x_y_pos:[20,57], box_size:[160,370], callout:['3','4']},
+            {question:'recycle',x_y_pos:[100,100], description:["And recycling is one of the", "most popular ways of", "supporting the environment"], text_x_y_pos:[20,57], box_size:[160,390], callout:['3','4']},
+            {question:'nobuygrn',x_y_pos:[100,100], description:["Fewer people change", "their buying habits for", "environmental reasons"], text_x_y_pos:[20,57], box_size:[160,330], callout:['1','2']},
+            {question:'drivless',x_y_pos:[100,100], description:["And people do not often", "change their driving habits"], text_x_y_pos:[20,57], box_size:[130,390], callout:['1','2']},
+            {question:'grngroup',x_y_pos:[width-0.4*width,100], description:["Even fewer have participated", "in any sort of environmental", "activism"], text_x_y_pos:[20,57], box_size:[160,400], callout:['0']},
+            {question:'grnsign',x_y_pos:[width-0.4*width,100], description:["And only one in five have", "signed a petition about an", "environmental issue in the", "past five years"], text_x_y_pos:[20,57], box_size:[190,380], callout:['0']},
+            {question:'ldcgrn',x_y_pos:[width-0.4*width,100], description:["Please use the buttons", "above to continue exploring", "the data"], text_x_y_pos:[20,57], box_size:[160,380], callout:[]},
+            {question:'ldcgrn',x_y_pos:[width-0.4*width,100], description:[""], text_x_y_pos:[0,0], box_size:[0,0], callout:[]}];
+          
           var num_descriptions = description_objects.length
 
           var description_counter = [0];
@@ -408,6 +426,7 @@
       		//Function updating chapter bar when questions are in a given chapter
           function update_chapter_bar(question) {
             var question_index = questions_list.indexOf(question);
+
             d3.select('.active_chapter').attr('class','inactive_chapter');
             if (question_index >= attitudes_chapter_start & question_index < risk_chapter_start) {
               d3.select('div#Attitudes').attr('class','active_chapter');
@@ -427,7 +446,7 @@
           }
 
           function update_dialog_box() {
-                       
+            //debugger;           
             var params = description_objects[description_counter]
 
             var descriptions = d3.select('svg').selectAll('g.description_text')
@@ -437,25 +456,58 @@
             var exit_desc = descriptions.exit()              
 
             exit_desc.remove()            
+            debugger;
+            if (typeof params !== "undefined" && params['text_x_y_pos'][0]!==0) {
+              var enter_desc = descriptions.enter()
+                                           .append('g')
+                                           .attr('class','description_text')
+                                           .attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
 
-            var enter_desc = descriptions.enter()
-                                         .append('g')
-                                         .attr('class','description_text')
-                                         .attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
+              var counter = 0
+              params["description"].forEach(function(line) {
+                enter_desc.append('text')
+                          .text(line)
+                          .attr('x',params["text_x_y_pos"][0])
+                          .attr('y',params["text_x_y_pos"][1]+counter*30);
+                counter++
+              })
+              enter_desc.append('rect')
+                        .attr('class','description_rect')
+                        .attr('height',params["box_size"][0])
+                        .attr('width',params["box_size"][1]);
+              
 
-            enter_desc.append('rect')
-                      .attr('class','description_rect')
-                      .attr('height',params["box_size"][0])
-                      .attr('width',params["box_size"][1]);
-            
-            var counter = 0
-            params["description"].forEach(function(line) {
-              enter_desc.append('text')
-                        .text(line)
-                        .attr('x',params["text_x_y_pos"][0])
-                        .attr('y',params["text_x_y_pos"][1]+counter*30);
-              counter++  
-            })
+              d3.select('div.restart_skip')
+                .text('skip presentation');
+
+              if (params['description']==="") {
+                d3.select('div.restart_skip')
+                .text('restart presentation');
+              }
+
+              var callouts = params['callout'];
+              //debugger;
+              if (callouts!==[]) {                
+                //debugger;
+                d3.selectAll('.callout')
+                  .attr('class','standard')
+                for (var i = 0, len = callouts.length; i<len; i++){
+                  var this_callout = '#id'+callouts[i]
+                  d3.select(this_callout)
+                    .attr('class','callout')
+                }
+              }
+              else {
+                d3.selectAll('.callout')
+                  .attr('class','standard')
+              }
+
+            }
+            else {
+              d3.select('div.restart_skip')
+                .text('restart presentation');
+              description_counter=[1000]
+            };
           };
 
 
@@ -469,15 +521,6 @@
             //Next node holds an object with the next batch of parameters
 
             
-           // d3.select('g.description_text').remove();
-
-
-            update_dialog_box();
-
-
-            //Updates chapter bar depending on current question
-            update_chapter_bar(question)
-            
             // filters out NaN observations from data from the question "question"     			
             var new_data = data.filter(function(d){
       				if(d[question]=='NaN'){
@@ -488,7 +531,7 @@
 
       			// Adds questions
       			question_space.data(question)
-      						  .text(question_text[question]);
+                    .text(question_text[question]);
 
       			// rolls up data by answer in "question"
       			var nested = d3.nest()
@@ -551,33 +594,51 @@
 				
 				//Enters rects	
 				entergroup.append('rect')
+              .attr("id",function(d) {
+                var key = d.key.replace(/\s/g, '').toLowerCase();
+                return "id"+key;
+              })
 						  .attr("width", x.rangeBand());
 				//Enters percentage labels
 				entergroup.append('text')
 						  .attr('class','bar_text');
 
+        //Updates narration dialogs
+        update_dialog_box();
+        //Updates chapter bar depending on current question
+            update_chapter_bar(question)
 				//update rects
 				group.select('rect')
       				 .transition() //This transition makes all bars go to the axis
       				 .duration(bar_moves)
       				 .attr('height', 0)
       				 .attr('y',height)
-					 .each('end', function(){ //This makes sure that transitions are only vertical
-						d3.select(this)
-						  .attr('x',function(d) {
-	      				 	return x(d.key);
-	      		    	  })
-	      		    	  .attr("width", x.rangeBand());
-						})
-					 .transition() //This transition creates the new bars
+					     .each('end', function(){ //This makes sure that transitions are only vertical
+						      d3.select(this)
+						        .attr('x',function(d) {
+	      				 	     return x(d.key);
+	      		        })
+	      		      .attr("width", x.rangeBand())
+                  .style('fill-opacity',0.5);
+						   })
+					     .transition() //This transition creates the new bars
       				 .delay(bar_moves)
       				 .duration(bar_moves*2.5)
 	      			 .attr('height', function(d){	
 	      				return height - y(+d.values['percent'].toPrecision(3));
 	      			 })
-	      		     .attr('y', function(d){
+	      		   .attr('y', function(d){
 	      				return y(+d.values['percent'].toPrecision(3));
-	      			 })
+	      			 });
+        
+        d3.selectAll('.callout')
+               .transition()
+               .delay(600)
+               .duration(500)
+               .style('fill-opacity','1')
+
+
+
 
 	      		//update text
 	      		group.select('text.bar_text')
@@ -587,12 +648,12 @@
 	      			 .attr('height',0)
 	      			 .attr('y', height)
 	      			 .each('end', function(){ //This makes sure that transitions are only vertical
-						d3.select(this)
-						  .attr('x',function(d) {
-	      				 	return x(d.key);
+						      d3.select(this)
+						        .attr('x',function(d) {
+	      				 	   return x(d.key);
 	      		    	  })
 	      		    	  .attr("width", x.rangeBand());
-					 })
+					     })
 	      			 .transition()
 	      			 .delay(bar_moves)
 	      			 .duration(bar_moves*2.5)
@@ -601,6 +662,8 @@
 	      			 .attr('y', function(d) {return y(+d.values['percent'].toPrecision(3))-5;})
 	      			 .style("fill-opacity", 0.7);
 	      		
+
+
             //Makes description button clickable for next description.
             var d_rect = svg.select('rect.description_rect')
             d_rect.on('click', function(d){       
@@ -613,7 +676,6 @@
                 update_chart(questions_list[current_question[0]])
               }
             });
-      			
 
             svg.select('g.x.axis')
                .transition()
@@ -621,10 +683,6 @@
 
 				    svg.select('g.y.axis')
       			   .call(yAxis);				      		
-      		
-
-
-
           };
       		
       		  var left = buttons.append('div')
@@ -647,6 +705,9 @@
             
             left.on("click", function(d) {
 		        	current_question--
+              description_counter = [1000]
+              d3.selectAll('.callout')
+                .attr('class','standard')
 		        	if (current_question < 0) {
 		        		current_question = num_questions-1;
 		        	};
@@ -654,6 +715,9 @@
 		        });
 		        right.on("click", function(d) {
 		        	current_question++
+              d3.selectAll('.callout')
+                .attr('class','standard')
+              description_counter = [1000]
 		        	if (current_question >= num_questions) {
 		        		current_question = 0
 		        	}
@@ -671,12 +735,31 @@
 
             //Programming for Chapter buttons
             chapter_button.on('click', function(d){
+              description_counter = [1000]
+              d3.selectAll('.callout')
+                .attr('class','standard')
               current_question = chapter_locations[d];
               update_chart(questions_list[current_question]);
               d3.select('.active_chapter').attr('class','inactive_chapter');
               d3.select(this).attr('class','active_chapter');
 
             });
+
+             //Makes restart button clickable to restart descriptions
+            var reset_skip_button = d3.selectAll('.restart_skip')
+
+            reset_skip_button.on('click', function(d){
+
+              if (typeof description_objects[description_counter] == "undefined"){
+                description_counter = [0]
+                current_question = questions_list.indexOf(description_objects[description_counter]['question'])
+                update_chart(description_objects[description_counter]['question'])
+              }
+              else {
+                debugger;
+                description_counter = [1000]
+                update_chart(questions_list[current_question])
+              }})
 
           	update_chart(questions_list[current_question[0]]);
 
