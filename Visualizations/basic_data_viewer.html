@@ -170,7 +170,7 @@
 
 
 
-          /*Adds title*/
+          /*Adds title and intro text*/
           d3.select("body")
         	  .append("div")
             .attr("class", "header_container")
@@ -184,6 +184,7 @@
 
           d3.select(".header_container")
             .append("hr")
+
           //Sets the starting index of question chapters used to update chapter button formatting and chart on button press  
           var attitudes_chapter_start = 0;
           var risk_chapter_start = 18;
@@ -199,8 +200,10 @@
           //The width of the divs that hold all non-svg content
           var content_width = d3.select('.question-chapters').node().getBoundingClientRect()['width']
 
-          //Chapter-titles
+          //Section adding chapter selection boxes
           var chapter_titles = ['Attitudes','Risk','Knowledge','Behaviors','Government']
+          
+
           var chapter_button_holder = chapters.selectAll('div')
                                     .data(chapter_titles)
                   
@@ -228,22 +231,19 @@
           width = content_width,
           height = 700 - margin;
 
-          // y scale
       		var y = d3.scale.linear()
       						.range([height,0]);
 
-          // x var
       		var x = d3.scale.ordinal()
       				  .rangeRoundBands([0, width], .1);
       		
-          //x axis
       		var xAxis = d3.svg.axis()
       						  .scale(x)
                     .tickFormat(function(d){
                       var responses = get_x_labels(current_question);
                       return responses[d]; })
       						  .orient("bottom");
-      		//y axis
+
       		var yAxis = d3.svg.axis()
       						  .scale(y)
       						  .orient("left");
@@ -258,7 +258,8 @@
           d3.select("body")
             .append('div')
             .attr('class','restart_skip')
-          //List of variables and their order
+
+          //List of variables in the data and their order
           var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
           
           //Outputs the x-axis labels for questions
@@ -318,7 +319,7 @@
             }
           };
 
-          //List of objects for descriptions
+          //List of objects for presentations
           var description_objects =[
             {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200], callout:[]},
             {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans", "have some concern over", "environmental issues"], text_x_y_pos:[20,57], box_size:[160,350], callout:["3","4","5"]},
@@ -408,13 +409,11 @@
 
       		var num_questions = questions_list.length;
 
-      		//draws x axis
             svg.append("g")
                .attr('class','x axis')
                .attr('transform', 'translate(0,' + height + ')')
                .call(xAxis);
                    
-            //draws y axis
             svg.append('g')
                .attr("class", 'y axis')
                .call(yAxis);
@@ -445,8 +444,9 @@
             }
           }
 
+          //function updating narrative text in presentation at start
           function update_dialog_box() {
-          
+            //Gets object for current dialog box
             var params = description_objects[description_counter]
 
             var descriptions = d3.select('svg').selectAll('g.description_text')
@@ -457,12 +457,14 @@
 
             exit_desc.remove()            
 
+            //if there is a presentation box
             if (typeof params !== "undefined" && params['text_x_y_pos'][0]!==0) {
               var enter_desc = descriptions.enter()
                                            .append('g')
                                            .attr('class','description_text')
                                            .attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
 
+              //places description box
               var counter = 0
               params["description"].forEach(function(line) {
                 enter_desc.append('text')
@@ -476,7 +478,7 @@
                         .attr('height',params["box_size"][0])
                         .attr('width',params["box_size"][1]);
               
-
+              //places a button that allows you to restart or skip the presentation
               d3.select('div.restart_skip')
                 .text('skip presentation');
 
@@ -487,6 +489,7 @@
 
               var callouts = params['callout'];
 
+              //Changes class of bars marked to be called out during presentation so that they will change color
               if (callouts!==[]) {                
                 d3.selectAll('.callout')
                   .attr('class','standard')
@@ -548,7 +551,6 @@
       						   .entries(new_data)
 
 
-            //sets the domain of x by passing it the range of possible values
       			x.domain(nested
               .sort(function(a,b){ //This sorts the bars in decending order only for topprob1      
                       if ( question === 'topprob1'){
@@ -561,19 +563,17 @@
       				return d.key;
       			}));
 
-      			//sets the domain of y by passing it the range of possible values
       			y.domain([0,1.1]);
       			
-
             //Create g to hold bars
       			var group = svg.selectAll('.bars')		
       					.data(nested, function(d) { return d.key;});
 
 
-            //remove exit
+            //remove exit with transitions
 	      		var exitbars = group.exit()
 	      			 
-	      		exitbars.select('rect')
+            exitbars.select('rect')
 	      			 .transition()
 	      			 .duration(bar_moves)
       				 .attr('height', 0 )
@@ -584,8 +584,8 @@
       				 .attr('transform',function(d) {
 						var y_val = 0;
 						var x_val = x(d.key);
-						return "translate(0," + y_val +")";
-					});
+						  return "translate(0," + y_val +")"; 
+            });
 
       			exitbars.select('text')
       					.transition()
@@ -593,167 +593,161 @@
       					.attr('y', height)
       					.style("fill-opacity", 1e-6);
 
-				
-				//enter selection
-				var entergroup = group.enter()
-					.append('g')
-					.attr('class','bars');
+  				//enter selection
+  				var entergroup = group.enter()
+  					.append('g')
+  					.attr('class','bars');
 
-				//Enters rects	
-				entergroup.append('rect')
-              .attr("id",function(d) {
-                var key = d.key.replace(/\s/g, '').toLowerCase();
-                return "id"+key;
-              })
-						  .attr("width", x.rangeBand());
-				//Enters percentage labels
-				entergroup.append('text')
-						  .attr('class','bar_text');
+  				//Enters rects	
+  				entergroup.append('rect')
+                .attr("id",function(d) {
+                  var key = d.key.replace(/\s/g, '').toLowerCase();
+                  return "id"+key;
+                })
+  						  .attr("width", x.rangeBand());
+  				//Enters percentage labels
+  				entergroup.append('text')
+  						  .attr('class','bar_text');
 
-        //Updates narration dialogs
-        update_dialog_box();
-        //Updates chapter bar depending on current question
-            update_chapter_bar(question)
-				//update rects
+          //Updates narration dialogs
+          update_dialog_box();
+          //Updates chapter bar depending on current question
+          update_chapter_bar(question)
+  				//update rects
+          group.select('rect')
+        				 .transition() //This transition makes all bars go to the axis
+        				 .duration(bar_moves)
+        				 .attr('height', 0)
+        				 .attr('y',height)
+  					     .each('end', function(){ //This makes sure that transitions are only vertical and not orizontal
+  						      d3.select(this)
+  						        .attr('x',function(d) {
+  	      				 	     return x(d.key);
+  	      		        })
+  	      		      .attr("width", x.rangeBand())
+                    .style('fill-opacity',0.5);
+  						   })
+  					     .transition() //This transition creates the new bars
+        				 .delay(bar_moves)
+        				 .duration(bar_moves*2.5)
+  	      			 .attr('height', function(d){	
+  	      				return height - y(+d.values['percent'].toPrecision(3));
+  	      			 })
+  	      		   .attr('y', function(d){
+  	      				return y(+d.values['percent'].toPrecision(3));
+  	      			 });
+          
+          //changes style of callout bars
+          d3.selectAll('.callout')
+                 .transition()
+                 .delay(600)
+                 .duration(500)
+                 .style('fill-opacity','1')
 
-        group.select('rect')
-      				 .transition() //This transition makes all bars go to the axis
-      				 .duration(bar_moves)
-      				 .attr('height', 0)
-      				 .attr('y',height)
-					     .each('end', function(){ //This makes sure that transitions are only vertical
-						      d3.select(this)
-						        .attr('x',function(d) {
-	      				 	     return x(d.key);
-	      		        })
-	      		      .attr("width", x.rangeBand())
-                  .style('fill-opacity',0.5);
-						   })
-					     .transition() //This transition creates the new bars
-      				 .delay(bar_moves)
-      				 .duration(bar_moves*2.5)
-	      			 .attr('height', function(d){	
-	      				return height - y(+d.values['percent'].toPrecision(3));
-	      			 })
-	      		   .attr('y', function(d){
-	      				return y(+d.values['percent'].toPrecision(3));
-	      			 });
-        
-
-
-        d3.selectAll('.callout')
-               .transition()
-               .delay(600)
-               .duration(500)
-               .style('fill-opacity','1')
-
-
-
-
-	      		//update text
-	      		group.select('text.bar_text')
-	      			 .transition()
-	      			 .duration(bar_moves)
-	      			 .style("fill-opacity", 1e-6)
-	      			 .attr('height',0)
-	      			 .attr('y', height)
-	      			 .each('end', function(){ //This makes sure that transitions are only vertical
-						      d3.select(this)
-						        .attr('x',function(d) {
-	      				 	   return x(d.key);
-	      		    	  })
-	      		    	  .attr("width", x.rangeBand());
-					     })
-	      			 .transition()
-	      			 .delay(bar_moves)
-	      			 .duration(bar_moves*2.5)
-	      			 .text(function (d) {return (Math.round(+d.values['percent'] * 1000)/10) +'%'})
-	      			 .attr('x', function(d) {return x(d.key);})
-	      			 .attr('y', function(d) {return y(+d.values['percent'].toPrecision(3))-5;})
-	      			 .style("fill-opacity", 0.7);
-	      		
-
-
-            //Makes description button clickable for next description.
-            var d_rect = svg.select('rect.description_rect')
-            d_rect.on('click', function(d){       
-              description_counter[0] ++
-              if (description_counter < num_descriptions) {
-                current_question = questions_list.indexOf(description_objects[description_counter]['question'])
-                update_chart(description_objects[description_counter]['question'])
-              }
-              else {
-                update_chart(questions_list[current_question[0]])
-              }
-            });
-
-            svg.select('g.x.axis')
-               .transition()
-               .call(xAxis);
-
-				    svg.select('g.y.axis')
-      			   .call(yAxis);				      		
-          };
-      		
-      		  var left = buttons.append('div')
-		        	   		  .selectAll('div')
-          			   		  .data(current_question)
-          			   		  .enter()
-          			   		  .append('div')
-          			   		  .attr("class", "button")
-          			   		  .text("<")
-          			   		  .attr("id", "left-button");	  
-          	
-          	var right = buttons.append('div')
-          	    	   		 .selectAll('div')
-          			   		   .data(current_question)
-          			   		   .enter()
-          			   		   .insert('div')
-          			   		   .attr("class", "button")
-          			   		   .text("> Next Question")
-          			   		   .attr("id", "right-button");
-            
-            left.on("click", function(d) {
-		        	current_question--
-              description_counter = [1000]
-              d3.selectAll('.callout')
-                .attr('class','standard')
-		        	if (current_question < 0) {
-		        		current_question = num_questions-1;
-		        	};
-              update_chart(questions_list[current_question])
-		        });
-		        right.on("click", function(d) {
-		        	current_question++
-              d3.selectAll('.callout')
-                .attr('class','standard')
-              description_counter = [1000]
-		        	if (current_question >= num_questions) {
-		        		current_question = 0
-		        	}
-
-		        	update_chart(questions_list[current_question]);
-		        });
-            
-            var chapter_locations= {
-              Attitudes: attitudes_chapter_start,
-              Risk:risk_chapter_start,
-              Knowledge: knowledge_chapter_start,
-              Behaviors: behavior_chapter_start ,
-              Government: government_chapter_start
+      		//update text
+      		group.select('text.bar_text')
+      			 .transition()
+      			 .duration(bar_moves)
+      			 .style("fill-opacity", 1e-6)
+      			 .attr('height',0)
+      			 .attr('y', height)
+      			 .each('end', function(){ //This makes sure that transitions are only vertical
+  				      d3.select(this)
+  				        .attr('x',function(d) {
+      				 	   return x(d.key);
+      		    	  })
+      		    	  .attr("width", x.rangeBand());
+  			     })
+      			 .transition()
+      			 .delay(bar_moves)
+      			 .duration(bar_moves*2.5)
+      			 .text(function (d) {return (Math.round(+d.values['percent'] * 1000)/10) +'%'})
+      			 .attr('x', function(d) {return x(d.key);})
+      			 .attr('y', function(d) {return y(+d.values['percent'].toPrecision(3))-5;})
+      			 .style("fill-opacity", 0.7);
+  	      		
+          //Makes description button clickable for next description.
+          var d_rect = svg.select('rect.description_rect')
+          d_rect.on('click', function(d){       
+            description_counter[0] ++
+            if (description_counter < num_descriptions) {
+              current_question = questions_list.indexOf(description_objects[description_counter]['question'])
+              update_chart(description_objects[description_counter]['question'])
             }
+            else {
+              update_chart(questions_list[current_question[0]])
+            }
+          });
 
-            //Programming for Chapter buttons
-            chapter_button.on('click', function(d){
-              description_counter = [1000]
-              d3.selectAll('.callout')
-                .attr('class','standard')
-              current_question = chapter_locations[d];
-              update_chart(questions_list[current_question]);
-              d3.select('.active_chapter').attr('class','inactive_chapter');
-              d3.select(this).attr('class','active_chapter');
+          svg.select('g.x.axis')
+             .transition()
+             .call(xAxis);
 
-            });
+  		    svg.select('g.y.axis')
+    			   .call(yAxis);				      		
+          };
+        	
+          //creates question navigation buttons	
+    		  var left = buttons.append('div')
+	        	   		  .selectAll('div')
+        			   		  .data(current_question)
+        			   		  .enter()
+        			   		  .append('div')
+        			   		  .attr("class", "button")
+        			   		  .text("<")
+        			   		  .attr("id", "left-button");	  
+        	
+        	var right = buttons.append('div')
+        	    	   		 .selectAll('div')
+        			   		   .data(current_question)
+        			   		   .enter()
+        			   		   .insert('div')
+        			   		   .attr("class", "button")
+        			   		   .text("> Next Question")
+        			   		   .attr("id", "right-button");
+          
+          //listens for click and updates question
+          left.on("click", function(d) {
+	        	current_question-- //current question tracks which question is being diesplayed
+            description_counter = [1000] //ensures that there is no display text
+            d3.selectAll('.callout')
+              .attr('class','standard')
+	        	if (current_question < 0) {
+	        		current_question = num_questions-1;
+	        	};
+            update_chart(questions_list[current_question])
+	        });
+	        right.on("click", function(d) {
+	        	current_question++
+            d3.selectAll('.callout')
+              .attr('class','standard')
+            description_counter = [1000]
+	        	if (current_question >= num_questions) {
+	        		current_question = 0
+	        	}
+
+	        	update_chart(questions_list[current_question]);
+	        });
+          
+          var chapter_locations= {
+            Attitudes: attitudes_chapter_start,
+            Risk:risk_chapter_start,
+            Knowledge: knowledge_chapter_start,
+            Behaviors: behavior_chapter_start ,
+            Government: government_chapter_start
+          }
+
+              //Programming for Chapter buttons
+              chapter_button.on('click', function(d){
+                description_counter = [1000]
+                d3.selectAll('.callout')
+                  .attr('class','standard')
+                current_question = chapter_locations[d];
+                update_chart(questions_list[current_question]);
+                d3.select('.active_chapter').attr('class','inactive_chapter');
+                d3.select(this).attr('class','active_chapter');
+
+              });
 
              //Makes restart button clickable to restart descriptions
             var reset_skip_button = d3.selectAll('.restart_skip')
