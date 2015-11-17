@@ -446,7 +446,7 @@
           }
 
           function update_dialog_box() {
-            //debugger;           
+          
             var params = description_objects[description_counter]
 
             var descriptions = d3.select('svg').selectAll('g.description_text')
@@ -456,7 +456,7 @@
             var exit_desc = descriptions.exit()              
 
             exit_desc.remove()            
-            debugger;
+
             if (typeof params !== "undefined" && params['text_x_y_pos'][0]!==0) {
               var enter_desc = descriptions.enter()
                                            .append('g')
@@ -486,9 +486,8 @@
               }
 
               var callouts = params['callout'];
-              //debugger;
+
               if (callouts!==[]) {                
-                //debugger;
                 d3.selectAll('.callout')
                   .attr('class','standard')
                 for (var i = 0, len = callouts.length; i<len; i++){
@@ -548,21 +547,29 @@
       						   	})
       						   .entries(new_data)
 
-      			//sets the domain of x by passing it the range of possible values
-      			x.domain(nested.map(function (d) {
+
+            //sets the domain of x by passing it the range of possible values
+      			x.domain(nested
+              .sort(function(a,b){ //This sorts the bars in decending order only for topprob1      
+                      if ( question === 'topprob1'){
+                        return b.values['percent'] - a.values['percent'];
+                      }
+                      else {
+                        return 0;
+                      }})
+              .map(function (d) {
       				return d.key;
       			}));
 
       			//sets the domain of y by passing it the range of possible values
       			y.domain([0,1.1]);
       			
+
             //Create g to hold bars
       			var group = svg.selectAll('.bars')		
-      					.data(nested, function(d) { 
-      						return d.key;
-      					});
+      					.data(nested, function(d) { return d.key;});
 
-      			
+
             //remove exit
 	      		var exitbars = group.exit()
 	      			 
@@ -590,8 +597,8 @@
 				//enter selection
 				var entergroup = group.enter()
 					.append('g')
-					.attr('class','bars')
-				
+					.attr('class','bars');
+
 				//Enters rects	
 				entergroup.append('rect')
               .attr("id",function(d) {
@@ -608,7 +615,8 @@
         //Updates chapter bar depending on current question
             update_chapter_bar(question)
 				//update rects
-				group.select('rect')
+
+        group.select('rect')
       				 .transition() //This transition makes all bars go to the axis
       				 .duration(bar_moves)
       				 .attr('height', 0)
@@ -631,6 +639,8 @@
 	      				return y(+d.values['percent'].toPrecision(3));
 	      			 });
         
+
+
         d3.selectAll('.callout')
                .transition()
                .delay(600)
@@ -756,7 +766,6 @@
                 update_chart(description_objects[description_counter]['question'])
               }
               else {
-                debugger;
                 description_counter = [1000]
                 update_chart(questions_list[current_question])
               }})
