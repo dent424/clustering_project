@@ -1,0 +1,152 @@
+h2 {
+		color: 'black';
+    font-weight: normal;
+		text-align: left;
+		font-size: 50px;
+		font-family: "Times New Roman", Times, serif; 
+		display:block;
+    margin: 0;
+}
+
+.header_container {
+  width: 70%;
+  min-width: 1000px;
+  max-width: 1600px;
+  height: 240px;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+.x.axis {
+  opacity: 50%;
+}
+
+
+p.introduction {
+  display: inline;
+  font-size: 30px;
+  font-family: "Times New Roman", Times, serif; 
+}
+
+p.chapter-text {
+  font-family: sans-serif;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
+  margin-top: 0.3em;
+  font-size: 25px;
+}
+
+#svg_main {
+	margin:auto; 
+	display:block;
+}
+
+div.button {
+	font-size: 30px;
+	color: #875a34;
+	padding: 3px;
+	margin: auto;
+  font-family: sans-serif;
+}
+
+div.question_selection_buttons {
+  width: 50%;
+  margin:auto;
+  height:60px; 
+}
+
+#left-button{
+	float: left;
+}
+
+#right-button{
+	float: left;
+}
+
+div.question_text{
+	text-align: left;
+	font-size: 40px;
+	color: #875a34;
+	font-family: sans-serif;
+	width: 70%;
+		margin:auto;  
+	display:block;
+  height:100px;
+  min-width: 1000px;
+  max-width: 1600px;
+}
+
+.x.axis{
+  fill:#875a34;
+  font-family: sans-serif; 
+}
+
+rect {
+	fill: forestgreen;
+	fill-opacity: 0.5;
+}
+
+.description_rect {
+  fill:white;
+  stroke-width:3;
+  stroke:#875a34;;
+
+}
+
+text.bar_text{
+	fill: forestgreen;
+	font-size: 40px;
+	font-family: sans-serif;
+}
+.question-chapters {
+  height: 50px;
+  font-size: 20px;
+  font-family: sans-serif;
+  position: relative;
+  margin: auto;
+  width: 70%;
+  min-width: 1000px;
+  max-width: 1600px;
+}
+
+.active_chapter {
+  background-color: green;
+  float:left;
+  height: 90%;
+  width: 20%;
+  opacity: 0.5;
+  border-radius:10px 25px 25px 10px;
+}
+.inactive_chapter {
+  background-color: #875a34;
+  float:left;
+  height: 90%;
+  width: 20%;
+  opacity: 0.7;
+  border-radius:10px 25px 25px 10px;
+}
+.chapter-text {
+  color: white;
+}
+.button-container {
+  /*container for question change buttons*/
+  height: 50px;
+  width: 70%;
+  margin: auto;
+  min-width: 1000px;
+  max-width: 1600px;
+}
+.description_text {
+  font-size: 30px
+}
+.restart_skip {
+  font-size: 20px;
+  font-family: sans-serif;
+  color: #875a34;
+  margin: auto;
+  min-width: 1000px;
+  max-width: 1600px;
+  width: 70%;
+  text-align: right;
+}
