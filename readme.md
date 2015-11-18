@@ -1,5 +1,7 @@
 Readme File for Alex Moore's Data Visualization Project
 
+A note on folder names - You may see the word cluster around the files. This is because these visualizations are the first part of a larger project involving clustering. These clusters are not currently implemented.
+
 Folders:
 Data Cleaning Tools - This folder contains tools used to clean and reformat the data in preparation for creating a D3 data visualization
 Original Data - Contains the original data which was cleaned as well as supporting documents for the data
