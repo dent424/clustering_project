@@ -18,7 +18,7 @@
         width: 70%;
         min-width: 1000px;
         max-width: 1600px;
-        height: 200px;
+        height: 240px;
         margin: auto;
         margin-bottom: 20px;
       }
@@ -327,8 +327,8 @@
           {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only", "the 5th most important issue", "to Americans"], text_x_y_pos:[20,57], box_size:[160,390], callout:["theenvironment"]},
           {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing", "to pay higher prices to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,380], callout:['1','2']},
           {question:'grnintl',x_y_pos:[100,100], description:["And over 75% of Americans", "believe that international", "environmental agreements are", "necessary"], text_x_y_pos:[20,57], box_size:[190,420], callout:['4','5']},
-          {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing", "to accept cuts to their standard", "of living for the sake of the", "environment"], text_x_y_pos:[20,57], box_size:[190,430], callout:['1','2']},
-          {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling", "to pay higher taxes to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['1','2']},
+          {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing", "to accept cuts to their standard", "of living for the sake of the", "environment"], text_x_y_pos:[20,57], box_size:[190,430], callout:['3','4','5']},
+          {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling", "to pay higher taxes to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['3','4','5']},
           {question:'govdook',x_y_pos:[100,100], description:["Perhaps this reluctance is due", "to a distrust of government"], text_x_y_pos:[20,57], box_size:[130,410], callout:['1','2']},
           {question:'grwthelp',x_y_pos:[100,100], description:["Instead many believe that", "economic growth is necessary", "to protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['4','5']},
           {question:'scigrn',x_y_pos:[100,100], description:["While also believing that", "improving technology on", "its own isn't a solution"], text_x_y_pos:[20,57], box_size:[160,360], callout:['1','2']},
@@ -491,6 +491,7 @@
             var callouts = params['callout'];
 
             //Changes class of bars marked to be called out during presentation so that they will change color
+            
             if (callouts!==[]) {                
               d3.selectAll('.callout')
                 .attr('class','standard');
@@ -759,6 +760,10 @@
           }
           else {
             description_counter = [1000];
+            
+            d3.selectAll('.callout')
+              .attr('class','standard')
+
             update_chart(questions_list[current_question]);
           }});
 
