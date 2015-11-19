@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <script src="http://d3js.org/d3.v3.min.js"></script>
+	  <style>
+	  	h2 {
+	    		color: 'black';
+          font-weight: normal;
+	    		text-align: left;
+	    		font-size: 50px;
+	    		font-family: "Times New Roman", Times, serif; 
+	    		display:block;
+          margin: 0;
+	    }
+      .header_container {
+        width: 70%;
+        min-width: 1000px;
+        max-width: 1600px;
+        height: 200px;
+        margin: auto;
+        margin-bottom: 20px;
+      }
+      .x.axis {
+        opacity: 50%;
+      }
+      p.introduction {
+        display: inline;
+        font-size: 30px;
+        font-family: "Times New Roman", Times, serif; 
+      }
+      p.chapter-text {
+        font-family: sans-serif;
+        padding: 0px;
+        margin: 0px;
+        text-align: center;
+        margin-top: 0.3em;
+        font-size: 25px;
+      }
+    	#svg_main {
+	    	margin:auto; 
+	    	display:block;
+	    }
+    	div.button {
+    		font-size: 30px;
+    		color: #875a34;
+    		padding: 3px;
+    		margin: auto;
+        font-family: sans-serif;
+    	}
+    	div.question_selection_buttons {
+        width: 50%;
+        margin:auto;
+        height:60px; 
+    	}
+   	
+    	#left-button{
+    		float: left;
+    	}
+    	#right-button{
+    		float: left;
+    	}
+    	div.question_text{
+    		text-align: left;
+    		font-size: 40px;
+    		color: #875a34;
+    		font-family: sans-serif;
+    		width: 70%;
+   			margin:auto;  
+	    	display:block;
+        height:100px;
+        min-width: 1000px;
+        max-width: 1600px;
+    	}
+      .x.axis{
+        fill:#875a34;
+        font-family: sans-serif; 
+      }
+    	rect {
+    		fill: forestgreen;
+    		fill-opacity: 0.5;
+    	}
+      
+      .description_rect {
+        fill:white;
+        stroke-width:3;
+        stroke:#875a34;;
+      }
+    	text.bar_text{
+    		fill: forestgreen;
+    		font-size: 40px;
+    		font-family: sans-serif;
+    	}
+      .question-chapters {
+        height: 50px;
+        font-size: 20px;
+        font-family: sans-serif;
+        position: relative;
+        margin: auto;
+        width: 70%;
+        min-width: 1000px;
+        max-width: 1600px;
+      }
+      .active_chapter {
+        background-color: green;
+        float:left;
+        height: 90%;
+        width: 20%;
+        opacity: 0.5;
+        border-radius:10px 25px 25px 10px;
+      }
+      .inactive_chapter {
+        background-color: #875a34;
+        float:left;
+        height: 90%;
+        width: 20%;
+        opacity: 0.7;
+        border-radius:10px 25px 25px 10px;
+      }
+      .chapter-text {
+        color: white;
+      }
+      .button-container {
+        /*container for question change buttons*/
+        height: 50px;
+        width: 70%;
+        margin: auto;
+        min-width: 1000px;
+        max-width: 1600px;
+      }
+      .description_text {
+        font-size: 30px
+      }
+      .restart_skip {
+        font-size: 20px;
+        font-family: sans-serif;
+        color: #875a34;
+        margin: auto;
+        min-width: 1000px;
+        max-width: 1600px;
+        width: 70%;
+        text-align: right;
+      }
+	  </style>
+	  <script type="text/javascript">
+	  	function draw(data) {
+	  		"use strict";
+	  		// Set speed at which bars move
+	  		var bar_moves = 200;
+	  		// Sets up initial question
+	  		var current_question = [0];
+          /*Adds title*/
+          d3.select("body")
+        	  .append("div")
+            .attr("class", "header_container")
+            .append("h2")
+            .text("Environmental Attitudes");
+          d3.select(".header_container")
+            .append("p")
+            .attr("class","introduction")
+            .text("Since 1972, the University of Chicago has run the General Social Survey (GSS) monitoring social attitudes in the United States. In 2010, the GSS included multiple questions on Americans' perceptions regarding environmental issues. Below are some of the results of the 2010 survey.")
+          d3.select(".header_container")
+            .append("hr")
+          //Sets the starting index of question chapters used to update chapter button formatting and chart on button press  
+          var attitudes_chapter_start = 0;
+          var risk_chapter_start = 18;
+          var knowledge_chapter_start = 25;
+          var behavior_chapter_start = 32;
+          var government_chapter_start = 42;
+          //Adds a div to put question section selection buttons in.
+          var chapters = d3.select("body")
+                           .append('div')
+                           .attr('class','question-chapters');
+          //The width of the divs that hold all non-svg content
+          var content_width = d3.select('.question-chapters').node().getBoundingClientRect()['width']
+          //Chapter-titles
+          var chapter_titles = ['Attitudes','Risk','Knowledge','Behaviors','Government']
+          var chapter_button_holder = chapters.selectAll('div')
+                                    .data(chapter_titles)
+                  
+          var chapter_button = chapter_button_holder.enter()
+                                                     .append('div')
+                                                     .attr('class','inactive_chapter')
+                                                     .attr('id',function(d){return d});
+                                                     
+          chapter_button.append('p')
+                         .attr('class', 'chapter-text')
+                         .text(function(d){return d});
+          /*Adds buttons for question selection*/
+        	var buttons =d3.select("body")
+        		  		   .append('div')
+                     .attr('class','button-container');
+        	//Adds space for updated question text later
+        	var question_space = d3.select("body")
+        						   .append('div')
+        						   .attr('class','question_text');
+      		/*sets up the canvas for the visualization*/
+          var margin = 75,
+          width = content_width,
+          height = 700 - margin;
+          // y scale
+      		var y = d3.scale.linear()
+      						.range([height,0]);
+          // x var
+      		var x = d3.scale.ordinal()
+      				  .rangeRoundBands([0, width], .1);
+      		
+          //x axis
+      		var xAxis = d3.svg.axis()
+      						  .scale(x)
+                    .tickFormat(function(d){
+                      var responses = get_x_labels(current_question);
+                      return responses[d]; })
+      						  .orient("bottom");
+      		//y axis
+      		var yAxis = d3.svg.axis()
+      						  .scale(y)
+      						  .orient("left");
+      		/*Adds the SVG element that will house everything else*/
+      		var svg = d3.select("body")
+      					.append("svg")
+      					.attr("id", "svg_main")
+      					.attr("width", width + margin)
+      					.attr("height", height + margin);
+          d3.select("body")
+            .append('div')
+            .attr('class','restart_skip')
+          //List of variables and their order
+          var questions_list = ["ihlpgrn","ldcgrn", "othssame", "harmgood", "impgrn", "scigrn", "grwthelp", "grwtharm", "grneffme", "popgrwth", "grnecon", "grnintl", "grnprog", "privent", "toodifme", "harmsgrn", "grnexagg", "helpharm", "chemgen", "nukegen",  "carsgen", "indusgen", "watergen", "tempgen1","grncon", "grnprice", "grnsol","grntaxes", "busgrn",  "peopgrn", "knwcause", "knowsol",  "drivless","recycle", "h2oless","nobuygrn","chemfree","redcehme","grnmoney", "grngroup","grndemo","grnsign",   "natchld", "natpark", "natsci", "natroad", "usdoenuf", "natenrgy", "natsoc", "govdook", "polgreed","polviews",  "topprob1"]
+          
+          //Outputs the x-axis labels for questions
+          function get_x_labels(question_index){
+            if ((question_index >= 0 && question_index <= 17)||(question_index >= 49 && question_index <= 50)){
+              var answer_choices = {1:"Strongly Disagree",2:"2",3:"3",4:"4",5:"Strongly Agree"}
+              return answer_choices
+            }
+            if (question_index >= 18 && question_index <= 23) {
+              var answer_choices = {1:"Extremely dangerous",2:"Very dangerous",3:"Somewhat dangerous",4:"Not very dangerous",5:"Not dangerous at all"}
+              return answer_choices
+            }
+            if (question_index === 24) {
+              var answer_choices = {1:"Not concerned",2:"2",3:"3",4:"4",5:"Very concerned"}
+              return answer_choices
+            }
+            if (question_index >= 25 && question_index <= 27) {
+              var answer_choices = {1:"Very willing",2:"Fairly willing",3:"Neither willing nor unwilling",4:"Not very willing",5:"Not at all willing"}
+              return answer_choices
+            }
+            if (question_index === 28) {
+              var answer_choices = {
+                'Heavy fines for businesses that damage the environment':"Heavy fines for environmental damage",'More information and education for businesses about the advantages of protecting the environment':"Information and education for businesses",'Use the tax system to reward businesses that protect the environment':"Tax benefits for good behavior"}
+              return answer_choices
+            }
+            if (question_index === 29) {
+              var answer_choices = {
+                'Heavy fines for people who damage the environment':"Heavy fines for environmental damage",'More information and education for people about the advantages of protecting the environment':"Information and education for people",'Use the tax system to reward people who protect the environment':"Tax benefits for good behavior"}
+              return answer_choices
+            }
+            if (question_index >= 30 && question_index <= 31) {
+              var answer_choices = {1:"Know nothing",2:"2",3:"3",4:"4",5:"Know a lot"}
+              return answer_choices
+            }
+            if (question_index >= 32 && question_index <= 37) {
+              var answer_choices = {1:"Never",2:"Sometimes",3:"Often",4:"Always"}
+              return answer_choices
+            }
+            if (question_index >= 38 && question_index <= 41) {
+              var answer_choices = {0:"No",1:"Yes"}
+              return answer_choices
+            }
+            if (question_index >= 42 && question_index <= 48) {
+              var answer_choices = {1:"Too little",2:"About right",3:"Too much"}
+              return answer_choices
+            }
+            if (question_index === 51) {
+              var answer_choices = {1:"Very conservative",2:"Conservative",3:"Slightly conservative",4:"Moderate",5:"Slightly liberal", 6:"Liberal", 7:"Very liberal"}
+              return answer_choices
+            }
+            if (question_index >= 52) {
+              var answer_choices = {"Crime":"Crime","Education":"Education","Health care":'Health care',Immigration:'Immigration','None of these':'Other','Poverty':'Poverty','Terrorism':'Terrorism','The economy':'Economy','The environment':'Environment'}
+              return answer_choices
+            }
+            else {
+              return "UNDEFINED"
+            }
+          };
+          //List of objects for descriptions
+          var description_objects =[
+            {question:'ldcgrn',x_y_pos:[100,100], description:["Click to Start"], text_x_y_pos:[20,57], box_size:[100,200], callout:[]},
+            {question:'grncon',x_y_pos:[100,100], description:["Over 75% of Americans", "have some concern over", "environmental issues"], text_x_y_pos:[20,57], box_size:[160,350], callout:["3","4","5"]},
+            {question:'topprob1',x_y_pos:[100,100], description:["But the environment is only", "the 5th most important issue", "to Americans"], text_x_y_pos:[20,57], box_size:[160,390], callout:["theenvironment"]},
+            {question:'grnprice',x_y_pos:[100,100], description:["Still, nearly half are willing", "to pay higher prices to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,380], callout:['1','2']},
+            {question:'grnintl',x_y_pos:[100,100], description:["And over 75% of Americans", "believe that international", "environmental agreements are", "necessary"], text_x_y_pos:[20,57], box_size:[190,420], callout:['4','5']},
+            {question:'grnsol',x_y_pos:[100,100], description:["But many are also not willing", "to accept cuts to their standard", "of living for the sake of the", "environment"], text_x_y_pos:[20,57], box_size:[190,430], callout:['1','2']},
+            {question:'grntaxes',x_y_pos:[100,100], description:["And even more are unwilling", "to pay higher taxes to", "protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['1','2']},
+            {question:'govdook',x_y_pos:[100,100], description:["Perhaps this reluctance is due", "to a distrust of government"], text_x_y_pos:[20,57], box_size:[130,410], callout:['1','2']},
+            {question:'grwthelp',x_y_pos:[100,100], description:["Instead many believe that", "economic growth is necessary", "to protect the environment"], text_x_y_pos:[20,57], box_size:[160,410], callout:['4','5']},
+            {question:'scigrn',x_y_pos:[100,100], description:["While also believing that", "improving technology on", "its own isn't a solution"], text_x_y_pos:[20,57], box_size:[160,360], callout:['1','2']},
+            {question:'toodifme',x_y_pos:[100,100], description:["Many believe that individuals", "can make positive", "environmental changes"], text_x_y_pos:[20,57], box_size:[160,410], callout:['1','2']},
+            {question:'ihlpgrn',x_y_pos:[100,100], description:["In fact, most believe they", "are helping the environment", "in some way"], text_x_y_pos:[20,57], box_size:[160,390], callout:['4','5']},
+            {question:'redcehme',x_y_pos:[100,100], description:["Many do conserve energy", "for environmental reasons", "at least some of the time"], text_x_y_pos:[20,57], box_size:[160,370], callout:['3','4']},
+            {question:'recycle',x_y_pos:[100,100], description:["And recycling is one of the", "most popular ways of", "supporting the environment"], text_x_y_pos:[20,57], box_size:[160,390], callout:['3','4']},
+            {question:'nobuygrn',x_y_pos:[100,100], description:["Fewer people change", "their buying habits for", "environmental reasons"], text_x_y_pos:[20,57], box_size:[160,330], callout:['1','2']},
+            {question:'drivless',x_y_pos:[100,100], description:["And people do not often", "change their driving habits"], text_x_y_pos:[20,57], box_size:[130,390], callout:['1','2']},
+            {question:'grngroup',x_y_pos:[width-0.4*width,100], description:["Even fewer have participated", "in any sort of environmental", "activism"], text_x_y_pos:[20,57], box_size:[160,400], callout:['0']},
+            {question:'grnsign',x_y_pos:[width-0.4*width,100], description:["And only one in five have", "signed a petition about an", "environmental issue in the", "past five years"], text_x_y_pos:[20,57], box_size:[190,380], callout:['0']},
+            {question:'ldcgrn',x_y_pos:[width-0.4*width,100], description:["Please use the buttons", "above to continue exploring", "the data"], text_x_y_pos:[20,57], box_size:[160,380], callout:[]},
+            {question:'ldcgrn',x_y_pos:[width-0.4*width,100], description:[""], text_x_y_pos:[0,0], box_size:[0,0], callout:[]}];
+          
+          var num_descriptions = description_objects.length
+          var description_counter = [0];
+          var test = "X";
+          //Text for questions
+      		var question_text = 
+      			{ldcgrn: "Poorer countries should be expected to make less effort than richer countries to protect the environment.",
+      			othssame: "There is no point in doing what I can for the environment unless others do the same.",
+      			chemgen:"How dangerous do you think that pesticides and chemicals used in farming are for the environment?",
+      			natchld:"In the US, are we spending too much, too little, or about the right amount on assistance for childcare?",
+      			natpark:"In the US, are we spending too much, too little, or about the right amount on parks and recreation?",
+      			sex:"Respondent's sex",
+      			nukegen: "How dangerous do you think nuclear power stations are for the environment?",
+      			harmgood: "Overall, modern science does more harm than good.",
+      			topprob1: "Which of these issues is the most important for America today?",
+      			drivless: "How often do you cut back on driving a car for environmental reasons?",
+      			grnmoney: "In the last five years, have you given money to an environmental group?",
+      			peopgrn: "Which of these approaches do you think would be the best way of getting people and their families in America to protect the environment?",
+      			natsci: "In the US, are we spending too much, too little, or about the right amount on supporting scientific research?",
+      			grngroup: "Are you a member of any group whose main aim is to preserve or protect the environment?",
+      			redcehme: "How often do you reduce the energy or fuel you use at home for environmental reasons?",
+      			grntaxes: "How willing would you be to pay much higher taxes in order to protect the environment?",
+      			grncon: "How concerned are you about environmental issues?",
+      			govdook: "Most of the time we can trust people in government to do what is right.",
+      			knowsol: "How much do you feel you know about solution to environmental problems?",
+      			chemfree: "How often do you make a special effort to buy fruits and vegetables grown without pesticides or chemicals?",
+      			ihlpgrn: "I do what I can to help the environment.",
+      			tempgen1: "How dangerous do you think that a rise in the world's temperature due to climate change is for the environment?",
+      			recycle: "How often do you make a special effort to sort your garbage for recycling?",
+      			grndemo:"In the last five years have you taken part in a protest or demonstration about an environmental issue?",
+      			impgrn: "There are more important things to do in life than protect the environment.",
+      			scigrn: "Modern science will solve our environmental problems with little change to our way of life.",
+      			h2oless: "How often do you choose to save or re-use water for environmental reasons?",
+      			carsgen: "How dangerous do you think air pollution caused by cars is for the environment?",
+      			indusgen: "How dangerous do you think air pollution caused by industry is for the environment?",
+      			grnprice: "How willing would you be to pay much higher prices in order to protect the environment?",
+      			grwthelp: "In order to protect the environment, America needs economic growth.",
+      			nobuygrn: "How often do you avoid buying certain products for environmental reasons?",
+      			grneffme: "Environmental problems have a direct effect on my everyday life.",
+      			helpharm:"I find it hard to know whether the way I live is helpful or harmful to the environment.",
+      			grnprog:"People worry too much about human progress harming the environment.",
+      			toodifme: "It is just too difficult for someone like me to do much about the environment.",
+      			grnsign: "In the last five years, have you signed a petition about an environmental issue?",
+    				harmsgrn: "Almost everything we do in modern life harms the environment.",
+    				grnexagg: "Many of the claims about environmental threats are exaggerated.",
+    				popgrwth: "The earth cannot continue to support population growth at its present rate.",
+    				watergen: "How dangerous is pollution of America's rivers, lakes and streams for the environment?",
+    				natenrgy: "In the US, are we spending too much, too little, or about the right amount on developing alternative energy sources",
+    				busgrn: "Which of these approaches do you think would be the best way of getting business and industry in America to protect the environment?",
+    				natsoc: "In the US, are we spending too much, too little, or about the right amount on Social Security",
+    				privent: "Private enterprise is the best way to solve America’s economic problems",
+    				grnsol: "How willing would you be to accept cuts in your standard of living in order to protect the environment?",
+    				natroad: "In the US, are we spending too much, too little, or about the right amount on highways and bridges?",
+    				age: "Age of respondent",
+    				usdoenuf: "Do you think America is doing enough to protect the world environment?",
+    				grwtharm: "Economic growth always harms the environment.",
+    				race: "Race of respondent.",
+    				polgreed: "Most politicians are in politics only for what they can get out of it personally.",
+    				polviews: "How liberal or conservative do you consider yourself?",
+    				grnintl: "For environmental problems, there should be international agreements that America and other countries should be made to follow.",
+    				knwcause: "How much do you feel you know about the causes of environmental problems?",
+    				grnecon: "We worry too much about the future of the environment, and not enough about prices and jobs today."}; 
+      		var num_questions = questions_list.length;
+      		//draws x axis
+            svg.append("g")
+               .attr('class','x axis')
+               .attr('transform', 'translate(0,' + height + ')')
+               .call(xAxis);
+                   
+            //draws y axis
+            svg.append('g')
+               .attr("class", 'y axis')
+               .call(yAxis);
+            //draws initial box for narrative descriptions
+            svg.append('g')
+               .attr('class','description_text')
+      		//Function updating chapter bar when questions are in a given chapter
+          function update_chapter_bar(question) {
+            var question_index = questions_list.indexOf(question);
+            d3.select('.active_chapter').attr('class','inactive_chapter');
+            if (question_index >= attitudes_chapter_start & question_index < risk_chapter_start) {
+              d3.select('div#Attitudes').attr('class','active_chapter');
+            }
+            else if (question_index >= risk_chapter_start & question_index < knowledge_chapter_start) {
+              d3.select('div#Risk').attr('class','active_chapter');
+            }
+            else if (question_index >= knowledge_chapter_start & question_index < behavior_chapter_start) {
+              d3.select('div#Knowledge').attr('class','active_chapter');
+            }
+            else if (question_index >= behavior_chapter_start & question_index < 41) {
+              d3.select('div#Behaviors').attr('class','active_chapter');
+            }
+            else {
+              d3.select('div#Government').attr('class','active_chapter');
+            }
+          }
+          function update_dialog_box() {
+            //debugger;           
+            var params = description_objects[description_counter]
+            var descriptions = d3.select('svg').selectAll('g.description_text')
+                          .data(description_counter, function(d) {
+                            return d;
+                          })
+            var exit_desc = descriptions.exit()              
+            exit_desc.remove()            
+            debugger;
+            if (typeof params !== "undefined" && params['text_x_y_pos'][0]!==0) {
+              var enter_desc = descriptions.enter()
+                                           .append('g')
+                                           .attr('class','description_text')
+                                           .attr('transform',"translate("+params["x_y_pos"][0]+","+params["x_y_pos"][1]+")");
+              var counter = 0
+              params["description"].forEach(function(line) {
+                enter_desc.append('text')
+                          .text(line)
+                          .attr('x',params["text_x_y_pos"][0])
+                          .attr('y',params["text_x_y_pos"][1]+counter*30);
+                counter++
+              })
+              enter_desc.append('rect')
+                        .attr('class','description_rect')
+                        .attr('height',params["box_size"][0])
+                        .attr('width',params["box_size"][1]);
+              
+              d3.select('div.restart_skip')
+                .text('skip presentation');
+              if (params['description']==="") {
+                d3.select('div.restart_skip')
+                .text('restart presentation');
+              }
+              var callouts = params['callout'];
+              //debugger;
+              if (callouts!==[]) {                
+                //debugger;
+                d3.selectAll('.callout')
+                  .attr('class','standard')
+                for (var i = 0, len = callouts.length; i<len; i++){
+                  var this_callout = '#id'+callouts[i]
+                  d3.select(this_callout)
+                    .attr('class','callout')
+                }
+              }
+              else {
+                d3.selectAll('.callout')
+                  .attr('class','standard')
+              }
+            }
+            else {
+              d3.select('div.restart_skip')
+                .text('restart presentation');
+              description_counter=[1000]
+            };
+          };
+          function update_chart(question) {
+      			//question is a string representing the question being displayed
+            //x_y_pos is an array with x and y position of text
+            //description is an array of strings to be used at x_y_pos
+            //text_x_y_pos is an array with x and y position of top left of top line of text
+            //box_size is size of the bounding box
+            //Next node holds an object with the next batch of parameters
+            
+            // filters out NaN observations from data from the question "question"     			
+            var new_data = data.filter(function(d){
+      				if(d[question]=='NaN'){
+      					return false;
+      				};
+      				return true;
+      			});
+      			// Adds questions
+      			question_space.data(question)
+                    .text(question_text[question]);
+      			// rolls up data by answer in "question"
+      			var nested = d3.nest()
+      						   .key(function(d){return d[question];
+      						   })
+      						   .rollup(function(leaves){
+      						   		var total = data.length
+      						   		var responses = leaves.length;
+      						   		return {
+      						   			'responses' : responses,
+      						   			'percent' : responses/total
+      						   		};
+      						   	})
+      						   .entries(new_data)
+      			//sets the domain of x by passing it the range of possible values
+      			x.domain(nested.map(function (d) {
+      				return d.key;
+      			}));
+      			//sets the domain of y by passing it the range of possible values
+      			y.domain([0,1.1]);
+      			
+            //Create g to hold bars
+      			var group = svg.selectAll('.bars')		
+      					.data(nested, function(d) { 
+      						return d.key;
+      					});
+      			
+            //remove exit
+	      		var exitbars = group.exit()
+	      			 
+	      		exitbars.select('rect')
+	      			 .transition()
+	      			 .duration(bar_moves)
+      				 .attr('height', 0 )
+      				 .attr('y', height)
+      				 .each("end", function(){
+      					group.exit().remove();	 	
+      				 })
+      				 .attr('transform',function(d) {
+						var y_val = 0;
+						var x_val = x(d.key);
+						return "translate(0," + y_val +")";
+					});
+      			exitbars.select('text')
+      					.transition()
+      					.duration(bar_moves)
+      					.attr('y', height)
+      					.style("fill-opacity", 1e-6);
+				
+				//enter selection
+				var entergroup = group.enter()
+					.append('g')
+					.attr('class','bars')
+				
+				//Enters rects	
+				entergroup.append('rect')
+              .attr("id",function(d) {
+                var key = d.key.replace(/\s/g, '').toLowerCase();
+                return "id"+key;
+              })
+						  .attr("width", x.rangeBand());
+				//Enters percentage labels
+				entergroup.append('text')
+						  .attr('class','bar_text');
+        //Updates narration dialogs
+        update_dialog_box();
+        //Updates chapter bar depending on current question
+            update_chapter_bar(question)
+				//update rects
+				group.select('rect')
+      				 .transition() //This transition makes all bars go to the axis
+      				 .duration(bar_moves)
+      				 .attr('height', 0)
+      				 .attr('y',height)
+					     .each('end', function(){ //This makes sure that transitions are only vertical
+						      d3.select(this)
+						        .attr('x',function(d) {
+	      				 	     return x(d.key);
+	      		        })
+	      		      .attr("width", x.rangeBand())
+                  .style('fill-opacity',0.5);
+						   })
+					     .transition() //This transition creates the new bars
+      				 .delay(bar_moves)
+      				 .duration(bar_moves*2.5)
+	      			 .attr('height', function(d){	
+	      				return height - y(+d.values['percent'].toPrecision(3));
+	      			 })
+	      		   .attr('y', function(d){
+	      				return y(+d.values['percent'].toPrecision(3));
+	      			 });
+        
+        d3.selectAll('.callout')
+               .transition()
+               .delay(600)
+               .duration(500)
+               .style('fill-opacity','1')
+	      		//update text
+	      		group.select('text.bar_text')
+	      			 .transition()
+	      			 .duration(bar_moves)
+	      			 .style("fill-opacity", 1e-6)
+	      			 .attr('height',0)
+	      			 .attr('y', height)
+	      			 .each('end', function(){ //This makes sure that transitions are only vertical
+						      d3.select(this)
+						        .attr('x',function(d) {
+	      				 	   return x(d.key);
+	      		    	  })
+	      		    	  .attr("width", x.rangeBand());
+					     })
+	      			 .transition()
+	      			 .delay(bar_moves)
+	      			 .duration(bar_moves*2.5)
+	      			 .text(function (d) {return (Math.round(+d.values['percent'] * 1000)/10) +'%'})
+	      			 .attr('x', function(d) {return x(d.key);})
+	      			 .attr('y', function(d) {return y(+d.values['percent'].toPrecision(3))-5;})
+	      			 .style("fill-opacity", 0.7);
+	      		
+            //Makes description button clickable for next description.
+            var d_rect = svg.select('rect.description_rect')
+            d_rect.on('click', function(d){       
+              description_counter[0] ++
+              if (description_counter < num_descriptions) {
+                current_question = questions_list.indexOf(description_objects[description_counter]['question'])
+                update_chart(description_objects[description_counter]['question'])
+              }
+              else {
+                update_chart(questions_list[current_question[0]])
+              }
+            });
+            svg.select('g.x.axis')
+               .transition()
+               .call(xAxis);
+				    svg.select('g.y.axis')
+      			   .call(yAxis);				      		
+          };
+      		
+      		  var left = buttons.append('div')
+		        	   		  .selectAll('div')
+          			   		  .data(current_question)
+          			   		  .enter()
+          			   		  .append('div')
+          			   		  .attr("class", "button")
+          			   		  .text("<")
+          			   		  .attr("id", "left-button");	  
+          	
+          	var right = buttons.append('div')
+          	    	   		 .selectAll('div')
+          			   		   .data(current_question)
+          			   		   .enter()
+          			   		   .insert('div')
+          			   		   .attr("class", "button")
+          			   		   .text("> Next Question")
+          			   		   .attr("id", "right-button");
+            
+            left.on("click", function(d) {
+		        	current_question--
+              description_counter = [1000]
+              d3.selectAll('.callout')
+                .attr('class','standard')
+		        	if (current_question < 0) {
+		        		current_question = num_questions-1;
+		        	};
+              update_chart(questions_list[current_question])
+		        });
+		        right.on("click", function(d) {
+		        	current_question++
+              d3.selectAll('.callout')
+                .attr('class','standard')
+              description_counter = [1000]
+		        	if (current_question >= num_questions) {
+		        		current_question = 0
+		        	}
+		        	update_chart(questions_list[current_question]);
+		        });
+            
+            var chapter_locations= {
+              Attitudes: attitudes_chapter_start,
+              Risk:risk_chapter_start,
+              Knowledge: knowledge_chapter_start,
+              Behaviors: behavior_chapter_start ,
+              Government: government_chapter_start
+            }
+            //Programming for Chapter buttons
+            chapter_button.on('click', function(d){
+              description_counter = [1000]
+              d3.selectAll('.callout')
+                .attr('class','standard')
+              current_question = chapter_locations[d];
+              update_chart(questions_list[current_question]);
+              d3.select('.active_chapter').attr('class','inactive_chapter');
+              d3.select(this).attr('class','active_chapter');
+            });
+             //Makes restart button clickable to restart descriptions
+            var reset_skip_button = d3.selectAll('.restart_skip')
+            reset_skip_button.on('click', function(d){
+              if (typeof description_objects[description_counter] == "undefined"){
+                description_counter = [0]
+                current_question = questions_list.indexOf(description_objects[description_counter]['question'])
+                update_chart(description_objects[description_counter]['question'])
+              }
+              else {
+                debugger;
+                description_counter = [1000]
+                update_chart(questions_list[current_question])
+              }})
+          	update_chart(questions_list[current_question[0]]);
+	  	}
+	  </script>
+	</head>
+	</body>
+		<script type="text/javascript">
+			d3.csv("clusterData.csv", draw)
+		</script>
+	</body>
+</html>

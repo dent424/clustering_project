@@ -15,8 +15,8 @@ from clustering_suite import cluster
 #import graphics
 
 
-data_path = "C:\Clustering Project\Data"
-data_path_2 = "C:\users\Alexander\clustering_project\Data"
+data_path = "C:\Clustering Project\Original_Data"
+data_path_2 = "C:\users\Alexander\clustering_project\Original_Data"
 data_file = 'GSS_comma.csv'
 
 #Sets up pretty printer for later use
