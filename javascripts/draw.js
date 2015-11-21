@@ -441,7 +441,8 @@ function draw(data) {
             var key = d.key.replace(/\s/g, '').toLowerCase();
             return "id"+key;
           })
-				  .attr("width", x.rangeBand());
+				  .attr("width", x.rangeBand())
+          .attr("class", 'bar_rect');
 		//Enters percentage labels
 		entergroup.append('text')
 				  .attr('class','bar_text');

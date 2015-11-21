@@ -8,6 +8,15 @@ h2 {
     margin: 0;
 }
 
+.bar_rect {
+  fill: forestgreen;
+
+}
+
+rect {
+   fill-opacity: 0.5; 
+}
+
 .header_container {
   width: 70%;
   min-width: 1000px;
@@ -20,7 +29,6 @@ h2 {
 .x.axis {
   opacity: 50%;
 }
-
 
 p.introduction {
   display: inline;
@@ -82,9 +90,8 @@ div.question_text{
   font-family: sans-serif; 
 }
 
-rect {
-	fill: forestgreen;
-	fill-opacity: 0.5;
+.transition_rect {
+  fill:none;
 }
 
 .description_rect {
