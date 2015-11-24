@@ -260,7 +260,45 @@ function cluster_transitions(data) {
 											 	};  
 							 				})
 							 			   .entries(data);
-		debugger;
+			colors.domain();
+			y.domain([0,1.1])
+			x_left.domain(prev_current_connector.map(function(d) {
+													return d.total;
+												   }));
+
+			//create g to hold transition lines
+			var left_group = svg.selectAll('.left_transition_g')
+						   .data(prev_current_connector, function(d) {return d.key;})
+						   
+			//debugger;
+			//remove transition lines
+			var exittrans_left = left_group.exit();
+			exittrans_left.remove();
+
+			//Enter selection
+			var trans_entergroup_left = left_group.enter()
+												  .append('g')
+												  .selectAll('polygon')
+												  .data(function(d) {
+												  	//debugger;
+												  	return d.values
+												  })
+												  .enter()
+												  .append('polygon')
+					  	   						  .attr('width', x_left.rangeBand())
+					  	   						  .attr('class','transition_poly');
+
+			//update left transitions
+			left_group.select('polygon')
+					  .attr('height', function(d) {
+					  	return height - y(+d.values['percent'].toPrecision(3));
+					  })
+					  .attr('y', function(d){
+					  	return d.values['y0'];
+					  })
+					  .style('fill', function(d){
+					  	return colors(d.values['cluster_num']);
+					  });
 		}
 		
 		var bar_data = update_stacked_bars(cluster_sol);
