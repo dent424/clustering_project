@@ -187,34 +187,40 @@ function cluster_transitions(data) {
 					  		.attr('width', x_left.rangeBand())
 					  		.attr('class','transition_rect');
 
-			//update left rects
+			//update rects
+			var left_group_y = {}; //This is an object for storing the y positions of each cluster for use in transition lines
 			left_group.select('rect')
 					  .attr('height', function(d) {
 					  	return height - y(+d.values['percent'].toPrecision(3));
 					  })
 					  .attr('y', function(d){
+					  	left_group_y[d.values['cluster_num']] =  d.values['y0']; 
 					  	return d.values['y0'];
 					  })
 					  .style('fill', function(d){
 					  	return colors(d.values['cluster_num']);
 					  });
 
+			var center_group_y = {}
 			center_group.select('rect')
 			  .attr('height', function(d) {
 			  	return height - y(+d.values['percent'].toPrecision(3));
 			  })
 			  .attr('y', function(d){
+			  	center_group_y[d.values['cluster_num']] =  d.values['y0'];
 			  	return d.values['y0'];
 			  })
 			  .style('fill', function(d){
 			  	return colors(d.values['cluster_num']);
 			  });
 
+			var right_group_y = {}
 			right_group.select('rect')
 			  .attr('height', function(d) {
 			  	return height - y(+d.values['percent'].toPrecision(3));
 			  })
 			  .attr('y', function(d){
+			  	right_group_y[d.values['cluster_num']] =  d.values['y0'];
 			  	return d.values['y0'];
 			  })
 			  .style('fill', function(d){
@@ -230,7 +236,11 @@ function cluster_transitions(data) {
 			var output = {'total': num_observations,
 						  'previous': prev_cluster_counts,
 						  'current' : current_cluster_counts,
-						  'next': next_cluster_counts}
+						  'next': next_cluster_counts,
+						  'left_group_ys': left_group_y,
+						  'center_group_ys': center_group_y,
+						  'right_group_ys': right_group_y,
+						  'stacked_width': x_left.rangeBand()}
 			return output 
 
 		}
@@ -270,35 +280,46 @@ function cluster_transitions(data) {
 			var left_group = svg.selectAll('.left_transition_g')
 						   .data(prev_current_connector, function(d) {return d.key;})
 						   
-			//debugger;
 			//remove transition lines
 			var exittrans_left = left_group.exit();
 			exittrans_left.remove();
 
 			//Enter selection
+			var transition_rectangle_left_positions = {}
 			var trans_entergroup_left = left_group.enter()
 												  .append('g')
+												  .attr('class','left_transition_g')
+												  .attr('transform',function(d) { 
+												  	var cluster_top = cluster_info['left_group_ys'][d.key];
+												  	transition_rectangle_left_positions[d.values['0'].values.from_cluster] = 0;
+												  	return 'translate('+cluster_info['stacked_width']+','+cluster_top+')';
+												  })
 												  .selectAll('polygon')
 												  .data(function(d) {
-												  	//debugger;
 												  	return d.values
 												  })
 												  .enter()
 												  .append('polygon')
-					  	   						  .attr('width', x_left.rangeBand())
 					  	   						  .attr('class','transition_poly');
 
 			//update left transitions
-			left_group.select('polygon')
-					  .attr('height', function(d) {
-					  	return height - y(+d.values['percent'].toPrecision(3));
+			var left_transition_width = (content_width/2-breakout_width/2) - (+cluster_info['stacked_width'])
+			
+			left_group.selectAll('polygon.transition_poly')
+					  .attr('points', function(d) {
+					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']]
+					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
+					  	var top_left = "0," + (current_y)
+					  	var top_right = left_transition_width + "," + (current_y)
+					  	var bottom_left = "0," + (current_y + bar_height)
+					  	var bottom_right = left_transition_width + "," +  (current_y + bar_height)
+					  	//debugger;
+					  	transition_rectangle_left_positions[d.values['from_cluster']] =  current_y + bar_height
+					  	//debugger;
+					  	return top_left + " " + top_right + " " + bottom_right + " " + bottom_left;
 					  })
-					  .attr('y', function(d){
-					  	return d.values['y0'];
-					  })
-					  .style('fill', function(d){
-					  	return colors(d.values['cluster_num']);
-					  });
+					  .attr('fill','red')
+					  .attr('opacity', 0.2); 
 		}
 		
 		var bar_data = update_stacked_bars(cluster_sol);
