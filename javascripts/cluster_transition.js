@@ -284,15 +284,28 @@ function cluster_transitions(data) {
 			var exittrans_left = left_group.exit();
 			exittrans_left.remove();
 
-			//Enter selection
+			
+			//Creates an array of keys for the clusters 
+			var left_group_cluster_ids = Object.keys(cluster_info['left_group_ys'])
+			var center_group_cluster_ids = Object.keys(cluster_info['center_group_ys'])
+			//Holds the top position of each transition bar
 			var transition_rectangle_left_positions = {}
+			var transition_rectangle_left_to_positions = {}
+
+			left_group_cluster_ids.forEach(function(group) {				
+				transition_rectangle_left_positions[group]= cluster_info['left_group_ys'][group]
+			})
+
+			center_group_cluster_ids.forEach(function(group) {				
+				transition_rectangle_left_to_positions[group]= cluster_info['center_group_ys'][group]
+			})
+
+			//Enter selection
 			var trans_entergroup_left = left_group.enter()
 												  .append('g')
 												  .attr('class','left_transition_g')
 												  .attr('transform',function(d) { 
-												  	var cluster_top = cluster_info['left_group_ys'][d.key];
-												  	transition_rectangle_left_positions[d.values['0'].values.from_cluster] = 0;
-												  	return 'translate('+cluster_info['stacked_width']+','+cluster_top+')';
+												  	return 'translate('+cluster_info['stacked_width']+',0)';
 												  })
 												  .selectAll('polygon')
 												  .data(function(d) {
@@ -306,19 +319,21 @@ function cluster_transitions(data) {
 			var left_transition_width = (content_width/2-breakout_width/2) - (+cluster_info['stacked_width'])
 			
 			left_group.selectAll('polygon.transition_poly')
-					  .attr('points', function(d) {
-					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']]
+					  .attr('points', function(d) { //sets the 4 points of a polygon
+					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']] //y position on from_clusters
+					  	var transition_y = transition_rectangle_left_to_positions[d.values['to_cluster']]//y position on to_clusters
 					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
 					  	var top_left = "0," + (current_y)
-					  	var top_right = left_transition_width + "," + (current_y)
+					  	var top_right = left_transition_width + "," + (transition_y)
 					  	var bottom_left = "0," + (current_y + bar_height)
-					  	var bottom_right = left_transition_width + "," +  (current_y + bar_height)
-					  	//debugger;
+					  	var bottom_right = left_transition_width + "," +  (transition_y + bar_height)
 					  	transition_rectangle_left_positions[d.values['from_cluster']] =  current_y + bar_height
-					  	//debugger;
+					  	transition_rectangle_left_to_positions[d.values['to_cluster']] = transition_y + bar_height
 					  	return top_left + " " + top_right + " " + bottom_right + " " + bottom_left;
 					  })
-					  .attr('fill','red')
+					  .style('fill', function(d){
+			  			return colors(d.values['from_cluster']);
+			  		  })
 					  .attr('opacity', 0.2); 
 		}
 		
