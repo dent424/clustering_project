@@ -198,7 +198,7 @@ function cluster_transitions(data) {
 					  	return d.values['y0'];
 					  })
 					  .style('fill', function(d){
-					  	return colors(d.values['cluster_num']);
+					  	return 'black';
 					  });
 
 			var center_group_y = {}
@@ -241,7 +241,24 @@ function cluster_transitions(data) {
 						  'center_group_ys': center_group_y,
 						  'right_group_ys': right_group_y,
 						  'stacked_width': x_left.rangeBand()}
+			left_group.on('mouseover', function(d) {
+				d3.selectAll('rect')
+				  .style('fill', function(d){
+			  	  return colors(d.values['cluster_num']);
+			  	});
+				center_group.selectAll('rect')
+				  .style('fill', 'black');
+			});
+			center_group.on('mouseover', function(d) {
+				d3.selectAll('rect')
+				  .style('fill', function(d){
+			  	  return colors(d.values['cluster_num']);
+			  	});
+				left_group.selectAll('rect')
+				  .style('fill', 'black');
+			});
 			return output 
+			
 
 		}
 		
@@ -336,7 +353,9 @@ function cluster_transitions(data) {
 			  		  })
 					  .attr('opacity', 0.2); 
 		}
-		
+
+
+
 		var bar_data = update_stacked_bars(cluster_sol);
 		update_bar_connectors(cluster_sol, bar_data);
 	}
