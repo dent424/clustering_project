@@ -177,11 +177,13 @@ function cluster_transitions(data) {
 
 			entergroup_left.append('rect')
 					  	   .attr('width', x_left.rangeBand())
-					  	   .attr('class','transition_rect');
+					  	   .attr('class','transition_rect')
+					  	   .attr('id','left_rects');
 
 			entergroup_center.append('rect')
 					  		.attr('width', x_left.rangeBand())
-					  		.attr('class','transition_rect');
+					  		.attr('class','transition_rect')
+					  		.attr('id','center_rects');
 
 			entergroup_right.append('rect')
 					  		.attr('width', x_left.rangeBand())
@@ -233,14 +235,8 @@ function cluster_transitions(data) {
 			svg.select('g.yAxis')
 			   .call(yAxis);
 
-			var output = {'total': num_observations,
-						  'previous': prev_cluster_counts,
-						  'current' : current_cluster_counts,
-						  'next': next_cluster_counts,
-						  'left_group_ys': left_group_y,
-						  'center_group_ys': center_group_y,
-						  'right_group_ys': right_group_y,
-						  'stacked_width': x_left.rangeBand()}
+			
+			//Listening for hover over stacked bars to change color on hover
 			left_group.on('mouseover', function(d) {
 				d3.selectAll('rect')
 				  .style('fill', function(d){
@@ -248,6 +244,10 @@ function cluster_transitions(data) {
 			  	});
 				center_group.selectAll('rect')
 				  .style('fill', 'black');
+				d3.selectAll('polygon.transition_poly')
+				  .style('fill',function(d){
+				  	return colors(d.values['from_cluster'])
+				  })
 			});
 			center_group.on('mouseover', function(d) {
 				d3.selectAll('rect')
@@ -256,7 +256,43 @@ function cluster_transitions(data) {
 			  	});
 				left_group.selectAll('rect')
 				  .style('fill', 'black');
+				d3.selectAll('polygon.transition_poly')
+				  .style('fill',function(d){
+				  	return colors(d.values['to_cluster'])
+				})
 			});
+
+			var rects = d3.selectAll('rect')
+			rects.on('mouseover', function(d) {
+				var selected = d3.select(this)
+				  .style('fill-opacity', function(d){
+				  	return 1;
+				  });
+				var location = d3.select(this).attr('id');
+				if (location === 'center_rects') {
+
+				}
+				
+
+			})
+
+			rects.on('mouseout', function(d) {
+				d3.select(this)
+				  .style('fill-opacity', function(d){
+				  	return 0.5;
+				  })
+			})
+
+			//What is getting returned
+			var output = {'total': num_observations,
+						  'previous': prev_cluster_counts,
+						  'current' : current_cluster_counts,
+						  'next': next_cluster_counts,
+						  'left_group_ys': left_group_y,
+						  'center_group_ys': center_group_y,
+						  'right_group_ys': right_group_y,
+						  'stacked_width': x_left.rangeBand()}
+
 			return output 
 			
 
@@ -348,8 +384,14 @@ function cluster_transitions(data) {
 					  	transition_rectangle_left_to_positions[d.values['to_cluster']] = transition_y + bar_height
 					  	return top_left + " " + top_right + " " + bottom_right + " " + bottom_left;
 					  })
+					  .attr('data-from', function(d){
+					  	return d.values['from_cluster'];
+					  })
+					  .attr('data-to', function(d){
+					  	return d.values['to_cluster'];
+					  })
 					  .style('fill', function(d){
-			  			return colors(d.values['from_cluster']);
+			  			return colors(d.values['to_cluster']);
 			  		  })
 					  .attr('opacity', 0.2); 
 		}
