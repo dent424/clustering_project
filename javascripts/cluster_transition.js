@@ -265,22 +265,33 @@ function cluster_transitions(data) {
 			var rects = d3.selectAll('rect')
 			rects.on('mouseover', function(d) {
 				var selected = d3.select(this)
-				  .style('fill-opacity', function(d){
-				  	return 1;
-				  });
+				  .style('fill-opacity', 1);
+				var target_rect = selected.datum().values.cluster_num;
 				var location = d3.select(this).attr('id');
 				if (location === 'center_rects') {
-
+					d3.selectAll('polygon.transition_poly')
+					  .filter(function(d){
+					  	return d.values.to_cluster === target_rect;
+					  })
+					  .style('opacity', 1);
 				}
-				
-
+				if (location === 'left_rects') {
+					d3.selectAll('polygon.transition_poly')
+					  .filter(function(d){
+					  	return d.values.from_cluster === target_rect;
+					  })
+					  .style('opacity', 1);	
+				}
 			})
 
 			rects.on('mouseout', function(d) {
 				d3.select(this)
 				  .style('fill-opacity', function(d){
 				  	return 0.5;
-				  })
+				  });
+
+				d3.selectAll('polygon.transition_poly')
+				  .style('opacity', 0.2);
 			})
 
 			//What is getting returned
