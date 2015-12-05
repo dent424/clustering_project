@@ -19,9 +19,6 @@ function cluster_transitions(data) {
 	var x_middle = d3.scale.ordinal()
 		  				   .rangeRoundBands([0, breakout_width], .1);
 
-	var x_right = d3.scale.ordinal()
-		  				  .rangeRoundBands([0, breakout_width], .1); 
-
 	var colors = d3.scale.category10();
 
 	var xAxis_left = d3.svg.axis()
@@ -31,10 +28,6 @@ function cluster_transitions(data) {
 	var xAxis_middle = d3.svg.axis()
 				         .scale(x_middle)
 	    		         .orient("bottom");
-
-	var xAxis_right = d3.svg.axis()
-				  		.scale(x_right)
-	    		  		.orient("bottom");
 
 	var yAxis = d3.svg.axis()
 				  .scale(y)
@@ -99,35 +92,10 @@ function cluster_transitions(data) {
 										 	};  
 										 })
 										 .entries(data);
-			y0 = 0;
-			y1 = 0;
-			var next_cluster_counts = {}
-			var next_cluster_sol = d3.nest()
-										 .key(function(d){return d[(cluster_sol+1)+"_clusters"];})
-										 .rollup(function(leaves){
-										 	var responses = leaves.length;
-										 	var percent = responses/num_observations;
-											var cluster_num = leaves[0][(cluster_sol+1)+"_clusters"];
-										 	next_cluster_counts[cluster_num] = responses;
-										 	y0 = y1;
-										 	y1 = y(0) + y0 - y(percent); 
-										 	return {
-										 		'cluster_num' : cluster_num,
-										 		'total' : num_observations,
-										 		'responses': responses,
-										 		'percent': percent,
-										 		'y0': y0,
-										 		'y1': y1
-										 	};  
-										 })
-										 .entries(data);
 
 			x_left.domain(previous_cluster_sol.map(function(d) {
 													return d.total;
 												   }));
-
-
-			
 
 			//create g to hold bars
 			var left_group = svg.selectAll('.left_bars')
@@ -136,19 +104,12 @@ function cluster_transitions(data) {
 			var center_group = svg.selectAll('.center_bars')
 						   .data(current_cluster_sol, function(d) {return d.key;});
 
-			var right_group = svg.selectAll('.right_bars')
-						   .data(next_cluster_sol, function(d) {return d.key;});
-
 			//remove bars
 			var exitbars_left = left_group.exit();
 			exitbars_left.remove();
 
 			var exitbars_center = center_group.exit();
 			exitbars_center.remove();
-
-			var exitbars_right = right_group.exit();
-			exitbars_right.remove();
-
 
 			//Enter selection
 			var entergroup_left = left_group.enter()
@@ -166,15 +127,6 @@ function cluster_transitions(data) {
 							  					})
 							  					.attr('transform','translate('+(content_width/2-breakout_width/2)+',0)');
 
-			var entergroup_right = right_group.enter()
-												.append('g')
-							  					.attr('class','right_bars')
-							  					.attr('id',function(d){
-							  						return d.values['cluster_num']
-							  					})
-							  					.attr('transform','translate('+(content_width-breakout_width)+',0)');
-
-
 			entergroup_left.append('rect')
 					  	   .attr('width', x_left.rangeBand())
 					  	   .attr('class','transition_rect')
@@ -184,10 +136,6 @@ function cluster_transitions(data) {
 					  		.attr('width', x_left.rangeBand())
 					  		.attr('class','transition_rect')
 					  		.attr('id','center_rects');
-
-			entergroup_right.append('rect')
-					  		.attr('width', x_left.rangeBand())
-					  		.attr('class','transition_rect');
 
 			//update rects
 			var left_group_y = {}; //This is an object for storing the y positions of each cluster for use in transition lines
@@ -210,19 +158,6 @@ function cluster_transitions(data) {
 			  })
 			  .attr('y', function(d){
 			  	center_group_y[d.values['cluster_num']] =  d.values['y0'];
-			  	return d.values['y0'];
-			  })
-			  .style('fill', function(d){
-			  	return colors(d.values['cluster_num']);
-			  });
-
-			var right_group_y = {}
-			right_group.select('rect')
-			  .attr('height', function(d) {
-			  	return height - y(+d.values['percent'].toPrecision(3));
-			  })
-			  .attr('y', function(d){
-			  	right_group_y[d.values['cluster_num']] =  d.values['y0'];
 			  	return d.values['y0'];
 			  })
 			  .style('fill', function(d){
@@ -298,10 +233,8 @@ function cluster_transitions(data) {
 			var output = {'total': num_observations,
 						  'previous': prev_cluster_counts,
 						  'current' : current_cluster_counts,
-						  'next': next_cluster_counts,
 						  'left_group_ys': left_group_y,
 						  'center_group_ys': center_group_y,
-						  'right_group_ys': right_group_y,
 						  'stacked_width': x_left.rangeBand()}
 
 			return output 
