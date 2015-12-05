@@ -6,3 +6,8 @@
 .left_bars {
 	fill:black;
 }
+
+.transition_poly {
+	stroke:black;
+	stroke-width:0.2;	
+}

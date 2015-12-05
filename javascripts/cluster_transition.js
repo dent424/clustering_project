@@ -117,7 +117,8 @@ function cluster_transitions(data) {
 							  				.attr('class','left_bars')
 							  				.attr('id',function(d){
 							  					return d.values['cluster_num']
-							  				});
+							  				})
+							  				.attr('transform','translate('+(content_width/3-x_left.rangeBand())+',0)');
 
 			var entergroup_center = center_group.enter()
 												.append('g')
@@ -125,7 +126,7 @@ function cluster_transitions(data) {
 							  					.attr('id',function(d){
 							  						return d.values['cluster_num']
 							  					})
-							  					.attr('transform','translate('+(content_width/2-breakout_width/2)+',0)');
+							  					.attr('transform','translate('+(2*content_width/3+x_left.rangeBand())+',0)');
 
 			entergroup_left.append('rect')
 					  	   .attr('width', x_left.rangeBand())
@@ -313,16 +314,16 @@ function cluster_transitions(data) {
 					  	   						  .attr('class','transition_poly');
 
 			//update left transitions
-			var left_transition_width = (content_width/2-breakout_width/2) - (+cluster_info['stacked_width'])
-			
+			var left_side = (content_width/3-(+cluster_info['stacked_width']))
+			var left_transition_width = (2*content_width/3)-0.5
 			left_group.selectAll('polygon.transition_poly')
 					  .attr('points', function(d) { //sets the 4 points of a polygon
 					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']] //y position on from_clusters
 					  	var transition_y = transition_rectangle_left_to_positions[d.values['to_cluster']]//y position on to_clusters
 					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
-					  	var top_left = "0," + (current_y)
+					  	var top_left = left_side + "," + (current_y)
 					  	var top_right = left_transition_width + "," + (transition_y)
-					  	var bottom_left = "0," + (current_y + bar_height)
+					  	var bottom_left = left_side + "," + (current_y + bar_height)
 					  	var bottom_right = left_transition_width + "," +  (transition_y + bar_height)
 					  	transition_rectangle_left_positions[d.values['from_cluster']] =  current_y + bar_height
 					  	transition_rectangle_left_to_positions[d.values['to_cluster']] = transition_y + bar_height
