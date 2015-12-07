@@ -142,6 +142,9 @@ function cluster_transitions(data) {
 			entergroup_left.append('text')
 						   .attr('class', 'segment_name left_segment_name')
 
+			entergroup_left.append('text')
+						   .attr('class', 'segment_percentage_labels segment_percentage_labels_left')
+
 			entergroup_center.append('rect')
 					  		.attr('width', x_left.rangeBand())
 					  		.attr('class','transition_rect')
@@ -149,6 +152,9 @@ function cluster_transitions(data) {
 
 			entergroup_center.append('text')
 						   .attr('class', 'segment_name center_segment_name')
+
+			entergroup_center.append('text')
+						     .attr('class', 'segment_percentage_labels segment_percentage_labels_center')
 
 			//update rects
 			var left_group_y = {}; //This is an object for storing the y positions of each cluster for use in transition lines
@@ -177,7 +183,8 @@ function cluster_transitions(data) {
 			  	return colors(d.values['cluster_num']);
 			  });
 
-			left_group.select('text')
+			//Adds segment names beside stacked bars
+			left_group.select('.left_segment_name')
 					  .text(function(d){
 					  	 return "segment " + (+d.values.cluster_num+1)
 					  })
@@ -186,7 +193,7 @@ function cluster_transitions(data) {
 					  })
 					  .attr('x', '-5')
 
-			center_group.select('text')
+			center_group.select('.center_segment_name')
 					  .text(function(d){
 					  	 return "segment " + (+d.values.cluster_num+1)
 					  })
@@ -194,6 +201,25 @@ function cluster_transitions(data) {
 					     return d.values['y0']+18;
 					  })
 					  .attr('x', x_left.rangeBand()+5)
+
+			//Adds percentage labels to segments
+			left_group.select('.segment_percentage_labels')
+					  .text(function(d){ 
+					  	return  Math.round(d.values.percent*100,2) + "%"
+					  })
+					  .attr('y', function(d){
+					  	return d.values['y0'] + 18;
+					  })
+					  .attr('x',x_left.rangeBand() )
+
+			center_group.select('.segment_percentage_labels')
+					  .text(function(d){
+					  	return  Math.round(d.values.percent*100,2) + "%"
+					  })
+					  .attr('y', function(d){
+					  	return d.values['y0'] + 18;
+					  })
+
 
 			svg.select('g.xAxis_left')
 			   .call(xAxis_left);

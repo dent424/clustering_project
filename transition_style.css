@@ -32,8 +32,23 @@
 	margin:auto; 
 }
 
+.segment_percentage_labels {
+	font-size: 20px;
+	font-family: sans-serif;
+	opacity: 0.8;
+}
+
+.segment_percentage_labels_left {
+	text-anchor: end;
+}
+
+.segment_percentage_labels_center {
+	text-anchor: start;
+}
+
 #svg_transitions {
 	margin:auto; 
 	display:block;
 }
+
 
