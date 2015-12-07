@@ -33,6 +33,12 @@ function cluster_transitions(data) {
 				  .scale(y)
 				  .orient("left");
 
+	d3.select('body')
+	  .append('div')
+	  .attr('class','title_container')
+	  .append('h2')
+	  .text('Cluster Transitions')
+
 	//Adds the SVG element that will house everything else
 	var svg = d3.select("body")
 				.append("svg")
@@ -133,10 +139,16 @@ function cluster_transitions(data) {
 					  	   .attr('class','transition_rect')
 					  	   .attr('id','left_rects');
 
+			entergroup_left.append('text')
+						   .attr('class', 'segment_name left_segment_name')
+
 			entergroup_center.append('rect')
 					  		.attr('width', x_left.rangeBand())
 					  		.attr('class','transition_rect')
 					  		.attr('id','center_rects');
+
+			entergroup_center.append('text')
+						   .attr('class', 'segment_name center_segment_name')
 
 			//update rects
 			var left_group_y = {}; //This is an object for storing the y positions of each cluster for use in transition lines
@@ -164,6 +176,24 @@ function cluster_transitions(data) {
 			  .style('fill', function(d){
 			  	return colors(d.values['cluster_num']);
 			  });
+
+			left_group.select('text')
+					  .text(function(d){
+					  	 return "segment " + (+d.values.cluster_num+1)
+					  })
+					  .attr('y', function(d){
+					     return d.values['y0']+18;
+					  })
+					  .attr('x', '-5')
+
+			center_group.select('text')
+					  .text(function(d){
+					  	 return "segment " + (+d.values.cluster_num+1)
+					  })
+					  .attr('y', function(d){
+					     return d.values['y0']+18;
+					  })
+					  .attr('x', x_left.rangeBand()+5)
 
 			svg.select('g.xAxis_left')
 			   .call(xAxis_left);
@@ -206,6 +236,7 @@ function cluster_transitions(data) {
 				var location = d3.select(this).attr('id');
 				if (location === 'center_rects') {
 					d3.selectAll('polygon.transition_poly')
+					  .style('opacity', 0)
 					  .filter(function(d){
 					  	return d.values.to_cluster === target_rect;
 					  })
@@ -213,6 +244,7 @@ function cluster_transitions(data) {
 				}
 				if (location === 'left_rects') {
 					d3.selectAll('polygon.transition_poly')
+					  .style('opacity', 0)
 					  .filter(function(d){
 					  	return d.values.from_cluster === target_rect;
 					  })

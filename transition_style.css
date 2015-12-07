@@ -11,3 +11,29 @@
 	stroke:black;
 	stroke-width:0.2;	
 }
+
+.segment_name {
+	font-size: 20px;
+  	font-family: sans-serif;
+  	opacity: 0.8;	
+}
+
+.left_segment_name {
+	text-anchor: end;
+}
+
+.center_segment_name {
+	text-anchor: start;
+}
+
+.title_container {
+	width: 770px;
+	height: 70px;
+	margin:auto; 
+}
+
+#svg_transitions {
+	margin:auto; 
+	display:block;
+}
+
