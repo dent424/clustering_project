@@ -46,6 +46,14 @@
 	text-anchor: start;
 }
 
+.to_cluster_percent {
+	text-anchor: end;
+}
+
+.from_cluster_percent {
+	text-anchor: start;
+}
+
 #svg_transitions {
 	margin:auto; 
 	display:block;

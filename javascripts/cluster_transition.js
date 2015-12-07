@@ -241,6 +241,7 @@ function cluster_transitions(data) {
 				  	return colors(d.values['from_cluster'])
 				  })
 			});
+
 			center_group.on('mouseover', function(d) {
 				d3.selectAll('rect')
 				  .style('fill', function(d){
@@ -260,6 +261,7 @@ function cluster_transitions(data) {
 				  .style('fill-opacity', 1);
 				var target_rect = selected.datum().values.cluster_num;
 				var location = d3.select(this).attr('id');
+
 				if (location === 'center_rects') {
 					d3.selectAll('polygon.transition_poly')
 					  .style('opacity', 0)
@@ -267,6 +269,11 @@ function cluster_transitions(data) {
 					  	return d.values.to_cluster === target_rect;
 					  })
 					  .style('opacity', 1);
+					d3.selectAll('text.to_cluster_percent')
+				  	  .filter(function(d){
+				  	  	return '#to_cluster_' + d.values.to_cluster === '#to_cluster_' + target_rect
+				  	  })
+				  	  .style('opacity', 0.8);
 				}
 				if (location === 'left_rects') {
 					d3.selectAll('polygon.transition_poly')
@@ -275,6 +282,11 @@ function cluster_transitions(data) {
 					  	return d.values.from_cluster === target_rect;
 					  })
 					  .style('opacity', 1);	
+					d3.selectAll('text.from_cluster_percent')
+				  	  .filter(function(d){
+				  	  	return '#from_cluster_' + d.values.from_cluster === '#from_cluster_' + target_rect
+				  	  })
+				  	  .style('opacity', 0.8);
 				}
 			})
 
@@ -286,6 +298,12 @@ function cluster_transitions(data) {
 
 				d3.selectAll('polygon.transition_poly')
 				  .style('opacity', 0.2);
+
+				d3.selectAll('text.to_cluster_percent')
+				  .style('opacity', 0)
+
+				d3.selectAll('text.from_cluster_percent')
+				  .style('opacity', 0)
 			})
 
 			//What is getting returned
@@ -368,10 +386,17 @@ function cluster_transitions(data) {
 												  	return d.values
 												  })
 												  .enter()
-												  .append('polygon')
-					  	   						  .attr('class','transition_poly');
+												  
+			trans_entergroup_left.append('polygon')
+					  	   		 .attr('class','transition_poly');
 
-			//update left transitions
+			trans_entergroup_left.append('text')
+								 .attr('class', 'from_cluster_percent')
+
+			trans_entergroup_left.append('text')
+								 .attr('class', 'to_cluster_percent')
+			
+			//update left transitions polygons
 			var left_side = (content_width/3-(+cluster_info['stacked_width']))
 			var left_transition_width = (2*content_width/3)-0.5
 			left_group.selectAll('polygon.transition_poly')
@@ -397,6 +422,41 @@ function cluster_transitions(data) {
 			  			return colors(d.values['to_cluster']);
 			  		  })
 					  .attr('opacity', 0.2); 
+
+			//update left transitions from percentages
+			left_group.selectAll('text.from_cluster_percent')
+					  .text(function(d) {
+					  	return Math.round(d.values.percent_of_from_cluster*100,1) + "%"
+					  })
+					  .attr('id', function(d) {
+					  	return "from_cluster_" + d.values.from_cluster
+					  })
+					  .attr('y', function(d) {
+					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']] //y position on from_clusters
+					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
+					  	var top_left = left_side + "," + (current_y)
+					  	transition_rectangle_left_positions[d.values['from_cluster']] =  current_y + bar_height
+					  	return top_left
+					  })
+					  .attr('x',left_side)
+					  .style('opacity','0')
+
+			left_group.selectAll('text.to_cluster_percent')
+					  .text(function(d) {
+					  	return Math.round(d.values.percent_of_to_cluster*100,1) + "%"
+					  })
+					  .attr('id', function(d) {
+					  	return "to_cluster_" + d.values.to_cluster
+					  })
+					  .attr('y', function(d) {
+					  	var transition_y = transition_rectangle_left_to_positions[d.values['to_cluster']] //y position on from_clusters
+					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
+					  	var top_right = left_transition_width + "," + (transition_y)
+					  	transition_rectangle_left_to_positions[d.values['to_cluster']] = transition_y + bar_height
+					  	return top_right
+					  })
+					  .attr('x',left_transition_width)
+					  .style('opacity','0')
 		}
 
 
