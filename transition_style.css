@@ -47,11 +47,15 @@
 }
 
 .to_cluster_percent {
-	text-anchor: end;
+	text-anchor: middle;
+	font-size: 20px;
+	font-weight: bold;
 }
 
 .from_cluster_percent {
-	text-anchor: start;
+	text-anchor: middle;
+	font-size: 20px;
+	font-weight: bold;
 }
 
 #svg_transitions {

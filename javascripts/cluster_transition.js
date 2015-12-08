@@ -258,7 +258,8 @@ function cluster_transitions(data) {
 			var rects = d3.selectAll('rect')
 			rects.on('mouseover', function(d) {
 				var selected = d3.select(this)
-				  .style('fill-opacity', 1);
+				  .style('fill-opacity', 0.7)
+				  .style('stroke-width', 2);
 				var target_rect = selected.datum().values.cluster_num;
 				var location = d3.select(this).attr('id');
 
@@ -268,12 +269,12 @@ function cluster_transitions(data) {
 					  .filter(function(d){
 					  	return d.values.to_cluster === target_rect;
 					  })
-					  .style('opacity', 1);
+					  .style('opacity', 0.7);
 					d3.selectAll('text.to_cluster_percent')
 				  	  .filter(function(d){
 				  	  	return '#to_cluster_' + d.values.to_cluster === '#to_cluster_' + target_rect
 				  	  })
-				  	  .style('opacity', 0.8);
+				  	  .style('opacity', 1);
 				}
 				if (location === 'left_rects') {
 					d3.selectAll('polygon.transition_poly')
@@ -281,20 +282,19 @@ function cluster_transitions(data) {
 					  .filter(function(d){
 					  	return d.values.from_cluster === target_rect;
 					  })
-					  .style('opacity', 1);	
+					  .style('opacity', 0.7);	
 					d3.selectAll('text.from_cluster_percent')
 				  	  .filter(function(d){
 				  	  	return '#from_cluster_' + d.values.from_cluster === '#from_cluster_' + target_rect
 				  	  })
-				  	  .style('opacity', 0.8);
+				  	  .style('opacity', 1);
 				}
 			})
 
 			rects.on('mouseout', function(d) {
 				d3.select(this)
-				  .style('fill-opacity', function(d){
-				  	return 0.5;
-				  });
+				  .style('fill-opacity',  0.5)
+				  .style('stroke-width', 1);
 
 				d3.selectAll('polygon.transition_poly')
 				  .style('opacity', 0.2);
@@ -366,16 +366,20 @@ function cluster_transitions(data) {
 			var transition_rectangle_left_positions = {};
 			var transition_rectangle_left_to_positions = {};
 			var text_left_positions = {};
+			var text_left_to_positions = {};
 			var text_center_positions = {};
+			var text_center_to_positions = {};
 
 			left_group_cluster_ids.forEach(function(group) {				
 				transition_rectangle_left_positions[group]= cluster_info['left_group_ys'][group];
 				text_left_positions[group]= cluster_info['left_group_ys'][group];
+				text_center_positions[group]= cluster_info['left_group_ys'][group];
 			})
 
 			center_group_cluster_ids.forEach(function(group) {				
 				transition_rectangle_left_to_positions[group]= cluster_info['center_group_ys'][group];
-				text_center_positions[group]= cluster_info['center_group_ys'][group];
+				text_left_to_positions[group]= cluster_info['center_group_ys'][group];
+				text_center_to_positions[group]= cluster_info['center_group_ys'][group];
 			})
 
 			//Enter selection
@@ -403,6 +407,7 @@ function cluster_transitions(data) {
 			//update left transitions polygons
 			var left_side = (content_width/3-(+cluster_info['stacked_width']))
 			var left_transition_width = (2*content_width/3)-0.5
+			var center = ((2*content_width/3) + (content_width/3-(+cluster_info['stacked_width'])))/2 
 			left_group.selectAll('polygon.transition_poly')
 					  .attr('points', function(d) { //sets the 4 points of a polygon
 					  	var current_y = transition_rectangle_left_positions[d.values['from_cluster']] //y position on from_clusters
@@ -430,36 +435,38 @@ function cluster_transitions(data) {
 			//update left transitions from percentages
 			left_group.selectAll('text.from_cluster_percent')
 					  .text(function(d) {
-					  	return (+d.values.percent_of_from_cluster*100).toPrecision(3).toString() + "%"
+					  	return (Math.round(+d.values.percent_of_from_cluster*1000)/10).toString() + "%"
 					  })
 					  .attr('id', function(d) {
 					  	return "from_cluster_" + d.values.from_cluster
 					  })
+					  .attr('x',center)
 					  .attr('y', function(d) {
 					  	var current_y = text_left_positions[d.values['from_cluster']] //y position on from_clusters
+					  	var transition_y = text_left_to_positions[d.values['to_cluster']] //y position on from_clusters
 					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
-					  	var top_left = left_side + "," + (current_y)
 					  	text_left_positions[d.values['from_cluster']] =  current_y + bar_height
-					  	return top_left
+					  	text_left_to_positions[d.values['to_cluster']] =  transition_y + bar_height
+					  	return (current_y + transition_y + bar_height)/2
 					  })
-					  .attr('x',left_side)
 					  .style('opacity','0')
 
 			left_group.selectAll('text.to_cluster_percent')
 					  .text(function(d) {
-					  	return (+d.values.percent_of_to_cluster*100).toPrecision(3).toString() + "%"
+					  	return (Math.round(+d.values.percent_of_to_cluster*1000)/10).toString() + "%"
 					  })
 					  .attr('id', function(d) {
 					  	return "to_cluster_" + d.values.to_cluster
 					  })
+					  .attr('x',center)
 					  .attr('y', function(d) {
-					  	var transition_y = text_center_positions[d.values['to_cluster']] //y position on from_clusters
+					  	var current_y = text_center_positions[d.values['from_cluster']] //y position on from_clusters
+					  	var transition_y = text_center_to_positions[d.values['to_cluster']] //y position on from_clusters
 					  	var bar_height = height - y(+d.values['percent_of_total'].toPrecision(3))
-					  	var top_right = left_transition_width + "," + (transition_y)
-					  	text_center_positions[d.values['to_cluster']] = transition_y + bar_height
-					  	return top_right
+					  	text_center_positions[d.values['from_cluster']] =  current_y + bar_height
+					  	text_center_to_positions[d.values['to_cluster']] =  transition_y + bar_height
+					  	return (current_y + transition_y + bar_height)/2 
 					  })
-					  .attr('x',left_transition_width)
 					  .style('opacity','0')
 		}
 
